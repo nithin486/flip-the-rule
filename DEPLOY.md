@@ -10,3 +10,7 @@
 
 Asset paths are relative (`base: './'`), so it also works from any sub-path or static host and uploads to CrazyGames as-is
 (zip the contents of `dist`).
+
+## If the dashboard shows "Deploy command: npx wrangler deploy" (Workers Builds)
+`wrangler.jsonc` in the repo root tells wrangler to serve the `dist` folder as static assets, so the default
+build command `npm run build` + deploy command `npx wrangler deploy` works with no other settings.
