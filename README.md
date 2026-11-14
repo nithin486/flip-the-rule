@@ -42,4 +42,4 @@ Still to do by hand: test inside the CrazyGames QA tool, take screenshots/metada
 ## v4: hand-designed levels (current)
 - All 40 levels are hand-designed (`tools/lv/LNN.mjs`), each with a different layout, and proven one at a time with `tools/proveOne.mjs` (solver + replay with the limit active). `node tools/assembleProved.mjs` writes `levels/*.json`. The old generated/mirrored set is superseded.
 - Worlds (new concept every 5 levels, new background palette and a per-level sky layout): 1 basics, 2 spikes + **hidden spikes**, 3 moving platforms + saws (+hidden saws), 4 portals/switches/gates/gravity zones, 5 ice/conveyors/bounce/**wind**, 6 **phase platforms**, pulsing spikes, flip crystals, 7 **no-flip zones**, **reversed controls**, 8 everything, no spare flips (limit = par).
-- Hidden hazards stay invisible until the player is ~160px away, then stay revealed.
+- Hidden hazards stay invisible until the player is ~160px away, then stay revealed until you retry or respawn, when they hide again (the surprise is there on every attempt).

@@ -236,7 +236,7 @@ export class GameplayScene extends Phaser.Scene {
 
   private checkInteractions() {
     const P = this.player, c = P.b.center, cx = c.x, cy = c.y, r = PHYS.radius;
-    // hidden hazards reveal themselves as the player closes in (and stay revealed on retries)
+    // hidden hazards reveal themselves as the player closes in (and hide again on every retry/respawn)
     if (this.fx) { for (const s of this.spikes) if (!s.revealed && (cx - (s.rect.x + s.rect.w / 2)) ** 2 + (cy - (s.rect.y + s.rect.h / 2)) ** 2 < 150 ** 2 + (s.rect.w / 2) ** 2) { s.reveal(this); audio.sfx('click'); }
       for (const s of this.saws) if (!s.revealed && (cx - s.x) ** 2 + (cy - s.y) ** 2 < 170 ** 2) { s.reveal(this); audio.sfx('click'); } }
     // hazards
@@ -317,6 +317,7 @@ export class GameplayScene extends Phaser.Scene {
     this.flips = s.flips; this.collected = s.collected; this.star?.setCollected(s.collected);
     this.refills.forEach((r, i) => r.setCollected((s.rf ?? []).includes(i))); this.refillsTaken = (s.rf ?? []).length;
     for (const sp of this.spikes) sp.update(s.t, this.fx);
+    if (this.fx) { for (const sp of this.spikes) sp.conceal(this); for (const sw of this.saws) sw.conceal(this); }
     this.teleCd = s.teleCd; this.zin = s.zin.slice();
     this.switches.forEach((sw) => sw.setOn(s.sw.includes(sw.def.id)));
     this.platforms.forEach((p, i) => {

@@ -27,6 +27,8 @@ export class Spike {
     }
     if (!def.hidden) this.revealed = true;
   }
+  /** Hidden spikes go back into hiding on every new attempt, so the surprise is there each time the level is played. */
+  conceal(scene: Phaser.Scene) { if (!this.def.hidden || !this.revealed) return; this.revealed = false; for (const i of this.imgs) { scene.tweens.killTweensOf(i); i.setAlpha(0).setScale(i.scaleX, 1); } }
   reveal(scene: Phaser.Scene) { if (this.revealed) return; this.revealed = true; for (const i of this.imgs) { i.setAlpha(1).setTint(0xffffff); scene.tweens.add({ targets: i, scaleY: { from: 1.7, to: 1 }, duration: 260, ease: 'Back.easeOut' }); } }
 }
 
@@ -52,6 +54,7 @@ export class Saw {
     this.img = scene.add.image(def.x, def.y, 'saw').setDepth(7).setDisplaySize(this.r * 2.9, this.r * 2.9);
     if (def.hidden) this.img.setAlpha(0); else this.revealed = true;
   }
+  conceal(scene: Phaser.Scene) { if (!this.def.hidden || !this.revealed) return; this.revealed = false; scene.tweens.killTweensOf(this.img); this.img.setAlpha(0).setDisplaySize(this.r * 2.9, this.r * 2.9); this.track?.setAlpha(0); }
   reveal(scene: Phaser.Scene) { if (this.revealed) return; this.revealed = true; this.img.setAlpha(1); this.track?.setAlpha(1); scene.tweens.add({ targets: this.img, scale: { from: this.img.scale * 1.5, to: this.img.scale }, duration: 260, ease: 'Back.easeOut' }); }
   update(t: number) {
     if (this.def.path) { const p = pathAt(this.def.x, this.def.y, this.def.path, t); this.x = p.x; this.y = p.y; }
