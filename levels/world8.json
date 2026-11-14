@@ -1,0 +1,758 @@
+[
+ {
+  "id": 36,
+  "world": 8,
+  "name": "Gauntlet",
+  "playerStart": {
+   "x": 60,
+   "y": 463
+  },
+  "gravity": "down",
+  "flipTarget": 4,
+  "collectible": {
+   "x": 470,
+   "y": 140
+  },
+  "exit": {
+   "x": 905,
+   "y": 463
+  },
+  "platforms": [
+   {
+    "x": 0,
+    "y": 480,
+    "width": 300,
+    "height": 28,
+    "kind": "ice"
+   },
+   {
+    "x": 300,
+    "y": 480,
+    "width": 660,
+    "height": 28
+   },
+   {
+    "x": 200,
+    "y": 96,
+    "width": 500,
+    "height": 28
+   },
+   {
+    "x": 760,
+    "y": 96,
+    "width": 200,
+    "height": 28
+   }
+  ],
+  "hazards": [
+   {
+    "type": "spike",
+    "x": 300,
+    "y": 466,
+    "width": 60,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 400,
+    "y": 466,
+    "width": 80,
+    "dir": "up",
+    "period": 3,
+    "phase": 0
+   },
+   {
+    "type": "spike",
+    "x": 260,
+    "y": 124,
+    "width": 50,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 480,
+    "y": 124,
+    "width": 70,
+    "dir": "down",
+    "period": 3,
+    "phase": 0.5
+   },
+   {
+    "type": "saw",
+    "x": 560,
+    "y": 300,
+    "r": 22,
+    "path": {
+     "dx": 0,
+     "dy": 120,
+     "period": 3,
+     "phase": 0
+    }
+   },
+   {
+    "type": "saw",
+    "x": 660,
+    "y": 300,
+    "r": 22,
+    "path": {
+     "dx": 0,
+     "dy": 120,
+     "period": 3,
+     "phase": 0.5
+    },
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 760,
+    "y": 466,
+    "width": 60,
+    "dir": "up",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 840,
+    "y": 466,
+    "width": 40,
+    "dir": "up"
+   }
+  ],
+  "zones": [
+   {
+    "x": 520,
+    "y": 124,
+    "width": 200,
+    "height": 356,
+    "kind": "wind",
+    "wind": -220
+   }
+  ],
+  "flipLimit": 4,
+  "parTime": 17,
+  "hint": "No spare flips from here on. Plan every one."
+ },
+ {
+  "id": 37,
+  "world": 8,
+  "name": "Switchback",
+  "playerStart": {
+   "x": 60,
+   "y": 463
+  },
+  "gravity": "down",
+  "flipTarget": 5,
+  "collectible": {
+   "x": 820,
+   "y": 300
+  },
+  "exit": {
+   "x": 905,
+   "y": 143
+  },
+  "platforms": [
+   {
+    "x": 0,
+    "y": 480,
+    "width": 960,
+    "height": 28
+   },
+   {
+    "x": 0,
+    "y": 300,
+    "width": 640,
+    "height": 28
+   },
+   {
+    "x": 0,
+    "y": 96,
+    "width": 960,
+    "height": 28
+   }
+  ],
+  "hazards": [
+   {
+    "type": "spike",
+    "x": 200,
+    "y": 466,
+    "width": 70,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 500,
+    "y": 466,
+    "width": 70,
+    "dir": "up",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 300,
+    "y": 328,
+    "width": 60,
+    "dir": "down"
+   },
+   {
+    "type": "saw",
+    "x": 760,
+    "y": 400,
+    "r": 22,
+    "path": {
+     "dx": 0,
+     "dy": 70,
+     "period": 2.6,
+     "phase": 0
+    },
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 200,
+    "y": 286,
+    "width": 50,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 420,
+    "y": 286,
+    "width": 80,
+    "dir": "up",
+    "period": 3,
+    "phase": 0
+   },
+   {
+    "type": "spike",
+    "x": 700,
+    "y": 124,
+    "width": 60,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 820,
+    "y": 124,
+    "width": 50,
+    "dir": "down",
+    "hidden": true
+   }
+  ],
+  "portals": [
+   {
+    "id": "a",
+    "x": 900,
+    "y": 440,
+    "pair": "b"
+   },
+   {
+    "id": "b",
+    "x": 60,
+    "y": 260,
+    "pair": "a"
+   }
+  ],
+  "zones": [
+   {
+    "x": 600,
+    "y": 328,
+    "width": 160,
+    "height": 152,
+    "kind": "lock"
+   }
+  ],
+  "flipLimit": 5,
+  "parTime": 16
+ },
+ {
+  "id": 38,
+  "world": 8,
+  "name": "Shatter Bridge",
+  "playerStart": {
+   "x": 60,
+   "y": 413
+  },
+  "gravity": "down",
+  "flipTarget": 4,
+  "collectible": {
+   "x": 480,
+   "y": 140
+  },
+  "exit": {
+   "x": 905,
+   "y": 413
+  },
+  "platforms": [
+   {
+    "x": 0,
+    "y": 430,
+    "width": 160,
+    "height": 28
+   },
+   {
+    "x": 220,
+    "y": 350,
+    "width": 90,
+    "height": 28,
+    "kind": "phase",
+    "period": 3,
+    "phase": 0
+   },
+   {
+    "x": 380,
+    "y": 350,
+    "width": 90,
+    "height": 28,
+    "kind": "phase",
+    "period": 3,
+    "phase": 0.33
+   },
+   {
+    "x": 540,
+    "y": 350,
+    "width": 90,
+    "height": 28,
+    "kind": "phase",
+    "period": 3,
+    "phase": 0.66
+   },
+   {
+    "x": 300,
+    "y": 490,
+    "width": 400,
+    "height": 28,
+    "kind": "conveyor",
+    "speed": -120
+   },
+   {
+    "x": 780,
+    "y": 430,
+    "width": 180,
+    "height": 28
+   },
+   {
+    "x": 250,
+    "y": 96,
+    "width": 400,
+    "height": 28
+   }
+  ],
+  "hazards": [
+   {
+    "type": "spike",
+    "x": 300,
+    "y": 476,
+    "width": 400,
+    "dir": "up"
+   },
+   {
+    "type": "saw",
+    "x": 450,
+    "y": 250,
+    "r": 22,
+    "path": {
+     "dx": 0,
+     "dy": 80,
+     "period": 2.6,
+     "phase": 0
+    },
+    "hidden": true
+   },
+   {
+    "type": "saw",
+    "x": 620,
+    "y": 250,
+    "r": 22,
+    "path": {
+     "dx": 0,
+     "dy": 80,
+     "period": 3,
+     "phase": 0
+    }
+   },
+   {
+    "type": "spike",
+    "x": 300,
+    "y": 124,
+    "width": 60,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 500,
+    "y": 124,
+    "width": 80,
+    "dir": "down",
+    "period": 3,
+    "phase": 0.4
+   },
+   {
+    "type": "spike",
+    "x": 830,
+    "y": 416,
+    "width": 50,
+    "dir": "up",
+    "hidden": true
+   }
+  ],
+  "zones": [
+   {
+    "x": 200,
+    "y": 124,
+    "width": 480,
+    "height": 366,
+    "kind": "reverse"
+   },
+   {
+    "x": 560,
+    "y": 124,
+    "width": 200,
+    "height": 366,
+    "kind": "wind",
+    "wind": 240
+   }
+  ],
+  "flipLimit": 4,
+  "parTime": 16
+ },
+ {
+  "id": 39,
+  "world": 8,
+  "name": "Last Light",
+  "playerStart": {
+   "x": 60,
+   "y": 463
+  },
+  "gravity": "down",
+  "flipTarget": 5,
+  "collectible": {
+   "x": 470,
+   "y": 300
+  },
+  "exit": {
+   "x": 905,
+   "y": 143
+  },
+  "platforms": [
+   {
+    "x": 0,
+    "y": 480,
+    "width": 280,
+    "height": 28,
+    "kind": "ice"
+   },
+   {
+    "x": 340,
+    "y": 340,
+    "width": 80,
+    "height": 140
+   },
+   {
+    "x": 440,
+    "y": 480,
+    "width": 90,
+    "height": 28,
+    "kind": "bounce"
+   },
+   {
+    "x": 600,
+    "y": 250,
+    "width": 60,
+    "height": 230
+   },
+   {
+    "x": 260,
+    "y": 96,
+    "width": 340,
+    "height": 28
+   },
+   {
+    "x": 740,
+    "y": 96,
+    "width": 220,
+    "height": 28
+   },
+   {
+    "x": 700,
+    "y": 480,
+    "width": 260,
+    "height": 30
+   }
+  ],
+  "hazards": [
+   {
+    "type": "spike",
+    "x": 340,
+    "y": 326,
+    "width": 80,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 600,
+    "y": 236,
+    "width": 60,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 300,
+    "y": 124,
+    "width": 60,
+    "dir": "down"
+   },
+   {
+    "type": "saw",
+    "x": 520,
+    "y": 330,
+    "r": 22,
+    "path": {
+     "dx": 0,
+     "dy": 90,
+     "period": 2.6,
+     "phase": 0
+    },
+    "hidden": true
+   },
+   {
+    "type": "saw",
+    "x": 680,
+    "y": 300,
+    "r": 22,
+    "path": {
+     "dx": 0,
+     "dy": 100,
+     "period": 3,
+     "phase": 0
+    }
+   },
+   {
+    "type": "spike",
+    "x": 760,
+    "y": 466,
+    "width": 60,
+    "dir": "up",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 480,
+    "y": 124,
+    "width": 70,
+    "dir": "down",
+    "period": 3,
+    "phase": 0.5
+   },
+   {
+    "type": "spike",
+    "x": 780,
+    "y": 124,
+    "width": 60,
+    "dir": "down"
+   }
+  ],
+  "zones": [
+   {
+    "x": 430,
+    "y": 124,
+    "width": 150,
+    "height": 356,
+    "kind": "lock"
+   },
+   {
+    "x": 700,
+    "y": 124,
+    "width": 250,
+    "height": 356,
+    "kind": "wind",
+    "wind": -220
+   }
+  ],
+  "flipLimit": 5,
+  "parTime": 16
+ },
+ {
+  "id": 40,
+  "world": 8,
+  "name": "Flip The Rule",
+  "playerStart": {
+   "x": 60,
+   "y": 463
+  },
+  "gravity": "down",
+  "flipTarget": 3,
+  "collectible": {
+   "x": 480,
+   "y": 140
+  },
+  "exit": {
+   "x": 905,
+   "y": 143
+  },
+  "platforms": [
+   {
+    "x": 0,
+    "y": 480,
+    "width": 200,
+    "height": 28,
+    "kind": "ice"
+   },
+   {
+    "x": 260,
+    "y": 400,
+    "width": 90,
+    "height": 28,
+    "kind": "phase",
+    "period": 3,
+    "phase": 0
+   },
+   {
+    "x": 400,
+    "y": 340,
+    "width": 100,
+    "height": 28,
+    "kind": "moving",
+    "path": {
+     "dx": 0,
+     "dy": 110,
+     "period": 3.4,
+     "phase": 0
+    }
+   },
+   {
+    "x": 560,
+    "y": 480,
+    "width": 160,
+    "height": 28,
+    "kind": "conveyor",
+    "speed": 120
+   },
+   {
+    "x": 220,
+    "y": 96,
+    "width": 400,
+    "height": 28
+   },
+   {
+    "x": 700,
+    "y": 300,
+    "width": 80,
+    "height": 28,
+    "kind": "phase",
+    "period": 3,
+    "phase": 0.4
+   },
+   {
+    "x": 740,
+    "y": 96,
+    "width": 220,
+    "height": 28
+   },
+   {
+    "x": 780,
+    "y": 480,
+    "width": 180,
+    "height": 30
+   }
+  ],
+  "hazards": [
+   {
+    "type": "spike",
+    "x": 560,
+    "y": 466,
+    "width": 90,
+    "dir": "up",
+    "period": 3,
+    "phase": 0.3
+   },
+   {
+    "type": "saw",
+    "x": 450,
+    "y": 230,
+    "r": 22,
+    "path": {
+     "dx": 0,
+     "dy": 80,
+     "period": 2.6,
+     "phase": 0
+    },
+    "hidden": true
+   },
+   {
+    "type": "saw",
+    "x": 640,
+    "y": 260,
+    "r": 22,
+    "path": {
+     "dx": 0,
+     "dy": 90,
+     "period": 3,
+     "phase": 0
+    }
+   },
+   {
+    "type": "spike",
+    "x": 260,
+    "y": 124,
+    "width": 60,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 460,
+    "y": 124,
+    "width": 70,
+    "dir": "down",
+    "period": 3,
+    "phase": 0.5
+   },
+   {
+    "type": "spike",
+    "x": 820,
+    "y": 466,
+    "width": 50,
+    "dir": "up",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 780,
+    "y": 124,
+    "width": 60,
+    "dir": "down"
+   }
+  ],
+  "zones": [
+   {
+    "x": 220,
+    "y": 124,
+    "width": 200,
+    "height": 356,
+    "kind": "reverse"
+   },
+   {
+    "x": 600,
+    "y": 124,
+    "width": 90,
+    "height": 356,
+    "kind": "lock"
+   },
+   {
+    "x": 700,
+    "y": 124,
+    "width": 120,
+    "height": 356,
+    "kind": "wind",
+    "wind": -240
+   }
+  ],
+  "refills": [
+   {
+    "x": 500,
+    "y": 220
+   }
+  ],
+  "flipLimit": 2,
+  "parTime": 16
+ }
+]

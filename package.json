@@ -1,0 +1,22 @@
+{
+  "name": "flip-the-rule",
+  "version": "1.0.0",
+  "description": "FLIP THE RULE - an original 2D gravity-flip physics puzzle platformer (Phaser 3 + TypeScript + Vite)",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "levels": "node tools/buildLevels.mjs",
+    "dev": "vite",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc --noEmit && vite build",
+    "build:single": "tsc --noEmit && SINGLE=1 vite build",
+    "preview": "vite preview",
+    "verify": "node tools/verifyLevels.mjs"
+  },
+  "dependencies": { "phaser": "3.90.0" },
+  "devDependencies": {
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8",
+    "vite-plugin-singlefile": "^2.0.0"
+  }
+}

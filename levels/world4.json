@@ -1,0 +1,552 @@
+[
+ {
+  "id": 16,
+  "world": 4,
+  "name": "Wormhole",
+  "playerStart": {
+   "x": 60,
+   "y": 463
+  },
+  "gravity": "down",
+  "flipTarget": 4,
+  "collectible": {
+   "x": 700,
+   "y": 150
+  },
+  "exit": {
+   "x": 905,
+   "y": 463
+  },
+  "platforms": [
+   {
+    "x": 0,
+    "y": 480,
+    "width": 960,
+    "height": 28
+   },
+   {
+    "x": 430,
+    "y": 96,
+    "width": 80,
+    "height": 384
+   },
+   {
+    "x": 560,
+    "y": 96,
+    "width": 400,
+    "height": 40
+   }
+  ],
+  "hazards": [
+   {
+    "type": "spike",
+    "x": 180,
+    "y": 466,
+    "width": 50,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 680,
+    "y": 466,
+    "width": 60,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 800,
+    "y": 466,
+    "width": 50,
+    "dir": "up",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 600,
+    "y": 136,
+    "width": 60,
+    "dir": "down"
+   }
+  ],
+  "portals": [
+   {
+    "id": "a",
+    "x": 330,
+    "y": 450,
+    "pair": "b"
+   },
+   {
+    "id": "b",
+    "x": 560,
+    "y": 450,
+    "pair": "a"
+   }
+  ],
+  "flipLimit": 5,
+  "parTime": 15,
+  "hint": "Portals link two places. Step in one, come out the other."
+ },
+ {
+  "id": 17,
+  "world": 4,
+  "name": "Keyhole",
+  "playerStart": {
+   "x": 60,
+   "y": 463
+  },
+  "gravity": "down",
+  "flipTarget": 4,
+  "collectible": {
+   "x": 820,
+   "y": 300
+  },
+  "exit": {
+   "x": 905,
+   "y": 463
+  },
+  "platforms": [
+   {
+    "x": 0,
+    "y": 480,
+    "width": 960,
+    "height": 28
+   },
+   {
+    "x": 260,
+    "y": 300,
+    "width": 280,
+    "height": 28
+   },
+   {
+    "x": 560,
+    "y": 96,
+    "width": 400,
+    "height": 40
+   }
+  ],
+  "hazards": [
+   {
+    "type": "spike",
+    "x": 260,
+    "y": 466,
+    "width": 160,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 300,
+    "y": 328,
+    "width": 60,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 450,
+    "y": 328,
+    "width": 50,
+    "dir": "down",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 760,
+    "y": 466,
+    "width": 60,
+    "dir": "up"
+   }
+  ],
+  "switches": [
+   {
+    "id": "a",
+    "x": 480,
+    "y": 293,
+    "dir": "down"
+   }
+  ],
+  "doors": [
+   {
+    "switch": "a",
+    "x": 640,
+    "y": 136,
+    "width": 22,
+    "height": 344
+   }
+  ],
+  "flipLimit": 5,
+  "parTime": 16,
+  "hint": "Step on the switch to open the gate."
+ },
+ {
+  "id": 18,
+  "world": 4,
+  "name": "Gravity Well",
+  "playerStart": {
+   "x": 60,
+   "y": 413
+  },
+  "gravity": "down",
+  "flipTarget": 3,
+  "collectible": {
+   "x": 480,
+   "y": 150
+  },
+  "exit": {
+   "x": 905,
+   "y": 143
+  },
+  "platforms": [
+   {
+    "x": 0,
+    "y": 430,
+    "width": 200,
+    "height": 28
+   },
+   {
+    "x": 290,
+    "y": 480,
+    "width": 380,
+    "height": 30
+   },
+   {
+    "x": 300,
+    "y": 96,
+    "width": 360,
+    "height": 28
+   },
+   {
+    "x": 760,
+    "y": 96,
+    "width": 200,
+    "height": 28
+   }
+  ],
+  "hazards": [
+   {
+    "type": "spike",
+    "x": 300,
+    "y": 466,
+    "width": 360,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 340,
+    "y": 124,
+    "width": 50,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 560,
+    "y": 124,
+    "width": 50,
+    "dir": "down"
+   },
+   {
+    "type": "saw",
+    "x": 440,
+    "y": 300,
+    "r": 22,
+    "path": {
+     "dx": 0,
+     "dy": 80,
+     "period": 3.2,
+     "phase": 0
+    }
+   }
+  ],
+  "zones": [
+   {
+    "x": 330,
+    "y": 124,
+    "width": 300,
+    "height": 356,
+    "gravity": "up"
+   }
+  ],
+  "flipLimit": 4,
+  "parTime": 16,
+  "hint": "Gravity zones override gravity inside their glow."
+ },
+ {
+  "id": 19,
+  "world": 4,
+  "name": "Two Keys",
+  "playerStart": {
+   "x": 60,
+   "y": 463
+  },
+  "gravity": "down",
+  "flipTarget": 3,
+  "collectible": {
+   "x": 470,
+   "y": 300
+  },
+  "exit": {
+   "x": 905,
+   "y": 145
+  },
+  "platforms": [
+   {
+    "x": 0,
+    "y": 480,
+    "width": 380,
+    "height": 28
+   },
+   {
+    "x": 480,
+    "y": 480,
+    "width": 480,
+    "height": 28
+   },
+   {
+    "x": 0,
+    "y": 96,
+    "width": 330,
+    "height": 28
+   },
+   {
+    "x": 430,
+    "y": 330,
+    "width": 160,
+    "height": 28
+   },
+   {
+    "x": 700,
+    "y": 96,
+    "width": 260,
+    "height": 28
+   }
+  ],
+  "hazards": [
+   {
+    "type": "spike",
+    "x": 380,
+    "y": 466,
+    "width": 100,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 120,
+    "y": 124,
+    "width": 60,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 500,
+    "y": 466,
+    "width": 60,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 480,
+    "y": 358,
+    "width": 60,
+    "dir": "down",
+    "hidden": true
+   },
+   {
+    "type": "saw",
+    "x": 640,
+    "y": 300,
+    "r": 22,
+    "path": {
+     "dx": 0,
+     "dy": 90,
+     "period": 3,
+     "phase": 0
+    }
+   },
+   {
+    "type": "spike",
+    "x": 760,
+    "y": 124,
+    "width": 60,
+    "dir": "down"
+   }
+  ],
+  "switches": [
+   {
+    "id": "a",
+    "x": 200,
+    "y": 131,
+    "dir": "up"
+   },
+   {
+    "id": "b",
+    "x": 520,
+    "y": 323,
+    "dir": "down"
+   }
+  ],
+  "doors": [
+   {
+    "switch": "a",
+    "x": 380,
+    "y": 124,
+    "width": 22,
+    "height": 356
+   },
+   {
+    "switch": "b",
+    "x": 660,
+    "y": 124,
+    "width": 22,
+    "height": 356
+   }
+  ],
+  "flipLimit": 4,
+  "parTime": 17
+ },
+ {
+  "id": 20,
+  "world": 4,
+  "name": "Nexus",
+  "playerStart": {
+   "x": 60,
+   "y": 413
+  },
+  "gravity": "down",
+  "flipTarget": 2,
+  "collectible": {
+   "x": 480,
+   "y": 400
+  },
+  "exit": {
+   "x": 905,
+   "y": 143
+  },
+  "platforms": [
+   {
+    "x": 0,
+    "y": 430,
+    "width": 200,
+    "height": 28
+   },
+   {
+    "x": 260,
+    "y": 330,
+    "width": 120,
+    "height": 28
+   },
+   {
+    "x": 420,
+    "y": 96,
+    "width": 200,
+    "height": 28
+   },
+   {
+    "x": 500,
+    "y": 480,
+    "width": 200,
+    "height": 30
+   },
+   {
+    "x": 700,
+    "y": 96,
+    "width": 260,
+    "height": 28
+   }
+  ],
+  "hazards": [
+   {
+    "type": "spike",
+    "x": 260,
+    "y": 316,
+    "width": 60,
+    "dir": "up"
+   },
+   {
+    "type": "saw",
+    "x": 520,
+    "y": 250,
+    "r": 22,
+    "path": {
+     "dx": 0,
+     "dy": 90,
+     "period": 3,
+     "phase": 0
+    }
+   },
+   {
+    "type": "spike",
+    "x": 450,
+    "y": 124,
+    "width": 60,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 520,
+    "y": 466,
+    "width": 80,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 620,
+    "y": 466,
+    "width": 50,
+    "dir": "up",
+    "hidden": true
+   },
+   {
+    "type": "saw",
+    "x": 800,
+    "y": 300,
+    "r": 22,
+    "path": {
+     "dx": 0,
+     "dy": 90,
+     "period": 2.6,
+     "phase": 0
+    }
+   }
+  ],
+  "switches": [
+   {
+    "id": "a",
+    "x": 560,
+    "y": 131,
+    "dir": "up"
+   }
+  ],
+  "doors": [
+   {
+    "switch": "a",
+    "x": 700,
+    "y": 124,
+    "width": 22,
+    "height": 356
+   }
+  ],
+  "portals": [
+   {
+    "id": "a",
+    "x": 320,
+    "y": 290,
+    "pair": "b"
+   },
+   {
+    "id": "b",
+    "x": 600,
+    "y": 440,
+    "pair": "a"
+   }
+  ],
+  "zones": [
+   {
+    "x": 740,
+    "y": 124,
+    "width": 220,
+    "height": 356,
+    "gravity": "up"
+   }
+  ],
+  "flipLimit": 3,
+  "parTime": 16
+ }
+]

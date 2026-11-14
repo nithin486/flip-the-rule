@@ -1,0 +1,513 @@
+[
+ {
+  "id": 11,
+  "world": 3,
+  "name": "Elevator Shaft",
+  "playerStart": {
+   "x": 70,
+   "y": 433
+  },
+  "gravity": "down",
+  "flipTarget": 3,
+  "collectible": {
+   "x": 470,
+   "y": 400
+  },
+  "exit": {
+   "x": 900,
+   "y": 145
+  },
+  "platforms": [
+   {
+    "x": 0,
+    "y": 450,
+    "width": 220,
+    "height": 28
+   },
+   {
+    "x": 320,
+    "y": 250,
+    "width": 120,
+    "height": 28,
+    "kind": "moving",
+    "path": {
+     "dx": 0,
+     "dy": 150,
+     "period": 4,
+     "phase": 0
+    }
+   },
+   {
+    "x": 560,
+    "y": 96,
+    "width": 400,
+    "height": 28
+   },
+   {
+    "x": 640,
+    "y": 450,
+    "width": 320,
+    "height": 28
+   }
+  ],
+  "hazards": [
+   {
+    "type": "saw",
+    "x": 520,
+    "y": 270,
+    "r": 22
+   },
+   {
+    "type": "spike",
+    "x": 700,
+    "y": 436,
+    "width": 70,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 820,
+    "y": 436,
+    "width": 50,
+    "dir": "up",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 600,
+    "y": 124,
+    "width": 60,
+    "dir": "down"
+   }
+  ],
+  "flipLimit": 4,
+  "parTime": 17,
+  "hint": "Moving platforms carry you - time your flip to ride them."
+ },
+ {
+  "id": 12,
+  "world": 3,
+  "name": "Ferry",
+  "playerStart": {
+   "x": 60,
+   "y": 413
+  },
+  "gravity": "down",
+  "flipTarget": 2,
+  "collectible": {
+   "x": 480,
+   "y": 150
+  },
+  "exit": {
+   "x": 905,
+   "y": 413
+  },
+  "platforms": [
+   {
+    "x": 0,
+    "y": 430,
+    "width": 180,
+    "height": 28
+   },
+   {
+    "x": 260,
+    "y": 300,
+    "width": 130,
+    "height": 28,
+    "kind": "moving",
+    "path": {
+     "dx": 230,
+     "dy": 0,
+     "period": 5,
+     "phase": 0
+    }
+   },
+   {
+    "x": 760,
+    "y": 430,
+    "width": 200,
+    "height": 28
+   },
+   {
+    "x": 300,
+    "y": 96,
+    "width": 340,
+    "height": 40
+   }
+  ],
+  "hazards": [
+   {
+    "type": "saw",
+    "x": 480,
+    "y": 230,
+    "r": 22,
+    "path": {
+     "dx": 0,
+     "dy": 70,
+     "period": 3,
+     "phase": 0
+    }
+   },
+   {
+    "type": "saw",
+    "x": 700,
+    "y": 330,
+    "r": 22,
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 420,
+    "y": 136,
+    "width": 60,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 800,
+    "y": 416,
+    "width": 50,
+    "dir": "up"
+   }
+  ],
+  "flipLimit": 3,
+  "parTime": 16,
+  "hint": "Saws patrol the gaps. Watch their rhythm."
+ },
+ {
+  "id": 13,
+  "world": 3,
+  "name": "Saw Mill",
+  "playerStart": {
+   "x": 60,
+   "y": 463
+  },
+  "gravity": "down",
+  "flipTarget": 2,
+  "collectible": {
+   "x": 480,
+   "y": 130
+  },
+  "exit": {
+   "x": 905,
+   "y": 463
+  },
+  "platforms": [
+   {
+    "x": 0,
+    "y": 480,
+    "width": 960,
+    "height": 28
+   },
+   {
+    "x": 0,
+    "y": 96,
+    "width": 960,
+    "height": 28
+   }
+  ],
+  "hazards": [
+   {
+    "type": "saw",
+    "x": 250,
+    "y": 300,
+    "r": 22,
+    "path": {
+     "dx": 0,
+     "dy": 130,
+     "period": 3,
+     "phase": 0
+    }
+   },
+   {
+    "type": "saw",
+    "x": 440,
+    "y": 300,
+    "r": 22,
+    "path": {
+     "dx": 0,
+     "dy": 130,
+     "period": 3,
+     "phase": 0.5
+    }
+   },
+   {
+    "type": "saw",
+    "x": 640,
+    "y": 300,
+    "r": 22,
+    "path": {
+     "dx": 0,
+     "dy": 130,
+     "period": 3,
+     "phase": 0
+    }
+   },
+   {
+    "type": "saw",
+    "x": 820,
+    "y": 400,
+    "r": 22,
+    "path": {
+     "dx": 0,
+     "dy": 70,
+     "period": 2.4,
+     "phase": 0
+    },
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 120,
+    "y": 466,
+    "width": 50,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 740,
+    "y": 124,
+    "width": 60,
+    "dir": "down"
+   }
+  ],
+  "flipLimit": 3,
+  "parTime": 16
+ },
+ {
+  "id": 14,
+  "world": 3,
+  "name": "Crusher Alley",
+  "playerStart": {
+   "x": 60,
+   "y": 413
+  },
+  "gravity": "down",
+  "flipTarget": 3,
+  "collectible": {
+   "x": 500,
+   "y": 300
+  },
+  "exit": {
+   "x": 905,
+   "y": 145
+  },
+  "platforms": [
+   {
+    "x": 0,
+    "y": 430,
+    "width": 170,
+    "height": 28
+   },
+   {
+    "x": 250,
+    "y": 260,
+    "width": 110,
+    "height": 28,
+    "kind": "moving",
+    "path": {
+     "dx": 0,
+     "dy": 140,
+     "period": 4,
+     "phase": 0
+    }
+   },
+   {
+    "x": 480,
+    "y": 260,
+    "width": 110,
+    "height": 28,
+    "kind": "moving",
+    "path": {
+     "dx": 0,
+     "dy": 140,
+     "period": 4,
+     "phase": 0.5
+    }
+   },
+   {
+    "x": 700,
+    "y": 96,
+    "width": 260,
+    "height": 28
+   },
+   {
+    "x": 700,
+    "y": 440,
+    "width": 260,
+    "height": 40
+   }
+  ],
+  "hazards": [
+   {
+    "type": "saw",
+    "x": 400,
+    "y": 330,
+    "r": 22,
+    "path": {
+     "dx": 0,
+     "dy": 90,
+     "period": 3,
+     "phase": 0
+    }
+   },
+   {
+    "type": "saw",
+    "x": 640,
+    "y": 250,
+    "r": 22,
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 740,
+    "y": 124,
+    "width": 70,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 760,
+    "y": 426,
+    "width": 60,
+    "dir": "up"
+   }
+  ],
+  "flipLimit": 4,
+  "parTime": 16
+ },
+ {
+  "id": 15,
+  "world": 3,
+  "name": "Orbit Station",
+  "playerStart": {
+   "x": 60,
+   "y": 363
+  },
+  "gravity": "down",
+  "flipTarget": 2,
+  "collectible": {
+   "x": 480,
+   "y": 400
+  },
+  "exit": {
+   "x": 905,
+   "y": 433
+  },
+  "platforms": [
+   {
+    "x": 0,
+    "y": 380,
+    "width": 150,
+    "height": 28
+   },
+   {
+    "x": 210,
+    "y": 200,
+    "width": 100,
+    "height": 28,
+    "kind": "moving",
+    "path": {
+     "dx": 120,
+     "dy": 0,
+     "period": 4,
+     "phase": 0
+    }
+   },
+   {
+    "x": 420,
+    "y": 96,
+    "width": 150,
+    "height": 28
+   },
+   {
+    "x": 520,
+    "y": 330,
+    "width": 110,
+    "height": 28,
+    "kind": "moving",
+    "path": {
+     "dx": 0,
+     "dy": 130,
+     "period": 3.4,
+     "phase": 0.25
+    }
+   },
+   {
+    "x": 700,
+    "y": 270,
+    "width": 80,
+    "height": 28
+   },
+   {
+    "x": 780,
+    "y": 450,
+    "width": 180,
+    "height": 28
+   }
+  ],
+  "hazards": [
+   {
+    "type": "saw",
+    "x": 300,
+    "y": 300,
+    "r": 22,
+    "path": {
+     "dx": 0,
+     "dy": 80,
+     "period": 3,
+     "phase": 0
+    }
+   },
+   {
+    "type": "saw",
+    "x": 620,
+    "y": 200,
+    "r": 22,
+    "path": {
+     "dx": 90,
+     "dy": 0,
+     "period": 3.6,
+     "phase": 0
+    }
+   },
+   {
+    "type": "saw",
+    "x": 560,
+    "y": 440,
+    "r": 22,
+    "path": {
+     "dx": 0,
+     "dy": 60,
+     "period": 2.6,
+     "phase": 0
+    },
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 440,
+    "y": 124,
+    "width": 60,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 810,
+    "y": 436,
+    "width": 60,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 880,
+    "y": 436,
+    "width": 40,
+    "dir": "up",
+    "hidden": true
+   }
+  ],
+  "flipLimit": 3,
+  "parTime": 16
+ }
+]

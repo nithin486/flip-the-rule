@@ -1,0 +1,643 @@
+[
+ {
+  "id": 26,
+  "world": 6,
+  "name": "Blink Bridge",
+  "playerStart": {
+   "x": 60,
+   "y": 413
+  },
+  "gravity": "down",
+  "flipTarget": 4,
+  "collectible": {
+   "x": 480,
+   "y": 150
+  },
+  "exit": {
+   "x": 905,
+   "y": 413
+  },
+  "platforms": [
+   {
+    "x": 0,
+    "y": 430,
+    "width": 180,
+    "height": 28
+   },
+   {
+    "x": 250,
+    "y": 330,
+    "width": 100,
+    "height": 28,
+    "kind": "phase",
+    "period": 3,
+    "phase": 0
+   },
+   {
+    "x": 430,
+    "y": 330,
+    "width": 100,
+    "height": 28,
+    "kind": "phase",
+    "period": 3,
+    "phase": 0.5
+   },
+   {
+    "x": 610,
+    "y": 330,
+    "width": 100,
+    "height": 28,
+    "kind": "phase",
+    "period": 3,
+    "phase": 0
+   },
+   {
+    "x": 780,
+    "y": 430,
+    "width": 180,
+    "height": 28
+   },
+   {
+    "x": 300,
+    "y": 96,
+    "width": 360,
+    "height": 28
+   }
+  ],
+  "hazards": [
+   {
+    "type": "spike",
+    "x": 340,
+    "y": 124,
+    "width": 60,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 520,
+    "y": 124,
+    "width": 60,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 250,
+    "y": 316,
+    "width": 60,
+    "dir": "up",
+    "period": 3,
+    "phase": 0.5
+   },
+   {
+    "type": "spike",
+    "x": 820,
+    "y": 416,
+    "width": 50,
+    "dir": "up",
+    "hidden": true
+   }
+  ],
+  "refills": [
+   {
+    "x": 480,
+    "y": 250
+   }
+  ],
+  "flipLimit": 5,
+  "parTime": 16,
+  "hint": "Phase platforms blink in and out. Wait for solid."
+ },
+ {
+  "id": 27,
+  "world": 6,
+  "name": "Pulse Floor",
+  "playerStart": {
+   "x": 60,
+   "y": 463
+  },
+  "gravity": "down",
+  "flipTarget": 4,
+  "collectible": {
+   "x": 480,
+   "y": 150
+  },
+  "exit": {
+   "x": 905,
+   "y": 463
+  },
+  "platforms": [
+   {
+    "x": 0,
+    "y": 480,
+    "width": 960,
+    "height": 28
+   },
+   {
+    "x": 250,
+    "y": 96,
+    "width": 460,
+    "height": 28
+   },
+   {
+    "x": 400,
+    "y": 330,
+    "width": 120,
+    "height": 28,
+    "kind": "phase",
+    "period": 3,
+    "phase": 0.3
+   }
+  ],
+  "hazards": [
+   {
+    "type": "spike",
+    "x": 200,
+    "y": 466,
+    "width": 90,
+    "dir": "up",
+    "period": 3,
+    "phase": 0
+   },
+   {
+    "type": "spike",
+    "x": 360,
+    "y": 466,
+    "width": 90,
+    "dir": "up",
+    "period": 3,
+    "phase": 0.4
+   },
+   {
+    "type": "spike",
+    "x": 520,
+    "y": 466,
+    "width": 90,
+    "dir": "up",
+    "period": 3,
+    "phase": 0.8
+   },
+   {
+    "type": "spike",
+    "x": 700,
+    "y": 466,
+    "width": 90,
+    "dir": "up",
+    "period": 3,
+    "phase": 0.2
+   },
+   {
+    "type": "spike",
+    "x": 300,
+    "y": 124,
+    "width": 50,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 560,
+    "y": 124,
+    "width": 50,
+    "dir": "down",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 840,
+    "y": 466,
+    "width": 40,
+    "dir": "up"
+   }
+  ],
+  "refills": [
+   {
+    "x": 620,
+    "y": 300
+   }
+  ],
+  "flipLimit": 4,
+  "parTime": 16,
+  "hint": "Pulsing spikes are safe only half the time."
+ },
+ {
+  "id": 28,
+  "world": 6,
+  "name": "Strobe Stairs",
+  "playerStart": {
+   "x": 60,
+   "y": 463
+  },
+  "gravity": "down",
+  "flipTarget": 3,
+  "collectible": {
+   "x": 480,
+   "y": 130
+  },
+  "exit": {
+   "x": 905,
+   "y": 143
+  },
+  "platforms": [
+   {
+    "x": 0,
+    "y": 480,
+    "width": 140,
+    "height": 28
+   },
+   {
+    "x": 200,
+    "y": 400,
+    "width": 100,
+    "height": 28,
+    "kind": "phase",
+    "period": 3,
+    "phase": 0
+   },
+   {
+    "x": 360,
+    "y": 320,
+    "width": 100,
+    "height": 28,
+    "kind": "phase",
+    "period": 3,
+    "phase": 0.35
+   },
+   {
+    "x": 520,
+    "y": 240,
+    "width": 100,
+    "height": 28,
+    "kind": "phase",
+    "period": 3,
+    "phase": 0.7
+   },
+   {
+    "x": 700,
+    "y": 96,
+    "width": 260,
+    "height": 28
+   },
+   {
+    "x": 620,
+    "y": 480,
+    "width": 340,
+    "height": 30
+   }
+  ],
+  "hazards": [
+   {
+    "type": "spike",
+    "x": 640,
+    "y": 466,
+    "width": 60,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 780,
+    "y": 466,
+    "width": 50,
+    "dir": "up",
+    "hidden": true
+   },
+   {
+    "type": "saw",
+    "x": 560,
+    "y": 360,
+    "r": 22,
+    "path": {
+     "dx": 0,
+     "dy": 80,
+     "period": 3,
+     "phase": 0
+    }
+   },
+   {
+    "type": "spike",
+    "x": 740,
+    "y": 124,
+    "width": 60,
+    "dir": "down"
+   }
+  ],
+  "refills": [
+   {
+    "x": 420,
+    "y": 250
+   },
+   {
+    "x": 610,
+    "y": 160
+   }
+  ],
+  "flipLimit": 3,
+  "parTime": 16,
+  "hint": "Flip crystals refill one flip. Collect them on the way."
+ },
+ {
+  "id": 29,
+  "world": 6,
+  "name": "Heartbeat",
+  "playerStart": {
+   "x": 60,
+   "y": 413
+  },
+  "gravity": "down",
+  "flipTarget": 2,
+  "collectible": {
+   "x": 500,
+   "y": 280
+  },
+  "exit": {
+   "x": 905,
+   "y": 413
+  },
+  "platforms": [
+   {
+    "x": 0,
+    "y": 430,
+    "width": 160,
+    "height": 28
+   },
+   {
+    "x": 220,
+    "y": 96,
+    "width": 220,
+    "height": 28
+   },
+   {
+    "x": 300,
+    "y": 360,
+    "width": 110,
+    "height": 28,
+    "kind": "moving",
+    "path": {
+     "dx": 0,
+     "dy": 110,
+     "period": 3.6,
+     "phase": 0
+    }
+   },
+   {
+    "x": 560,
+    "y": 470,
+    "width": 120,
+    "height": 30
+   },
+   {
+    "x": 560,
+    "y": 96,
+    "width": 140,
+    "height": 28
+   },
+   {
+    "x": 740,
+    "y": 330,
+    "width": 90,
+    "height": 28,
+    "kind": "phase",
+    "period": 3,
+    "phase": 0
+   },
+   {
+    "x": 800,
+    "y": 430,
+    "width": 160,
+    "height": 28
+   }
+  ],
+  "hazards": [
+   {
+    "type": "spike",
+    "x": 240,
+    "y": 124,
+    "width": 80,
+    "dir": "down",
+    "period": 3,
+    "phase": 0
+   },
+   {
+    "type": "spike",
+    "x": 570,
+    "y": 456,
+    "width": 90,
+    "dir": "up",
+    "period": 3,
+    "phase": 0.5
+   },
+   {
+    "type": "saw",
+    "x": 500,
+    "y": 250,
+    "r": 22,
+    "path": {
+     "dx": 0,
+     "dy": 70,
+     "period": 2.8,
+     "phase": 0
+    },
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 840,
+    "y": 416,
+    "width": 50,
+    "dir": "up",
+    "hidden": true
+   },
+   {
+    "type": "saw",
+    "x": 660,
+    "y": 260,
+    "r": 22,
+    "path": {
+     "dx": 0,
+     "dy": 80,
+     "period": 3.4,
+     "phase": 0
+    }
+   },
+   {
+    "type": "spike",
+    "x": 580,
+    "y": 124,
+    "width": 60,
+    "dir": "down",
+    "period": 3,
+    "phase": 0.5
+   }
+  ],
+  "refills": [
+   {
+    "x": 480,
+    "y": 200
+   }
+  ],
+  "flipLimit": 3,
+  "parTime": 16
+ },
+ {
+  "id": 30,
+  "world": 6,
+  "name": "Crystal Core",
+  "playerStart": {
+   "x": 60,
+   "y": 463
+  },
+  "gravity": "down",
+  "flipTarget": 5,
+  "collectible": {
+   "x": 470,
+   "y": 140
+  },
+  "exit": {
+   "x": 905,
+   "y": 143
+  },
+  "platforms": [
+   {
+    "x": 0,
+    "y": 480,
+    "width": 150,
+    "height": 28
+   },
+   {
+    "x": 210,
+    "y": 400,
+    "width": 90,
+    "height": 28,
+    "kind": "phase",
+    "period": 3,
+    "phase": 0
+   },
+   {
+    "x": 360,
+    "y": 340,
+    "width": 100,
+    "height": 28,
+    "kind": "moving",
+    "path": {
+     "dx": 0,
+     "dy": 120,
+     "period": 3.6,
+     "phase": 0
+    }
+   },
+   {
+    "x": 520,
+    "y": 300,
+    "width": 90,
+    "height": 28,
+    "kind": "phase",
+    "period": 3,
+    "phase": 0.5
+   },
+   {
+    "x": 280,
+    "y": 96,
+    "width": 300,
+    "height": 28
+   },
+   {
+    "x": 680,
+    "y": 480,
+    "width": 100,
+    "height": 30
+   },
+   {
+    "x": 740,
+    "y": 96,
+    "width": 220,
+    "height": 28
+   },
+   {
+    "x": 790,
+    "y": 320,
+    "width": 80,
+    "height": 28,
+    "kind": "phase",
+    "period": 3,
+    "phase": 0.2
+   }
+  ],
+  "hazards": [
+   {
+    "type": "spike",
+    "x": 320,
+    "y": 124,
+    "width": 70,
+    "dir": "down",
+    "period": 3,
+    "phase": 0.5
+   },
+   {
+    "type": "spike",
+    "x": 480,
+    "y": 124,
+    "width": 50,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 690,
+    "y": 466,
+    "width": 70,
+    "dir": "up",
+    "period": 3,
+    "phase": 0
+   },
+   {
+    "type": "saw",
+    "x": 450,
+    "y": 230,
+    "r": 22,
+    "path": {
+     "dx": 0,
+     "dy": 70,
+     "period": 2.6,
+     "phase": 0
+    },
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 800,
+    "y": 466,
+    "width": 50,
+    "dir": "up",
+    "hidden": true
+   },
+   {
+    "type": "saw",
+    "x": 620,
+    "y": 250,
+    "r": 22,
+    "path": {
+     "dx": 0,
+     "dy": 90,
+     "period": 3.2,
+     "phase": 0
+    }
+   },
+   {
+    "type": "spike",
+    "x": 790,
+    "y": 124,
+    "width": 60,
+    "dir": "down"
+   }
+  ],
+  "refills": [
+   {
+    "x": 360,
+    "y": 250
+   },
+   {
+    "x": 610,
+    "y": 220
+   }
+  ],
+  "flipLimit": 5,
+  "parTime": 16
+ }
+]

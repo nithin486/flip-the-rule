@@ -1,0 +1,162 @@
+{
+ "1": {
+  "flipTarget": 1,
+  "parTime": 15
+ },
+ "2": {
+  "flipTarget": 2,
+  "parTime": 15
+ },
+ "3": {
+  "flipTarget": 6,
+  "parTime": 16
+ },
+ "4": {
+  "flipTarget": 3,
+  "parTime": 15
+ },
+ "5": {
+  "flipTarget": 3,
+  "parTime": 16
+ },
+ "6": {
+  "flipTarget": 3,
+  "parTime": 15
+ },
+ "7": {
+  "flipTarget": 6,
+  "parTime": 16
+ },
+ "8": {
+  "flipTarget": 3,
+  "parTime": 16
+ },
+ "9": {
+  "flipTarget": 5,
+  "parTime": 16
+ },
+ "10": {
+  "flipTarget": 4,
+  "parTime": 16
+ },
+ "11": {
+  "flipTarget": 3,
+  "parTime": 17
+ },
+ "12": {
+  "flipTarget": 2,
+  "parTime": 16
+ },
+ "13": {
+  "flipTarget": 2,
+  "parTime": 16
+ },
+ "14": {
+  "flipTarget": 3,
+  "parTime": 16
+ },
+ "15": {
+  "flipTarget": 2,
+  "parTime": 16
+ },
+ "16": {
+  "flipTarget": 4,
+  "parTime": 15
+ },
+ "17": {
+  "flipTarget": 4,
+  "parTime": 16
+ },
+ "18": {
+  "flipTarget": 3,
+  "parTime": 16
+ },
+ "19": {
+  "flipTarget": 3,
+  "parTime": 17
+ },
+ "20": {
+  "flipTarget": 2,
+  "parTime": 16
+ },
+ "21": {
+  "flipTarget": 4,
+  "parTime": 16
+ },
+ "22": {
+  "flipTarget": 2,
+  "parTime": 16
+ },
+ "23": {
+  "flipTarget": 4,
+  "parTime": 16
+ },
+ "24": {
+  "flipTarget": 2,
+  "parTime": 17
+ },
+ "25": {
+  "flipTarget": 3,
+  "parTime": 17
+ },
+ "26": {
+  "flipTarget": 4,
+  "parTime": 16
+ },
+ "27": {
+  "flipTarget": 4,
+  "parTime": 16
+ },
+ "28": {
+  "flipTarget": 3,
+  "parTime": 16
+ },
+ "29": {
+  "flipTarget": 2,
+  "parTime": 16
+ },
+ "30": {
+  "flipTarget": 5,
+  "parTime": 16
+ },
+ "31": {
+  "flipTarget": 2,
+  "parTime": 16
+ },
+ "32": {
+  "flipTarget": 4,
+  "parTime": 16
+ },
+ "33": {
+  "flipTarget": 3,
+  "parTime": 16
+ },
+ "34": {
+  "flipTarget": 4,
+  "parTime": 17
+ },
+ "35": {
+  "flipTarget": 3,
+  "parTime": 16
+ },
+ "36": {
+  "flipTarget": 4,
+  "parTime": 17
+ },
+ "37": {
+  "flipTarget": 5,
+  "parTime": 16
+ },
+ "38": {
+  "flipTarget": 4,
+  "parTime": 16
+ },
+ "39": {
+  "flipTarget": 5,
+  "parTime": 16
+ },
+ "40": {
+  "flipTarget": 3,
+  "parTime": 16
+ }
+}
