@@ -1,7 +1,7 @@
 {
-  "name": "flip-the-rule",
+  "name": "upside-down-run",
   "version": "1.0.0",
-  "description": "FLIP THE RULE - an original 2D gravity-flip physics puzzle platformer (Phaser 3 + TypeScript + Vite)",
+  "description": "Upside Down Run - an original 2D gravity-flip physics puzzle platformer (Phaser 3 + TypeScript + Vite)",
   "private": true,
   "type": "module",
   "scripts": {

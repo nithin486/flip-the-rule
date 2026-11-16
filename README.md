@@ -1,4 +1,4 @@
-# FLIP THE RULE
+# UPSIDE DOWN RUN
 
 Original 2D physics puzzle platformer. You can't jump: flip gravity to travel between the tops and undersides of platforms, dodge hazards, collect stars and reach the exit portal.
 Phaser 3 + TypeScript + Vite. Desktop and mobile. 40 levels in 8 worlds, each with a hard flip limit + deterministic Daily Challenge. Zero binary assets: all art is drawn procedurally and all audio is synthesised (WebAudio), so there are no licences to clear and the build is ~350 KB gzipped.

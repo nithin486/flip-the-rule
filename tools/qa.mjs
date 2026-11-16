@@ -53,7 +53,7 @@ const res = await p.evaluate(async (all) => {
   ok('crystal adds a flip', s.refillsTaken === 1 && s.flipCap === 2, `taken=${s.refillsTaken} cap=${s.flipCap}`);
   // saving
   const save = (await import(location.origin + '/src/systems/SaveSystem.ts'));
-  localStorage.setItem('flip-the-rule.save', '{not json'); ok('corrupted save does not crash', save.save.load().unlockedLevel === 1);
+  localStorage.setItem('upside-down-run.save', '{not json'); ok('corrupted save does not crash', save.save.load().unlockedLevel === 1);
   ok('garbage fields sanitised', save.sanitize({ unlockedLevel: 'x', stars: { 1: 99, foo: 2 }, settings: 5 }).stars['1'] === 3);
   ok('outdated (v0) save migrates', save.sanitize({ unlockedLevel: 4, stars: { 1: 3 } }).unlockedLevel === 4);
   // progression through real win()

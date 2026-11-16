@@ -30,16 +30,16 @@ export class MenuScene extends Phaser.Scene {
     this.input.on('pointermove', (p: Phaser.Input.Pointer) => { const dx = (p.x - W / 2) / W, dy = (p.y - H / 2) / H; parallax.forEach((q) => { q.o.x = q.bx - dx * 26 * q.k; }); void dy; });
     this.add.image(W / 2, H / 2, 'vignette').setScale(2).setDepth(40).setAlpha(0.9);
 
-    // --- logo: "FLIP" literally flips upside-down ---
-    const flip = this.add.text(W / 2 - 150, 92, 'FLIP', { fontFamily: FONT_HEAD, fontSize: '92px', color: '#fbbf24', fontStyle: '800' }).setOrigin(0.5).setStroke('#2e1065', 14).setShadow(0, 6, 'rgba(0,0,0,.4)', 0, true, true);
-    const rule = this.add.text(W / 2 + 120, 92, 'THE RULE', { fontFamily: FONT_HEAD, fontSize: '92px', color: '#ffffff', fontStyle: '800' }).setOrigin(0.5).setStroke('#2e1065', 14).setShadow(0, 6, 'rgba(0,0,0,.4)', 0, true, true);
+    // --- logo: "UPSIDE" literally flips upside-down ---
+    const flip = this.add.text(W / 2 - 175, 92, 'UPSIDE', { fontFamily: FONT_HEAD, fontSize: '78px', color: '#fbbf24', fontStyle: '800' }).setOrigin(0.5).setStroke('#2e1065', 14).setShadow(0, 6, 'rgba(0,0,0,.4)', 0, true, true);
+    const rule = this.add.text(W / 2 + 120, 92, 'DOWN RUN', { fontFamily: FONT_HEAD, fontSize: '78px', color: '#ffffff', fontStyle: '800' }).setOrigin(0.5).setStroke('#2e1065', 14).setShadow(0, 6, 'rgba(0,0,0,.4)', 0, true, true);
     const gold = flip.context.createLinearGradient(0, 0, 0, flip.height); gold.addColorStop(0, '#fff7ad'); gold.addColorStop(0.5, '#fbbf24'); gold.addColorStop(1, '#f59e0b'); flip.setFill(gold);
     const wh = rule.context.createLinearGradient(0, 0, 0, rule.height); wh.addColorStop(0, '#ffffff'); wh.addColorStop(1, '#c4b5fd'); rule.setFill(wh);
     const halo = this.add.image(W / 2, 100, 'glow').setScale(11, 3.6).setTint(0xa78bfa).setAlpha(0.55).setBlendMode(Phaser.BlendModes.ADD).setDepth(-1);
     this.tweens.add({ targets: halo, alpha: 0.9, scaleX: 12, duration: 1600, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
-    rule.setScale(0.62).setX(W / 2 + 128).setY(98);
+    { const gap = 22, tw = flip.width + rule.width + gap, x0 = W / 2 - tw / 2; flip.setX(x0 + flip.width / 2).setY(88); rule.setX(x0 + flip.width + gap + rule.width / 2).setY(88); }
     this.tweens.add({ targets: flip, scaleY: { from: 1, to: -1 }, duration: 500, ease: 'Back.easeInOut', yoyo: true, hold: 1800, repeatDelay: 1800, repeat: -1, onYoyo: () => this.tweens.add({ targets: up, alpha: 1, duration: 400 }), onRepeat: () => this.tweens.add({ targets: up, alpha: 0, duration: 400 }) });
-    this.add.text(W / 2, 160, 'You can\'t jump. Flip gravity \u2014 but every flip counts.', { fontFamily: FONT_BODY, fontSize: '18px', color: '#f5f3ff', fontStyle: '600' }).setOrigin(0.5).setShadow(0, 2, 'rgba(0,0,0,.5)', 3);
+    this.add.text(W / 2, 150, 'You can\'t jump. Flip gravity \u2014 but every flip counts.', { fontFamily: FONT_BODY, fontSize: '18px', color: '#f5f3ff', fontStyle: '600' }).setOrigin(0.5).setShadow(0, 2, 'rgba(0,0,0,.5)', 3);
 
     // --- animated character shuttling between floor and ceiling platforms ---
     const key = platformKey(this, 240, 26, 1, 'solid');
@@ -59,7 +59,7 @@ export class MenuScene extends Phaser.Scene {
       this.tweens.add({ targets: o, alpha: { from: 0, to: 0.65 }, y: o.y - Phaser.Math.Between(60, 160), duration: Phaser.Math.Between(2400, 5200), delay: Phaser.Math.Between(0, 3000), repeat: -1, ease: 'Sine.easeInOut', yoyo: true });
     }
     const vg = this.add.graphics().setDepth(0); vg.fillStyle(0x000000, 0.28).fillRect(0, 0, W, 26).fillRect(0, H - 26, W, 26);
-    const badge = this.add.container(W / 2 + 150, 180).setDepth(2);
+    const badge = this.add.container(W / 2, 184).setDepth(2);
     badge.add([this.add.rectangle(0, 0, 330, 26, 0x0b0b1a, 0.6).setStrokeStyle(2, 0x67e8f9, 0.9), this.add.text(0, 0, `${TOTAL_LEVELS} LEVELS  ·  8 WORLDS  ·  LIMITED FLIPS`, { fontFamily: FONT_BODY, fontSize: '13px', color: '#a5f3fc', fontStyle: '800' }).setOrigin(0.5)]);
     this.tweens.add({ targets: badge, alpha: 0.75, duration: 1100, yoyo: true, repeat: -1 });
 

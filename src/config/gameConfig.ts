@@ -27,7 +27,7 @@ export const HEX = {
 export const FONT_HEAD = "'Baloo 2', 'Trebuchet MS', 'Segoe UI', sans-serif";
 export const FONT_BODY = "Poppins, 'Segoe UI', Arial, sans-serif";
 
-export const SAVE_KEY = 'flip-the-rule.save';
+export const SAVE_KEY = 'upside-down-run.save';
 export const SAVE_VERSION = 1;
 
 export interface WorldTheme {
