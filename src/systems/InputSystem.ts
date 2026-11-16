@@ -22,7 +22,7 @@ export class InputSystem {
       if (e.repeat) return;
       if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'ArrowDown' || e.code === 'KeyW' || e.code === 'KeyS') this.flipQueued = true;
       else if (e.code === 'KeyR') this.restartQueued = true;
-      else if (e.code === 'Escape' || e.code === 'KeyP') this.pauseQueued = true;
+      else if (e.code === 'KeyP') this.pauseQueued = true;
     };
     kb.on('keydown', onDown);
     this.offs.push(() => kb.off('keydown', onDown));

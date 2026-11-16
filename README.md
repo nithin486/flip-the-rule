@@ -10,7 +10,7 @@ Phaser 3 + TypeScript + Vite. Desktop and mobile. 40 levels in 8 worlds, each wi
     npm run build:single   # one self-contained index.html
 
 ## Controls
-Move A/D or arrows. Flip SPACE (or up/down). Restart R. Pause ESC. Touch: on-screen buttons. `?` button: text hint, then a ghost replaying a verified solution.
+Move A/D or arrows. Flip SPACE (or up/down). Restart R. Pause P. Touch: on-screen buttons. `?` button: text hint, then a ghost replaying a verified solution.
 
 ## Architecture (src/)
 - `config/` tuning (spec starting values: 900 accel, 260 max, 1200 friction, 1000 gravity, 650 terminal, 200 ms flip cooldown, fixed 60 Hz) and world themes

@@ -80,7 +80,7 @@
     "dir": "down"
    }
   ],
-  "flipLimit": 4,
+  "flipLimit": 6,
   "parTime": 17,
   "hint": "Moving platforms carry you - time your flip to ride them."
  },
@@ -170,7 +170,7 @@
     "dir": "up"
    }
   ],
-  "flipLimit": 3,
+  "flipLimit": 5,
   "parTime": 16,
   "hint": "Saws patrol the gaps. Watch their rhythm."
  },
@@ -271,7 +271,7 @@
     "dir": "down"
    }
   ],
-  "flipLimit": 3,
+  "flipLimit": 5,
   "parTime": 16
  },
  {
@@ -373,7 +373,7 @@
     "dir": "up"
    }
   ],
-  "flipLimit": 4,
+  "flipLimit": 6,
   "parTime": 16
  },
  {
@@ -507,7 +507,7 @@
     "hidden": true
    }
   ],
-  "flipLimit": 3,
+  "flipLimit": 5,
   "parTime": 16
  }
 ]

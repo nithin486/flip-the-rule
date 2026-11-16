@@ -33,7 +33,7 @@
    }
   ],
   "hazards": [],
-  "flipLimit": 2,
+  "flipLimit": 5,
   "parTime": 15
  },
  {
@@ -90,7 +90,7 @@
     "dir": "down"
    }
   ],
-  "flipLimit": 3,
+  "flipLimit": 6,
   "parTime": 15
  },
  {
@@ -180,7 +180,7 @@
     "dir": "down"
    }
   ],
-  "flipLimit": 7,
+  "flipLimit": 10,
   "parTime": 16
  },
  {
@@ -257,7 +257,7 @@
     "dir": "up"
    }
   ],
-  "flipLimit": 4,
+  "flipLimit": 7,
   "parTime": 15
  },
  {
@@ -327,7 +327,7 @@
     "dir": "down"
    }
   ],
-  "flipLimit": 4,
+  "flipLimit": 7,
   "parTime": 16
  }
 ]

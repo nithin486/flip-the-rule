@@ -71,6 +71,7 @@ export class MenuScene extends Phaser.Scene {
     new Button(this, W / 2 + 150, 350, 'LEVEL SELECT', () => this.go('LevelSelect'), { w: 330, h: 56, size: 24, color: 0x7c3aed });
     const done = !!save.data.daily.completed[LevelSystem.dateKey()];
     new Button(this, W / 2 + 150, 418, done ? 'DAILY CHALLENGE ✓' : 'DAILY CHALLENGE', () => this.go('Gameplay', { daily: true }), { w: 330, h: 56, size: 24, color: 0x3b82f6 });
+    new Button(this, 190, 250, 'BALL SKINS', () => this.scene.launch('Skins'), { w: 190, h: 44, size: 18, color: 0xdb2777 });
     new Button(this, W / 2 + 150, 486, 'SETTINGS', () => this.scene.launch('Settings', { from: 'Menu' }), { w: 330, h: 50, size: 22, color: 0x475569 });
 
     // --- progress ---

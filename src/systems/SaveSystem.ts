@@ -13,7 +13,7 @@ export const defaultSave = (): SaveData => ({
   version: SAVE_VERSION,
   unlockedLevel: 1,
   stars: {}, bestScores: {}, bestTimes: {}, bestFlips: {},
-  totalScore: 0,
+  totalScore: 0, skin: 0,
   settings: { music: true, sound: true, reduceMotion: false, touchControls: 'auto' },
   daily: { lastCompleted: '', streak: 0, bestStreak: 0, completed: {} },
 });
@@ -40,6 +40,7 @@ export function sanitize(raw: unknown): SaveData {
   d.bestTimes = numMap(r.bestTimes);
   d.bestFlips = numMap(r.bestFlips);
   d.totalScore = Math.floor(num(r.totalScore, 0, 0));
+  d.skin = Math.floor(num(r.skin, 0, 0, 4));
   const s = (r.settings && typeof r.settings === 'object') ? r.settings : {};
   d.settings.music = typeof s.music === 'boolean' ? s.music : true;
   d.settings.sound = typeof s.sound === 'boolean' ? s.sound : true;

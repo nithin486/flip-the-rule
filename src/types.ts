@@ -45,6 +45,7 @@ export interface SaveData {
   bestTimes: Record<string, number>;
   bestFlips: Record<string, number>;
   totalScore: number;
+  skin: number;
   settings: { music: boolean; sound: boolean; reduceMotion: boolean; touchControls: 'auto' | 'on' | 'off' };
   daily: { lastCompleted: string; streak: number; bestStreak: number; completed: Record<string, number> };
 }

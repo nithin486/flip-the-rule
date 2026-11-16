@@ -9,6 +9,7 @@ import { MenuScene } from './scenes/MenuScene';
 import { PauseScene } from './scenes/PauseScene';
 import { PreloadScene } from './scenes/PreloadScene';
 import { SettingsScene } from './scenes/SettingsScene';
+import { SkinsScene } from './scenes/SkinsScene';
 import { LevelSystem } from './systems/LevelSystem';
 
 const game = new Phaser.Game({
@@ -22,7 +23,7 @@ const game = new Phaser.Game({
   render: { antialias: true, roundPixels: false },
   fps: { target: 60, smoothStep: true },
   disableContextMenu: true,
-  scene: [BootScene, PreloadScene, MenuScene, LevelSelectScene, GameplayScene, PauseScene, LevelCompleteScene, SettingsScene, GameOverScene],
+  scene: [BootScene, PreloadScene, MenuScene, LevelSelectScene, GameplayScene, PauseScene, LevelCompleteScene, SettingsScene, SkinsScene, GameOverScene],
 });
 // Debug / test hooks (also used by the headless verifier).
 (window as any).__ftr = { game, LevelSystem };

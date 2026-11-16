@@ -1,3 +1,4 @@
+import { save } from '../systems/SaveSystem';
 import Phaser from 'phaser';
 import { H, W, WORLDS, worldOfLevel } from '../config/gameConfig';
 
@@ -20,15 +21,24 @@ const rr = (c: CanvasRenderingContext2D, x: number, y: number, w: number, h: num
 
 // ---------------- player ----------------
 export type Expr = 'idle' | 'blink' | 'happy' | 'dead' | 'flip';
-export const playerKey = (e: Expr, look: number) => `p_${e}_${look}`;
-function drawPlayer(c: CanvasRenderingContext2D, e: Expr, look: number) {
+export interface Skin { name: string; need: number; c0: string; c1: string; c2: string; glow: string; line: string }
+/** Unlock by total stars collected (max 120). */
+export const SKINS: Skin[] = [
+  { name: 'Violet', need: 0, c0: '#c4b5fd', c1: '#8b5cf6', c2: '#5b21b6', glow: 'rgba(124,58,237,0.7)', line: '#2e1065' },
+  { name: 'Sunset', need: 12, c0: '#fed7aa', c1: '#fb923c', c2: '#c2410c', glow: 'rgba(249,115,22,0.7)', line: '#431407' },
+  { name: 'Mint', need: 30, c0: '#bbf7d0', c1: '#34d399', c2: '#047857', glow: 'rgba(16,185,129,0.7)', line: '#022c22' },
+  { name: 'Bubblegum', need: 55, c0: '#fbcfe8', c1: '#f472b6', c2: '#be185d', glow: 'rgba(236,72,153,0.7)', line: '#500724' },
+  { name: 'Gold', need: 90, c0: '#fef9c3', c1: '#fbbf24', c2: '#b45309', glow: 'rgba(245,158,11,0.8)', line: '#451a03' },
+];
+export const playerKey = (e: Expr, look: number, skin = save.data.skin) => `p${skin}_${e}_${look}`;
+function drawPlayer(c: CanvasRenderingContext2D, e: Expr, look: number, sk: Skin) {
   const S = 44, cx = S / 2, cy = S / 2, R = 19;
   c.clearRect(0, 0, S, S);
-  c.shadowColor = 'rgba(124,58,237,0.7)'; c.shadowBlur = 6;
+  c.shadowColor = sk.glow; c.shadowBlur = 6;
   const g = c.createRadialGradient(cx - 6, cy - 7, 2, cx, cy, R);
-  g.addColorStop(0, '#c4b5fd'); g.addColorStop(0.45, '#8b5cf6'); g.addColorStop(1, '#5b21b6');
+  g.addColorStop(0, sk.c0); g.addColorStop(0.45, sk.c1); g.addColorStop(1, sk.c2);
   c.fillStyle = g; c.beginPath(); c.arc(cx, cy, R, 0, Math.PI * 2); c.fill();
-  c.shadowBlur = 0; c.lineWidth = 2; c.strokeStyle = '#2e1065'; c.stroke();
+  c.shadowBlur = 0; c.lineWidth = 2; c.strokeStyle = sk.line; c.stroke();
   // shine
   c.fillStyle = 'rgba(255,255,255,0.35)'; c.beginPath(); c.ellipse(cx - 7, cy - 9, 5, 3, -0.6, 0, Math.PI * 2); c.fill();
   // face
@@ -230,7 +240,7 @@ export function makeBaseTextures(scene: Phaser.Scene) {
     c.fillStyle = '#fff'; c.font = '600 16px Poppins, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('SPACE', 48, 20);
   });
   // player variants
-  (['idle', 'blink', 'happy', 'dead', 'flip'] as Expr[]).forEach((e) => [-1, 0, 1].forEach((look) => canvasTex(scene, playerKey(e, look), 44, 44, (c) => drawPlayer(c, e, look))));
+  SKINS.forEach((sk, si) => (['idle', 'blink', 'happy', 'dead', 'flip'] as Expr[]).forEach((e) => [-1, 0, 1].forEach((look) => canvasTex(scene, playerKey(e, look, si), 44, 44, (c) => drawPlayer(c, e, look, sk)))));
   // ---- UI polish textures ----
   canvasTex(scene, 'vignette', 480, 270, (c, w, h) => { const g = c.createRadialGradient(w / 2, h / 2, h * 0.38, w / 2, h / 2, w * 0.62); g.addColorStop(0, 'rgba(5,3,22,0)'); g.addColorStop(1, 'rgba(5,3,22,0.72)'); c.fillStyle = g; c.fillRect(0, 0, w, h); });
   canvasTex(scene, 'ray', 160, 560, (c, w, h) => { const g = c.createLinearGradient(0, 0, 0, h); g.addColorStop(0, 'rgba(255,255,255,0.55)'); g.addColorStop(1, 'rgba(255,255,255,0)'); c.fillStyle = g; c.beginPath(); c.moveTo(w * 0.42, 0); c.lineTo(w * 0.58, 0); c.lineTo(w, h); c.lineTo(0, h); c.closePath(); c.fill(); });

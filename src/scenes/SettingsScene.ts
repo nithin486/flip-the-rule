@@ -19,7 +19,7 @@ export class SettingsScene extends Phaser.Scene {
     const modes = ['auto', 'on', 'off'] as const;
     const tc = new Button(this, W / 2 + 60, H / 2 + 5, '', () => { s.touchControls = modes[(modes.indexOf(s.touchControls) + 1) % 3]; tc.setLabel(`Touch controls: ${s.touchControls.toUpperCase()}`); up(); }, { w: 320, h: 40, size: 18, color: 0x475569, font: 'body' });
     tc.setLabel(`Touch controls: ${s.touchControls.toUpperCase()}`);
-    this.add.text(W / 2, H / 2 + 75, 'CONTROLS\nMove: A / D or ← →     Flip gravity: SPACE (or ↑ / ↓)\nRestart: R     Pause: ESC     Touch: on-screen buttons', { fontFamily: FONT_BODY, fontSize: '15px', color: '#e2e8f0', align: 'center', lineSpacing: 6 }).setOrigin(0.5);
+    this.add.text(W / 2, H / 2 + 75, 'CONTROLS\nMove: A / D or ← →     Flip gravity: SPACE (or ↑ / ↓)\nRestart: R     Pause: P     Touch: on-screen buttons', { fontFamily: FONT_BODY, fontSize: '15px', color: '#e2e8f0', align: 'center', lineSpacing: 6 }).setOrigin(0.5);
     const reset = new Button(this, W / 2 - 150, H / 2 + 165, 'RESET PROGRESS', () => {
       if (!this.confirm) { this.confirm = true; reset.setLabel('SURE? CLICK AGAIN'); reset.color = 0xef4444; reset.draw(false); return; }
       save.reset(); audio.applySettings(); this.scene.get('Menu').scene.restart(); this.scene.stop();

@@ -26,6 +26,7 @@ for (let w = 1; w <= 8; w++) {
   for (let i = (w - 1) * 5 + 1; i <= w * 5; i++) {
     const j = JSON.parse(fs.readFileSync(new URL(`L${i}.json`, dir)));
     const l = j.level; l.world = w;
+    l.flipLimit += i <= 10 ? 3 : i <= 20 ? 2 : 0; // gentler ramp-up: extra spare flips early (solutions stay valid, 3 stars still need par)
     if (HINTS[i]) l.hint = HINTS[i]; else delete l.hint;
     arr.push(l); sol[i] = j.track; tg[i] = { flipTarget: l.flipTarget, parTime: l.parTime };
   }
