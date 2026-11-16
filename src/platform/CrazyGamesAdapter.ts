@@ -50,10 +50,12 @@ export class CrazyGamesAdapter implements PlatformAdapter {
   private request(type: 'midgame' | 'rewarded', onStart?: () => void): Promise<boolean> {
     return new Promise((resolve) => {
       if (!this.ready) return resolve(false);
-      let done = false; const finish = (ok: boolean) => { if (!done) { done = true; resolve(ok); } };
+      let done = false, started = false; const finish = (ok: boolean) => { if (!done) { done = true; resolve(ok); } };
+      // If no ad actually starts within a few seconds (blocked, no fill, SDK silent) give up fast so the game never feels frozen.
+      if (type === 'rewarded') setTimeout(() => { if (!started) finish(false); }, 4000);
       try {
         this.sdk.ad.requestAd(type, {
-          adStarted: () => onStart?.(),
+          adStarted: () => { started = true; onStart?.(); },
           adFinished: () => finish(true),
           adError: () => finish(false),
         });

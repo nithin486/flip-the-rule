@@ -41,7 +41,7 @@ export class GameplayScene extends Phaser.Scene {
   cpIndex = -1; startSnap!: Snap; cpSnap: Snap | null = null; zin: boolean[] = [];
   rider: Platform | null = null; deaths = 0;
   /** When true the scene's own update loop is idle and an external driver (solver/tests) calls stepSim. */
-  manual = false; hintShown = false;
+  manual = false; hintShown = false; hintBusy = false;
   private bgDown?: Phaser.GameObjects.Image; private bgUp?: Phaser.GameObjects.Image;
   private trail?: Phaser.GameObjects.Particles.ParticleEmitter; private burst?: Phaser.GameObjects.Particles.ParticleEmitter; private dust?: Phaser.GameObjects.Particles.ParticleEmitter;
   private hintTxt?: Phaser.GameObjects.Text; private ghost?: Phaser.GameObjects.GameObject[];
@@ -62,7 +62,7 @@ export class GameplayScene extends Phaser.Scene {
     const L = this.level, world = L.world;
     this.platforms = []; this.doors = []; this.spikes = []; this.saws = []; this.checkpoints = []; this.switches = []; this.zones = []; this.teles = []; this.refills = []; this.refillsTaken = 0;
     this.hintTxt = undefined; this.ghost = undefined; this.bgDown = this.bgUp = this.halo = undefined; this.trail = this.burst = this.dust = undefined; this.hud = undefined; this.touch = undefined; this.shutdownFns = [];
-    this.status = 'play'; this.manual = false; this.hintShown = false; this.t = 0; this.elapsed = 0; this.started = false; this.flips = 0; this.acc = 0; this.collected = false; this.teleCd = 0; this.cpIndex = -1; this.cpSnap = null; this.rider = null; this.deaths = 0;
+    this.status = 'play'; this.manual = false; this.hintShown = false; this.hintBusy = false; this.t = 0; this.elapsed = 0; this.started = false; this.flips = 0; this.acc = 0; this.collected = false; this.teleCd = 0; this.cpIndex = -1; this.cpSnap = null; this.rider = null; this.deaths = 0;
 
     // physics: stepped manually at a fixed 60 Hz for determinism (see stepWorld)
     const w = this.physics.world; w.pause(); w.setBounds(0, -600, W, H + 1200); w.setBoundsCollision(true, true, false, false);
@@ -412,10 +412,12 @@ export class GameplayScene extends Phaser.Scene {
     const sol = LevelSystem.solution(this.level.id);
     if (!sol) { this.showHint(); return; }
     audio.setSuspended(false);
-    const ok = await platform.requestRewardedAd(() => audio.setSuspended(true)).catch(() => false); audio.setSuspended(false);
+    if (this.hintBusy) return; this.hintBusy = true;
+    this.showHint(); this.hintTxt?.setText('Loading hint…').setAlpha(1); this.tweens.killTweensOf(this.hintTxt!); // instant feedback
+    const ok = await platform.requestRewardedAd(() => audio.setSuspended(true)).catch(() => false); audio.setSuspended(false); this.hintBusy = false;
     if (!this.sys.isActive()) return;
     // If the portal has no ad to show (blocked / no fill / embedded elsewhere) the hint is still given: a dead button is worse than a free hint.
-    if (!ok) this.showHint();
+    if (!ok) this.showHint(); else { this.hintTxt?.setText('Follow the ghost ball').setAlpha(1); this.tweens.add({ targets: this.hintTxt, alpha: 0, delay: 2500, duration: 600 }); }
     audio.sfx('hint');
     const g = this.add.graphics().setDepth(30); g.fillStyle(0xffffff, 0.35);
     sol.forEach((p, i) => { if (i % 2 === 0) g.fillCircle(p[0], p[1], 3); });
