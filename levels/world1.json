@@ -194,8 +194,8 @@
   "gravity": "down",
   "flipTarget": 3,
   "collectible": {
-   "x": 480,
-   "y": 305
+   "x": 418,
+   "y": 296
   },
   "exit": {
    "x": 885,
@@ -212,13 +212,13 @@
     "x": 380,
     "y": 92,
     "width": 76,
-    "height": 168
+    "height": 128
    },
    {
     "x": 380,
-    "y": 340,
+    "y": 372,
     "width": 76,
-    "height": 130
+    "height": 98
    },
    {
     "x": 500,
@@ -231,14 +231,14 @@
    {
     "type": "spike",
     "x": 380,
-    "y": 326,
+    "y": 358,
     "width": 76,
     "dir": "up"
    },
    {
     "type": "spike",
     "x": 380,
-    "y": 260,
+    "y": 220,
     "width": 76,
     "dir": "down"
    },

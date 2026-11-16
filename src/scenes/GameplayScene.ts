@@ -13,7 +13,7 @@ import { InputSystem, type InputFrame } from '../systems/InputSystem';
 import { LevelSystem, validateLevel } from '../systems/LevelSystem';
 import { save } from '../systems/SaveSystem';
 import { computeResult } from '../systems/ScoreSystem';
-import { bgKey } from '../ui/Textures';
+import { bgKey, playerKey } from '../ui/Textures';
 import { HUD } from '../ui/HUD';
 import { TouchControls } from '../ui/TouchControls';
 import type { GravityDir, LevelData, LevelResult } from '../types';
@@ -413,11 +413,13 @@ export class GameplayScene extends Phaser.Scene {
     if (!sol) { this.showHint(); return; }
     audio.setSuspended(false);
     const ok = await platform.requestRewardedAd(() => audio.setSuspended(true)).catch(() => false); audio.setSuspended(false);
-    if (!ok || !this.sys.isActive()) return;
+    if (!this.sys.isActive()) return;
+    // If the portal has no ad to show (blocked / no fill / embedded elsewhere) the hint is still given: a dead button is worse than a free hint.
+    if (!ok) this.showHint();
     audio.sfx('hint');
     const g = this.add.graphics().setDepth(30); g.fillStyle(0xffffff, 0.35);
     sol.forEach((p, i) => { if (i % 2 === 0) g.fillCircle(p[0], p[1], 3); });
-    const ball = this.add.image(sol[0][0], sol[0][1], 'p_idle_1').setAlpha(0.55).setDepth(30).setTint(0xa5f3fc);
+    const ball = this.add.image(sol[0][0], sol[0][1], playerKey('idle', 1)).setAlpha(0.55).setDepth(30).setTint(0xa5f3fc);
     const o = { i: 0 };
     const tw = this.tweens.add({ targets: o, i: sol.length - 1, duration: sol.length * 50, repeat: 1, onUpdate: () => { const p = sol[Math.round(o.i)]; ball.setPosition(p[0], p[1]); },
       onComplete: () => { g.destroy(); ball.destroy(); this.ghost = undefined; } });
@@ -429,8 +431,9 @@ export class GameplayScene extends Phaser.Scene {
     if (!this.hintTxt) {
       this.hintTxt = this.add.text(W / 2, 74, '', { fontFamily: FONT_BODY, fontSize: '17px', color: '#fff', fontStyle: '600', backgroundColor: 'rgba(11,11,26,0.72)', padding: { x: 16, y: 8 }, align: 'center' }).setOrigin(0.5, 0).setDepth(45);
     }
-    if (!txt) { if (!auto) this.hintTxt.setText('No hint here — trust the physics!').setAlpha(1); else this.hintTxt.setAlpha(0); }
-    else this.hintTxt.setText(txt).setAlpha(1);
+    const par = this.level.flipTarget, tip = `Par is ${par} flip${par === 1 ? '' : 's'} · you have ${this.level.flipLimit ?? par}.${this.daily ? '' : '  Tap ? again to watch a ghost show the way.'}`;
+    if (!txt) { if (!auto) this.hintTxt.setText(tip).setAlpha(1); else this.hintTxt.setAlpha(0); }
+    else this.hintTxt.setText(auto || this.daily ? txt : `${txt}\n${tip}`).setAlpha(1);
     this.tweens.killTweensOf(this.hintTxt);
     if (txt || !auto) this.tweens.add({ targets: this.hintTxt, alpha: 0, delay: auto ? 7000 : 3500, duration: 600 });
   }
