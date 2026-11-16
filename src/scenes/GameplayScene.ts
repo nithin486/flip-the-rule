@@ -41,7 +41,7 @@ export class GameplayScene extends Phaser.Scene {
   cpIndex = -1; startSnap!: Snap; cpSnap: Snap | null = null; zin: boolean[] = [];
   rider: Platform | null = null; deaths = 0;
   /** When true the scene's own update loop is idle and an external driver (solver/tests) calls stepSim. */
-  manual = false; hintShown = false; hintBusy = false;
+  manual = false; hintShown = false; hintBusy = false; pendingFlip = false; flipBuf = 0;
   private bgDown?: Phaser.GameObjects.Image; private bgUp?: Phaser.GameObjects.Image;
   private trail?: Phaser.GameObjects.Particles.ParticleEmitter; private burst?: Phaser.GameObjects.Particles.ParticleEmitter; private dust?: Phaser.GameObjects.Particles.ParticleEmitter;
   private hintTxt?: Phaser.GameObjects.Text; private ghost?: Phaser.GameObjects.GameObject[];
@@ -62,7 +62,7 @@ export class GameplayScene extends Phaser.Scene {
     const L = this.level, world = L.world;
     this.platforms = []; this.doors = []; this.spikes = []; this.saws = []; this.checkpoints = []; this.switches = []; this.zones = []; this.teles = []; this.refills = []; this.refillsTaken = 0;
     this.hintTxt = undefined; this.ghost = undefined; this.bgDown = this.bgUp = this.halo = undefined; this.trail = this.burst = this.dust = undefined; this.hud = undefined; this.touch = undefined; this.shutdownFns = [];
-    this.status = 'play'; this.manual = false; this.hintShown = false; this.hintBusy = false; this.t = 0; this.elapsed = 0; this.started = false; this.flips = 0; this.acc = 0; this.collected = false; this.teleCd = 0; this.cpIndex = -1; this.cpSnap = null; this.rider = null; this.deaths = 0;
+    this.status = 'play'; this.manual = false; this.hintShown = false; this.hintBusy = false; this.pendingFlip = false; this.t = 0; this.elapsed = 0; this.started = false; this.flips = 0; this.acc = 0; this.collected = false; this.teleCd = 0; this.cpIndex = -1; this.cpSnap = null; this.rider = null; this.deaths = 0;
 
     // physics: stepped manually at a fixed 60 Hz for determinism (see stepWorld)
     const w = this.physics.world; w.pause(); w.setBounds(0, -600, W, H + 1200); w.setBoundsCollision(true, true, false, false);
@@ -449,11 +449,15 @@ export class GameplayScene extends Phaser.Scene {
     if (restart) this.restartLevel();
     if (this.status !== 'play') { if (this.status === 'dead') this.player.post(delta / 1000, true); return; }
     this.acc += Math.min(delta, 100) / 1000;
-    let flip = frame.flip;
+    // A flip press must never be lost: on 120/144Hz displays many render frames run no physics step, and a press that lands
+    // just before the flip cooldown ends used to be dropped too. Keep it pending until a step consumes it (or ~150ms pass).
+    if (frame.flip) { this.pendingFlip = true; this.flipBuf = 0; }
     while (this.acc >= PHYS.step) {
       this.acc -= PHYS.step;
-      this.stepSim({ left: frame.left, right: frame.right, flip });
-      flip = false; if (this.status !== 'play') break;
+      const before = this.flips, want = this.pendingFlip;
+      this.stepSim({ left: frame.left, right: frame.right, flip: want });
+      if (want && (this.flips !== before || this.player.flipCooldown <= 0 || (this.flipBuf += PHYS.step) > 0.15)) this.pendingFlip = false;
+      if (this.status !== 'play') break;
     }
   }
 }
