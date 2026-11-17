@@ -82,7 +82,7 @@
     "pair": "a"
    }
   ],
-  "flipLimit": 7,
+  "flipLimit": 5,
   "parTime": 15,
   "hint": "Portals link two places. Step in one, come out the other."
  },
@@ -172,7 +172,7 @@
     "height": 344
    }
   ],
-  "flipLimit": 7,
+  "flipLimit": 5,
   "parTime": 16,
   "hint": "Step on the switch to open the gate."
  },
@@ -264,7 +264,7 @@
     "gravity": "up"
    }
   ],
-  "flipLimit": 6,
+  "flipLimit": 4,
   "parTime": 16,
   "hint": "Gravity zones override gravity inside their glow."
  },
@@ -398,7 +398,7 @@
     "height": 356
    }
   ],
-  "flipLimit": 6,
+  "flipLimit": 4,
   "parTime": 17
  },
  {
@@ -546,7 +546,7 @@
     "gravity": "up"
    }
   ],
-  "flipLimit": 5,
+  "flipLimit": 3,
   "parTime": 16
  }
 ]

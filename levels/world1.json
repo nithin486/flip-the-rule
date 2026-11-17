@@ -327,7 +327,7 @@
     "dir": "down"
    }
   ],
-  "flipLimit": 7,
+  "flipLimit": 4,
   "parTime": 16
  }
 ]
