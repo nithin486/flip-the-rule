@@ -111,8 +111,8 @@ export class GameplayScene extends Phaser.Scene {
       audio.play('game', th.root);
       platform.gameplayStart();
       const blur = () => { if (this.status === 'play') this.pauseGame(); };
-      this.game.events.on(Phaser.Core.Events.HIDDEN, blur); this.game.events.on(Phaser.Core.Events.BLUR, blur);
-      this.shutdownFns.push(() => { this.game.events.off(Phaser.Core.Events.HIDDEN, blur); this.game.events.off(Phaser.Core.Events.BLUR, blur); });
+      this.game.events.on(Phaser.Core.Events.HIDDEN, blur); // only when the tab is really hidden: a plain focus change (iframe, ad overlay, clicking the page) must not pause and eat key presses
+      this.shutdownFns.push(() => { this.game.events.off(Phaser.Core.Events.HIDDEN, blur); });
       this.cameras.main.fadeIn(250, 11, 11, 26);
       this.events.on('fall-gone', () => audio.sfx('collapse'));
     }
@@ -456,7 +456,7 @@ export class GameplayScene extends Phaser.Scene {
       this.acc -= PHYS.step;
       const before = this.flips, want = this.pendingFlip;
       this.stepSim({ left: frame.left, right: frame.right, flip: want });
-      if (want && (this.flips !== before || this.player.flipCooldown <= 0 || (this.flipBuf += PHYS.step) > 0.15)) this.pendingFlip = false;
+      if (want && (this.flips !== before || this.player.flipCooldown <= 0 || (this.flipBuf += PHYS.step) > 0.22)) this.pendingFlip = false;
       if (this.status !== 'play') break;
     }
   }

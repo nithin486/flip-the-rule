@@ -27,5 +27,6 @@ const game = new Phaser.Game({
 });
 // Debug / test hooks (also used by the headless verifier).
 (window as any).__ftr = { game, LevelSystem };
+game.events.once('ready', () => { game.canvas.setAttribute('tabindex', '0'); game.canvas.style.outline = 'none'; });
 // Keyboard focus: inside an iframe the game only receives keys after the frame has focus, so grab it on any click/tap.
 window.addEventListener('pointerdown', () => { try { window.focus(); } catch { /* ignore */ } }, { capture: true });
