@@ -34,10 +34,10 @@ export class CrazyGamesAdapter implements PlatformAdapter {
         const s = document.createElement('script');
         s.src = SDK_URL; s.async = true; s.onload = () => res(); s.onerror = () => rej(new Error('sdk load failed'));
         document.head.appendChild(s);
-        setTimeout(() => rej(new Error('sdk timeout')), 6000);
+        setTimeout(() => rej(new Error('sdk timeout')), 2500);
       });
       this.sdk = window.CrazyGames!.SDK;
-      await this.sdk.init();
+      await Promise.race([this.sdk.init(), new Promise((_, rej) => setTimeout(() => rej(new Error('sdk init timeout')), 2500))]);
       this.ready = true;
     } catch (e) { console.warn('[CrazyGames] SDK unavailable, running without it', e); this.ready = false; this.hasAds = false; }
   }
