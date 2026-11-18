@@ -58,12 +58,22 @@ export function sanitize(raw: unknown): SaveData {
 
 export class SaveSystem {
   data: SaveData;
+  /** Optional mirror (portal cloud save). */
+  onSave?: (json: string) => void;
   constructor(private backend: SaveBackend = new LocalBackend()) { this.data = this.load(); }
   setBackend(b: SaveBackend) { this.backend = b; this.data = this.load(); }
   load(): SaveData {
     try { const t = this.backend.read(); if (!t) return defaultSave(); return sanitize(JSON.parse(t)); } catch { return defaultSave(); }
   }
-  save() { try { this.backend.write(JSON.stringify(this.data)); } catch { /* ignore */ } }
+  save() { try { const j = JSON.stringify(this.data); this.backend.write(j); this.onSave?.(j); } catch { /* ignore */ } }
+  /** Merge a cloud save: take it only if it holds more progress than the local one. */
+  mergeRemote(json: string | null) {
+    if (!json) return;
+    try {
+      const r = sanitize(JSON.parse(json)), prog = (d: SaveData) => d.unlockedLevel * 1000 + Object.values(d.stars).reduce((a, b) => a + b, 0);
+      if (prog(r) > prog(this.data)) { this.data = r; this.backend.write(JSON.stringify(r)); }
+    } catch { /* corrupt remote save: ignore */ }
+  }
   reset() { this.data = defaultSave(); this.save(); }
   stars(id: number) { return this.data.stars[String(id)] ?? 0; }
   totalStars() { return Object.values(this.data.stars).reduce((a, b) => a + b, 0); }

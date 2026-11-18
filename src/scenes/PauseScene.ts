@@ -20,7 +20,6 @@ export class PauseScene extends Phaser.Scene {
     new Button(this, W / 2, H / 2 + 122, 'LEVEL SELECT', () => { audio.setDuck(1); this.scene.stop('Gameplay'); this.scene.stop(); this.scene.start('LevelSelect'); }, { w: 300, h: 46, color: 0x7c3aed, size: 20 });
     new Button(this, W / 2, H / 2 + 176, 'MAIN MENU', () => { audio.setDuck(1); this.scene.stop('Gameplay'); this.scene.stop(); this.scene.start('Menu'); }, { w: 300, h: 40, color: 0x475569, size: 18 });
     this.add.text(W / 2, H / 2 - 140, '', { fontFamily: FONT_BODY });
-    this.input.keyboard!.once('keydown-ESC', resume);
     this.input.keyboard!.once('keydown-P', resume);
   }
 }

@@ -27,6 +27,10 @@ export class CrazyGamesAdapter implements PlatformAdapter {
     return false;
   }
 
+  private queue: Array<() => void> = [];
+  private settled = false;
+  /** Boot waits for this only briefly (see BootScene), but the SDK keeps loading in the background: calls made before it is ready
+   *  (loadingStart/Stop, gameplayStart) are queued and replayed so CrazyGames still receives every event (they measure load size/time with them). */
   async init() {
     try {
       await new Promise<void>((res, rej) => {
@@ -34,18 +38,27 @@ export class CrazyGamesAdapter implements PlatformAdapter {
         const s = document.createElement('script');
         s.src = SDK_URL; s.async = true; s.onload = () => res(); s.onerror = () => rej(new Error('sdk load failed'));
         document.head.appendChild(s);
-        setTimeout(() => rej(new Error('sdk timeout')), 2500);
+        setTimeout(() => rej(new Error('sdk timeout')), 20000);
       });
       this.sdk = window.CrazyGames!.SDK;
-      await Promise.race([this.sdk.init(), new Promise((_, rej) => setTimeout(() => rej(new Error('sdk init timeout')), 2500))]);
-      this.ready = true;
-    } catch (e) { console.warn('[CrazyGames] SDK unavailable, running without it', e); this.ready = false; this.hasAds = false; }
+      await Promise.race([this.sdk.init(), new Promise((_, rej) => setTimeout(() => rej(new Error('sdk init timeout')), 15000))]);
+      this.ready = true; this.settled = true;
+      const q = this.queue; this.queue = []; q.forEach((f) => this.safe(f));
+    } catch (e) { console.warn('[CrazyGames] SDK unavailable, running without it', e); this.ready = false; this.hasAds = false; this.settled = true; this.queue = []; }
   }
-  private safe(fn: () => void) { if (!this.ready) return; try { fn(); } catch (e) { console.warn('[CrazyGames]', e); } }
+  private safe(fn: () => void) {
+    if (!this.ready) { if (!this.settled) this.queue.push(fn); return; }
+    try { fn(); } catch (e) { console.warn('[CrazyGames]', e); }
+  }
   loadingStart() { this.safe(() => this.sdk.game.loadingStart()); }
   loadingStop() { this.safe(() => this.sdk.game.loadingStop()); }
   gameplayStart() { this.safe(() => this.sdk.game.gameplayStart()); }
   gameplayStop() { this.safe(() => this.sdk.game.gameplayStop()); }
+  device() {
+    try { const t = this.sdk?.user?.systemInfo?.device?.type; return t === 'mobile' || t === 'tablet' || t === 'desktop' ? t : null; } catch { return null; }
+  }
+  readRemote() { try { return this.ready ? (this.sdk.data.getItem('save') ?? null) : null; } catch { return null; } }
+  writeRemote(v: string) { try { if (this.ready) this.sdk.data.setItem('save', v); } catch { /* ignore */ } }
 
   private request(type: 'midgame' | 'rewarded', onStart?: () => void): Promise<boolean> {
     return new Promise((resolve) => {

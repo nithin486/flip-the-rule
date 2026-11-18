@@ -25,6 +25,5 @@ export class SettingsScene extends Phaser.Scene {
       save.reset(); audio.applySettings(); this.scene.get('Menu').scene.restart(); this.scene.stop();
     }, { w: 250, h: 44, size: 16, color: 0x7f1d1d });
     new Button(this, W / 2 + 150, H / 2 + 165, 'DONE', () => this.scene.stop(), { w: 220, h: 50, size: 24, color: 0x22c55e });
-    this.input.keyboard!.once('keydown-ESC', () => this.scene.stop());
   }
 }

@@ -1,3 +1,4 @@
+import { platform } from '../platform';
 import Phaser from 'phaser';
 import { save } from '../systems/SaveSystem';
 import type { InputSystem } from '../systems/InputSystem';
@@ -65,8 +66,9 @@ export class TouchControls {
       const sm = scene.scale; sm.refresh(); setTimeout(() => sm.refresh(), 60); setTimeout(() => sm.refresh(), 300);
     };
     window.addEventListener('resize', layout);
-    const auto = () => scene.sys.game.device.input.touch;
-    const apply = () => { const m = save.data.settings.touchControls; this.shown = m === 'on' || (m === 'auto' && (auto() || this.sawTouch)); root.style.display = this.shown ? 'block' : 'none'; layout(); };
+    // CrazyGames forbids touch sniffing: when the portal SDK knows the device class, trust it; otherwise fall back to our own detection.
+    const auto = () => { const d = platform.device(); return d ? d !== 'desktop' : scene.sys.game.device.input.touch; };
+    const apply = () => { const m = save.data.settings.touchControls; this.shown = m === 'on' || (m === 'auto' && (auto() || (this.sawTouch && platform.device() !== 'desktop'))); root.style.display = this.shown ? 'block' : 'none'; layout(); };
     scene.input.on('pointerdown', (p: Phaser.Input.Pointer) => { if (p.wasTouch && !this.sawTouch) { this.sawTouch = true; apply(); } });
     const cleanup = () => { input.touchLeft.clear(); input.touchRight.clear(); root.remove(); window.removeEventListener('resize', layout); if (gameEl) { gameEl.style.left = '0'; gameEl.style.right = '0'; } scene.scale.refresh(); };
     scene.events.once('shutdown', cleanup); scene.events.once('destroy', cleanup);

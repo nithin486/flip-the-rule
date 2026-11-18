@@ -14,7 +14,6 @@ export class LevelSelectScene extends Phaser.Scene {
     this.cameras.main.fadeIn(200, 11, 11, 26);
     const wi = WORLDS.findIndex((w) => save.data.unlockedLevel >= w.first && save.data.unlockedLevel <= w.last); this.world = Math.max(1, wi + 1);
     this.draw(true);
-    this.input.keyboard!.on('keydown-ESC', () => this.back());
     this.input.keyboard!.on('keydown-LEFT', () => this.shift(-1)); this.input.keyboard!.on('keydown-RIGHT', () => this.shift(1));
   }
   private back() { this.scene.start('Menu'); }
