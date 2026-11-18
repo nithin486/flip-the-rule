@@ -11,6 +11,6 @@ export class PreloadScene extends Phaser.Scene {
     const t = this.add.text(W / 2, H / 2, 'UPSIDE DOWN RUN', { fontFamily: FONT_HEAD, fontSize: '48px', color: '#fff', fontStyle: '800' }).setOrigin(0.5);
     makeBaseTextures(this);
     document.getElementById('boot-splash')?.remove();
-    this.tweens.add({ targets: t, alpha: 0, duration: 250, delay: 150, onComplete: () => { platform.loadingStop(); this.scene.start('Menu'); } });
+    this.tweens.add({ targets: t, alpha: 0, duration: 150, delay: 0, onComplete: () => { platform.loadingStop(); this.scene.start('Menu'); } });
   }
 }
