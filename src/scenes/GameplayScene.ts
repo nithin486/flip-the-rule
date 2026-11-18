@@ -97,7 +97,7 @@ export class GameplayScene extends Phaser.Scene {
     if (this.fx) {
       this.touch = new TouchControls(this, this.inp);
       this.hud = new HUD(this, this.daily ? 'DAILY CHALLENGE' : `LEVEL ${L.id}`, `${WORLDS[Math.min(WORLDS.length, Math.max(1, world)) - 1].name.toUpperCase()} · ${L.name.toUpperCase()}`, !!L.collectible, {
-        pause: () => this.pauseGame(), restart: () => this.restartLevel(), hint: () => { if (this.hintShown) void this.hintGhost(); else { this.hintShown = true; this.showHint(); } },
+        pause: () => this.pauseGame(), restart: () => this.restartLevel(), hint: () => this.openHint(),
       }, WORLDS[Math.min(WORLDS.length, Math.max(1, world)) - 1].accent);
       this.hud.setFlips(0, this.flipCap, L.flipTarget);
       this.hud.setGravity(L.gravity);
@@ -406,19 +406,20 @@ export class GameplayScene extends Phaser.Scene {
 
   // ---------------------------------------------------------------- hints
   private tokens(s: string) { const touch = this.touch?.visible; return s.replace('{flip}', touch ? 'FLIP' : 'SPACE').replace('{move}', touch ? 'the arrows' : 'A / D or ←/→'); }
-  /** Hint button: text hint first; then (after the platform's rewarded ad, if any) a ghost replays a verified solution. */
-  async hintGhost() {
-    if (this.daily || this.status !== 'play' || this.ghost) { this.showHint(); return; }
+  /** Hint button: pauses the game and opens the hint panel (the rewarded ad, if any, is requested there - never on the live gameplay screen). */
+  openHint() {
+    if (this.status !== 'play' || !this.fx) return;
+    const par = this.level.flipTarget, txt = this.level.hint ? this.tokens(this.level.hint) : '';
+    const tip = `${txt ? txt + '\n\n' : ''}Par is ${par} flip${par === 1 ? '' : 's'}; you have ${this.level.flipLimit ?? par}.`;
+    const canGhost = !this.daily && !!LevelSystem.solution(this.level.id) && !this.ghost;
+    this.status = 'paused'; platform.gameplayStop(); audio.sfx('hint');
+    this.scene.pause(); this.scene.launch('Hint', { tip, canGhost });
+  }
+  /** Ghost ball replays a verified solution. */
+  playGhost() {
     const sol = LevelSystem.solution(this.level.id);
-    if (!sol) { this.showHint(); return; }
-    audio.setSuspended(false);
-    if (this.hintBusy) return; this.hintBusy = true;
-    this.showHint(); this.hintTxt?.setText('Loading hint…').setAlpha(1); this.tweens.killTweensOf(this.hintTxt!); // instant feedback
-    const ok = await platform.requestRewardedAd(() => audio.setSuspended(true)).catch(() => false); audio.setSuspended(false); this.hintBusy = false;
-    if (!this.sys.isActive()) return;
-    // If the portal has no ad to show (blocked / no fill / embedded elsewhere) the hint is still given: a dead button is worse than a free hint.
-    if (!ok) this.showHint(); else { this.hintTxt?.setText('Follow the ghost ball').setAlpha(1); this.tweens.add({ targets: this.hintTxt, alpha: 0, delay: 2500, duration: 600 }); }
-    audio.sfx('hint');
+    if (!sol || this.ghost) return;
+    this.hintTxt?.setText('Follow the ghost ball').setAlpha(1); if (this.hintTxt) this.tweens.add({ targets: this.hintTxt, alpha: 0, delay: 2500, duration: 600 });
     const g = this.add.graphics().setDepth(30); g.fillStyle(0xffffff, 0.35);
     sol.forEach((p, i) => { if (i % 2 === 0) g.fillCircle(p[0], p[1], 3); });
     const ball = this.add.image(sol[0][0], sol[0][1], playerKey('idle', 1)).setAlpha(0.55).setDepth(30).setTint(0xa5f3fc);

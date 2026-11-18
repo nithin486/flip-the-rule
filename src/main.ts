@@ -12,6 +12,7 @@ import { LevelCompleteScene } from './scenes/LevelCompleteScene';
 import { LevelSelectScene } from './scenes/LevelSelectScene';
 import { MenuScene } from './scenes/MenuScene';
 import { PauseScene } from './scenes/PauseScene';
+import { HintScene } from './scenes/HintScene';
 import { PreloadScene } from './scenes/PreloadScene';
 import { SettingsScene } from './scenes/SettingsScene';
 import { SkinsScene } from './scenes/SkinsScene';
@@ -28,7 +29,7 @@ const game = new Phaser.Game({
   render: { antialias: true, roundPixels: false },
   fps: { target: 60, smoothStep: true },
   disableContextMenu: true,
-  scene: [BootScene, PreloadScene, MenuScene, LevelSelectScene, GameplayScene, PauseScene, LevelCompleteScene, SettingsScene, SkinsScene, GameOverScene],
+  scene: [BootScene, PreloadScene, MenuScene, LevelSelectScene, GameplayScene, PauseScene, HintScene, LevelCompleteScene, SettingsScene, SkinsScene, GameOverScene],
 });
 // Debug / test hooks (also used by the headless verifier).
 (window as any).__ftr = { game, LevelSystem };
