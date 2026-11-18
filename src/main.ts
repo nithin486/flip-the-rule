@@ -1,4 +1,9 @@
 import Phaser from 'phaser';
+// Fonts are bundled (no third-party font CDN: fewer requests, works offline/behind blockers, nothing external to wait for).
+import '@fontsource/baloo-2/latin-600.css';
+import '@fontsource/baloo-2/latin-800.css';
+import '@fontsource/poppins/latin-500.css';
+import '@fontsource/poppins/latin-600.css';
 import { H, W } from './config/gameConfig';
 import { BootScene } from './scenes/BootScene';
 import { GameOverScene } from './scenes/GameOverScene';

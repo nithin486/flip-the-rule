@@ -13,7 +13,11 @@
     "preview": "vite preview",
     "verify": "node tools/verifyLevels.mjs"
   },
-  "dependencies": { "phaser": "3.90.0" },
+  "dependencies": {
+    "@fontsource/baloo-2": "^5.3.0",
+    "@fontsource/poppins": "^5.3.0",
+    "phaser": "3.90.0"
+  },
   "devDependencies": {
     "typescript": "^7.0.2",
     "vite": "^8.3.8",
