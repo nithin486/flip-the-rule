@@ -23,6 +23,8 @@ export class CrazyGamesAdapter implements PlatformAdapter {
       if (q.get('platform') === 'crazygames') return true;
       if (/crazygames\./i.test(location.hostname)) return true;
       if (window.self !== window.top && /crazygames\./i.test(document.referrer)) return true;
+      const ao = (location as any).ancestorOrigins; if (ao) for (let i = 0; i < ao.length; i++) if (/crazygames\./i.test(ao[i])) return true;
+      if (window.CrazyGames?.SDK || document.getElementById('cg-sdk')) return true;
     } catch { /* cross-origin access errors */ }
     return false;
   }
@@ -35,12 +37,15 @@ export class CrazyGamesAdapter implements PlatformAdapter {
     try {
       await new Promise<void>((res, rej) => {
         if (window.CrazyGames?.SDK) return res();
-        const s = document.createElement('script');
-        s.src = SDK_URL; s.async = true; s.onload = () => res(); s.onerror = () => rej(new Error('sdk load failed'));
-        document.head.appendChild(s);
+        // The <head> snippet in index.html normally already started loading the SDK: reuse that tag instead of loading it twice.
+        const s = (document.getElementById('cg-sdk') as HTMLScriptElement | null) ?? Object.assign(document.createElement('script'), { src: SDK_URL, async: true });
+        s.addEventListener('load', () => res()); s.addEventListener('error', () => rej(new Error('sdk load failed')));
+        if (!s.parentNode) document.head.appendChild(s);
+        else if (window.CrazyGames?.SDK) res();
         setTimeout(() => rej(new Error('sdk timeout')), 20000);
       });
       this.sdk = window.CrazyGames!.SDK;
+      if (this.sdk.environment === 'disabled') throw new Error('SDK disabled on this domain');
       await Promise.race([this.sdk.init(), new Promise((_, rej) => setTimeout(() => rej(new Error('sdk init timeout')), 15000))]);
       this.ready = true; this.settled = true;
       const q = this.queue; this.queue = []; q.forEach((f) => this.safe(f));
