@@ -1,0 +1,17 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:#000;overflow:hidden}#game{position:fixed;inset:0}</style></head>
+<body><div id="game"></div>
+<script type="module">
+import '../src/main.ts';
+import { CoverScene } from './CoverScene.ts';
+const q = new URLSearchParams(location.search), w = +q.get('w'), h = +q.get('h');
+const iv = setInterval(() => {
+  const f = window.__ftr; if (!f) return;
+  const g = f.game; const act = g.scene.getScenes(true).map((s) => s.scene.key);
+  if (!act.includes('Gameplay') && !act.includes('Menu')) return;
+  clearInterval(iv);
+  act.forEach((k) => g.scene.stop(k)); document.getElementById('touch-ui')?.remove();
+  g.scale.setGameSize(w, h); g.scale.refresh();
+  if (!g.scene.getScene('Cover')) g.scene.add('Cover', CoverScene, false);
+  g.scene.start('Cover');
+}, 100);
+</script></body></html>

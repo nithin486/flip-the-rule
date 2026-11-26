@@ -43,3 +43,15 @@ Still to do by hand: test inside the CrazyGames QA tool, take screenshots/metada
 - All 40 levels are hand-designed (`tools/lv/LNN.mjs`), each with a different layout, and proven one at a time with `tools/proveOne.mjs` (solver + replay with the limit active). `node tools/assembleProved.mjs` writes `levels/*.json`. The old generated/mirrored set is superseded.
 - Worlds (new concept every 5 levels, new background palette and a per-level sky layout): 1 basics, 2 spikes + **hidden spikes**, 3 moving platforms + saws (+hidden saws), 4 portals/switches/gates/gravity zones, 5 ice/conveyors/bounce/**wind**, 6 **phase platforms**, pulsing spikes, flip crystals, 7 **no-flip zones**, **reversed controls**, 8 everything, no spare flips (limit = par).
 - Hidden hazards stay invisible until the player is ~160px away, then stay revealed until you retry or respawn, when they hide again (the surprise is there on every attempt).
+
+
+## v5: CrazyGames relaunch (fixes for the Basic Launch metrics)
+Basic Launch result of v4: conversion 44% desktop / 15% mobile, playtime 2m22s / 0m53s, D1 0.46% / 0.84%. Changes:
+- **Relaxed flips by default**: running out of flips no longer ends the attempt; par decides the 3rd star. Original limits = Settings > Hard mode (the headless solver/QA still use the limits).
+- **Onboarding in the level**: level 1 shows the keys (or pulses the touch button) right above the ball, step by step; full-width ceiling so an early flip is safe.
+- **Stuck helpers**: after 3 failed tries the ghost hint is free; after 6 a free Skip Level appears. Hidden hazards reveal from further away and stay revealed after the first surprise.
+- **Retention**: login streak with streak-only skins (Frost day 2, Ember day 3, Galaxy day 5), teased on the menu and level-complete screens.
+- **Portrait mode on phones** (no more rotate prompt): two-row HUD, zoomed follow camera, exit preview pan + EXIT edge marker, bottom band for big touch controls, reflowed menus, overlays scaled to fit. Rotating rebuilds the current screen.
+- **SDK**: respects `game.settings.muteAudio` (+ listener), `happytime()` on world clears, `reportGameCompletedPercentage()`; iOS audio resumes on touchend/click.
+- **Covers** (CrazyGames sizes, title-only text): `store/covers/` rendered from the game art by `tools/cover.html` + `tools/CoverScene.ts` (dev server: `/tools/cover.html?w=1920&h=1080`).
+Submit with both orientations enabled.

@@ -38,7 +38,7 @@ export const skinOpen = (i: number) => { const sk = SKINS[i]; if (!sk) return fa
 /** The next login-streak reward still locked (for "come back tomorrow" teasers). */
 export const nextStreakSkin = () => SKINS.find((sk) => sk.streak && save.data.visits.best < sk.streak) ?? null;
 export const playerKey = (e: Expr, look: number, skin = save.data.skin) => `p${skin}_${e}_${look}`;
-function drawPlayer(c: CanvasRenderingContext2D, e: Expr, look: number, sk: Skin) {
+export function drawPlayer(c: CanvasRenderingContext2D, e: Expr, look: number, sk: Skin) {
   const S = 44, cx = S / 2, cy = S / 2, R = 19;
   c.clearRect(0, 0, S, S);
   c.shadowColor = sk.glow; c.shadowBlur = 6;
