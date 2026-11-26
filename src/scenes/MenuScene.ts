@@ -4,7 +4,7 @@ import { audio } from '../systems/AudioSystem';
 import { LevelSystem } from '../systems/LevelSystem';
 import { save } from '../systems/SaveSystem';
 import { Button, body } from '../ui/Buttons';
-import { bgKey, playerKey, platformKey } from '../ui/Textures';
+import { SKINS, bgKey, nextStreakSkin, playerKey, platformKey } from '../ui/Textures';
 
 export class MenuScene extends Phaser.Scene {
   constructor() { super('Menu'); }
@@ -60,7 +60,7 @@ export class MenuScene extends Phaser.Scene {
     }
     const vg = this.add.graphics().setDepth(0); vg.fillStyle(0x000000, 0.28).fillRect(0, 0, W, 26).fillRect(0, H - 26, W, 26);
     const badge = this.add.container(W / 2, 184).setDepth(2);
-    badge.add([this.add.rectangle(0, 0, 330, 26, 0x0b0b1a, 0.6).setStrokeStyle(2, 0x67e8f9, 0.9), this.add.text(0, 0, `${TOTAL_LEVELS} LEVELS  ·  8 WORLDS  ·  LIMITED FLIPS`, { fontFamily: FONT_BODY, fontSize: '13px', color: '#a5f3fc', fontStyle: '800' }).setOrigin(0.5)]);
+    badge.add([this.add.rectangle(0, 0, 330, 26, 0x0b0b1a, 0.6).setStrokeStyle(2, 0x67e8f9, 0.9), this.add.text(0, 0, `${TOTAL_LEVELS} LEVELS  ·  8 WORLDS  ·  DAILY CHALLENGE`, { fontFamily: FONT_BODY, fontSize: '13px', color: '#a5f3fc', fontStyle: '800' }).setOrigin(0.5)]);
     this.tweens.add({ targets: badge, alpha: 0.75, duration: 1100, yoyo: true, repeat: -1 });
 
     // --- buttons ---
@@ -71,7 +71,7 @@ export class MenuScene extends Phaser.Scene {
     new Button(this, W / 2 + 150, 350, 'LEVEL SELECT', () => this.go('LevelSelect'), { w: 330, h: 56, size: 24, color: 0x7c3aed });
     const done = !!save.data.daily.completed[LevelSystem.dateKey()];
     new Button(this, W / 2 + 150, 418, done ? 'DAILY CHALLENGE ✓' : 'DAILY CHALLENGE', () => this.go('Gameplay', { daily: true }), { w: 330, h: 56, size: 24, color: 0x3b82f6 });
-    new Button(this, 190, 250, 'BALL SKINS', () => this.scene.launch('Skins'), { w: 190, h: 44, size: 18, color: 0xdb2777 });
+    new Button(this, 190, 250, 'BALL SKINS', () => this.scene.launch('Skins', { from: 'Menu' }), { w: 190, h: 44, size: 18, color: 0xdb2777 });
     new Button(this, W / 2 + 150, 486, 'SETTINGS', () => this.scene.launch('Settings', { from: 'Menu' }), { w: 330, h: 50, size: 22, color: 0x475569 });
 
     // --- progress ---
@@ -81,7 +81,15 @@ export class MenuScene extends Phaser.Scene {
       return this.add.text(x, y, label, { fontFamily: FONT_BODY, fontSize: '15px', color: tc, fontStyle: '700' }).setOrigin(0.5).setDepth(3);
     };
     pill(190, 500, 300, `★ ${s} / ${TOTAL_LEVELS * 3}    ·    Score ${save.data.totalScore.toLocaleString()}`, 0xfbbf24, '#fef3c7');
-    if (save.data.daily.streak > 0) pill(112, 30, 190, `🔥 Daily streak ${save.data.daily.streak}`, 0xf97316, '#ffedd5');
+    const vs = save.data.visits.streak;
+    if (vs > 1) pill(112, 30, 190, `🔥 ${vs}-day streak`, 0xf97316, '#ffedd5');
+    // Login streak reward / teaser (D1 hook): a streak-only skin unlocks on day 2, 3 and 5.
+    const vi = save.visitInfo, got = vi.newDay ? SKINS.findIndex((sk) => sk.streak === vi.streak) : -1, nxt = nextStreakSkin();
+    if (got >= 0 || nxt) {
+      const msg = got >= 0 ? `🎁 Day ${vi.streak} in a row! New skin unlocked: ${SKINS[got].name.toUpperCase()}` : `🎁 Play tomorrow too: ${nxt!.streak}-day streak unlocks the ${nxt!.name.toUpperCase()} skin`;
+      const t = this.add.text(190, 214, msg, { fontFamily: FONT_BODY, fontSize: '13px', color: '#fff7ed', fontStyle: '700', backgroundColor: 'rgba(194,65,12,0.88)', padding: { x: 10, y: 6 }, wordWrap: { width: 300 }, align: 'center' }).setOrigin(0.5).setDepth(5);
+      if (got >= 0) { save.data.skin = got; save.save(); this.tweens.add({ targets: t, scale: 1.08, yoyo: true, repeat: 3, duration: 300 }); }
+    }
     this.input.keyboard!.on('keydown-ENTER', () => this.go('Gameplay', { levelId: next }));
     this.input.keyboard!.on('keydown-SPACE', () => this.go('Gameplay', { levelId: next }));
   }

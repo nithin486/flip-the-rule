@@ -48,6 +48,11 @@ export class CrazyGamesAdapter implements PlatformAdapter {
       if (this.sdk.environment === 'disabled') throw new Error('SDK disabled on this domain');
       await Promise.race([this.sdk.init(), new Promise((_, rej) => setTimeout(() => rej(new Error('sdk init timeout')), 15000))]);
       this.ready = true; this.settled = true;
+      try {
+        this.muted = !!this.sdk.game?.settings?.muteAudio;
+        this.sdk.game?.addSettingsChangeListener?.((st: any) => { this.muted = !!st?.muteAudio; this.muteFns.forEach((f) => f(this.muted)); });
+        if (this.muted) this.muteFns.forEach((f) => f(true));
+      } catch { /* settings API missing: keep audio */ }
       const q = this.queue; this.queue = []; q.forEach((f) => this.safe(f));
     } catch (e) { console.warn('[CrazyGames] SDK unavailable, running without it', e); this.ready = false; this.hasAds = false; this.settled = true; this.queue = []; }
   }
@@ -55,6 +60,10 @@ export class CrazyGamesAdapter implements PlatformAdapter {
     if (!this.ready) { if (!this.settled) this.queue.push(fn); return; }
     try { fn(); } catch (e) { console.warn('[CrazyGames]', e); }
   }
+  muted = false; private muteFns: Array<(m: boolean) => void> = [];
+  onMuteChange(fn: (m: boolean) => void) { this.muteFns.push(fn); if (this.muted) fn(true); }
+  happytime() { this.safe(() => this.sdk.game.happytime()); }
+  progress(pct: number) { this.safe(() => this.sdk.game.reportGameCompletedPercentage?.(Math.max(0, Math.min(100, Math.round(pct))))); }
   loadingStart() { this.safe(() => this.sdk.game.loadingStart()); }
   loadingStop() { this.safe(() => this.sdk.game.loadingStop()); }
   gameplayStart() { this.safe(() => this.sdk.game.gameplayStart()); }

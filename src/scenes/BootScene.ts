@@ -9,12 +9,13 @@ export class BootScene extends Phaser.Scene {
   create() {
     platform.loadingStart();
     const unlock = () => audio.unlock();
-    window.addEventListener('pointerdown', unlock, { passive: true }); window.addEventListener('keydown', unlock);
+    // iOS: an interrupted AudioContext may only be resumed inside touchend/click, so listen to those too (every time, not once).
+    for (const ev of ['pointerdown', 'touchend', 'click', 'keydown']) window.addEventListener(ev, unlock, { passive: true });
     const fonts = Promise.race([
       Promise.all([document.fonts.load("800 24px 'Baloo 2'"), document.fonts.load("600 16px Poppins")]).catch(() => null),
       new Promise((r) => setTimeout(r, 700)),
     ]);
     // Never let a slow font/SDK request hold the game hostage: each wait is capped, total boot <= ~3s even on a dead connection.
-    Promise.all([fonts, Promise.race([platform.init(), new Promise((r) => setTimeout(r, 3000))])]).finally(() => { save.mergeRemote(platform.readRemote()); save.onSave = (j) => platform.writeRemote(j); this.scene.start('Preload'); });
+    Promise.all([fonts, Promise.race([platform.init(), new Promise((r) => setTimeout(r, 3000))])]).finally(() => { save.mergeRemote(platform.readRemote()); save.onSave = (j) => platform.writeRemote(j); save.registerVisit(); platform.progress(save.progressPct()); platform.onMuteChange((m) => audio.setPlatformMuted(m)); this.scene.start('Preload'); });
   }
 }

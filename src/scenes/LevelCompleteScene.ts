@@ -5,6 +5,7 @@ import { audio } from '../systems/AudioSystem';
 import { save } from '../systems/SaveSystem';
 import { Button, panel, title } from '../ui/Buttons';
 import type { LevelData, LevelResult } from '../types';
+import { nextStreakSkin } from '../ui/Textures';
 
 export class LevelCompleteScene extends Phaser.Scene {
   constructor() { super('LevelComplete'); }
@@ -25,7 +26,7 @@ export class LevelCompleteScene extends Phaser.Scene {
       }
     }
     const rows: Array<[string, string]> = [
-      ['Flips', `${r.flips} of ${level.flipLimit ?? '∞'} allowed  ·  par ${level.flipTarget}`], ['Time', `${r.time.toFixed(1)}s`], ['Star collected', r.collected ? 'Yes  +500' : 'No'],
+      ['Flips', save.data.settings.hardMode && level.flipLimit ? `${r.flips} of ${level.flipLimit} allowed  ·  par ${level.flipTarget}` : `${r.flips}  ·  ★★★ target ${level.flipTarget}`], ['Time', `${r.time.toFixed(1)}s`], ['Star collected', r.collected ? 'Yes  +500' : 'No'],
       ['Efficiency', `+${r.breakdown.efficiency}`], ['Time bonus', `+${r.breakdown.time}`],
     ];
     rows.forEach(([a, b], i) => {
@@ -35,7 +36,10 @@ export class LevelCompleteScene extends Phaser.Scene {
     const sc = this.add.text(W / 2, H / 2 + 150, '0', { fontFamily: FONT_HEAD, fontSize: '46px', color: '#fbbf24', fontStyle: '800' }).setOrigin(0.5).setStroke('#451a03', 7);
     const o = { v: 0 }; this.tweens.add({ targets: o, v: r.score, duration: 900, delay: 300, onUpdate: () => sc.setText(`SCORE ${Math.round(o.v).toLocaleString()}`) });
     if (r.newBest) this.add.text(W / 2 + 232, H / 2 + 148, 'NEW BEST!', { fontFamily: FONT_HEAD, fontSize: '20px', color: '#22c55e', fontStyle: '800' }).setOrigin(0.5).setAngle(-8);
-    if (!daily) this.add.text(W / 2, H / 2 + 184, `Best ${(save.data.bestScores[String(level.id)] ?? r.score).toLocaleString()}`, { fontFamily: FONT_BODY, fontSize: '14px', color: '#94a3b8' }).setOrigin(0.5);
+    const tease = nextStreakSkin();
+    const best = daily ? '' : `Best ${(save.data.bestScores[String(level.id)] ?? r.score).toLocaleString()}`;
+    const teaseTxt = tease ? `🎁 Play again tomorrow to unlock the ${tease.name.toUpperCase()} skin` : '';
+    this.add.text(W / 2, H / 2 + 184, [best, teaseTxt].filter(Boolean).join('    ·    '), { fontFamily: FONT_BODY, fontSize: '14px', color: tease ? '#fdba74' : '#94a3b8', fontStyle: tease ? '700' : '400' }).setOrigin(0.5);
 
     const gp = this.scene.get('Gameplay');
     const replay = () => { this.scene.stop(); gp.scene.restart({ levelId: level.id, daily }); };

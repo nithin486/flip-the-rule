@@ -46,7 +46,11 @@ export interface SaveData {
   bestFlips: Record<string, number>;
   totalScore: number;
   skin: number;
-  settings: { music: boolean; sound: boolean; reduceMotion: boolean; touchControls: 'auto' | 'on' | 'off' };
+  settings: { music: boolean; sound: boolean; reduceMotion: boolean; touchControls: 'auto' | 'on' | 'off'; hardMode: boolean };
+  /** Login streak (consecutive days the game was opened) - drives streak-only skin rewards. */
+  visits: { last: string; streak: number; best: number };
+  /** Levels skipped with the free skip (no stars). */
+  skipped: number[];
   daily: { lastCompleted: string; streak: number; bestStreak: number; completed: Record<string, number> };
 }
 

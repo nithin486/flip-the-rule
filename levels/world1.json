@@ -3,7 +3,7 @@
   "id": 1,
   "world": 1,
   "name": "First Flip",
-  "hint": "Flip gravity with {flip}. Your flips are limited!",
+  "hint": "Roll right, then press {flip} to fall UP!",
   "playerStart": {
    "x": 90,
    "y": 423
@@ -26,9 +26,9 @@
     "height": 28
    },
    {
-    "x": 430,
+    "x": 0,
     "y": 100,
-    "width": 530,
+    "width": 960,
     "height": 28
    }
   ],

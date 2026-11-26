@@ -31,7 +31,19 @@ export class HUD {
   /** `cap` may be Infinity for levels without a limit. */
   setFlips(used: number, cap: number, par: number) {
     const g = this.pips; g.clear();
-    if (!isFinite(cap)) { this.left.setText(`${used}`).setColor('#fff'); this.pipLabel.setText('FLIPS'); return; }
+    if (!isFinite(cap)) {
+      // Relaxed mode: flips are free; the pips show the 3-star target (par). Gold while on target, grey once over.
+      const n = Math.min(Math.max(par, 1), 16), sp = n > 11 ? 15 : 19, x0 = W - 392, over = used > par;
+      for (let i = 0; i < n; i++) {
+        const x = x0 + 8 + i * sp, y = 34;
+        g.fillStyle(0x0b0b1a, 0.8).fillCircle(x, y, 7);
+        if (i < used) { g.fillStyle(over ? 0x64748b : 0xfbbf24, 1).fillCircle(x, y, 5.5); g.fillStyle(0xffffff, 0.7).fillCircle(x - 1.6, y - 1.8, 1.8); }
+        else g.lineStyle(1.5, 0xfbbf24, 0.8).strokeCircle(x, y, 5);
+      }
+      this.left.setText(`${used}`).setColor(over ? '#cbd5e1' : '#fde68a');
+      this.pipLabel.setText(over ? `FLIPS · ★★★ needs ${par}` : `FLIPS · ★★★ in ${par}`);
+      return;
+    }
     const remaining = Math.max(0, cap - used), n = Math.min(cap, 16), sp = n > 11 ? 15 : 19, x0 = W - 392;
     for (let i = 0; i < n; i++) {
       const filled = i < remaining, x = x0 + 8 + i * sp, y = 34, isPar = i === cap - par - 1 && par < cap;

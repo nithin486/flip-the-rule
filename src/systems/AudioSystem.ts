@@ -18,6 +18,9 @@ class AudioSystem {
   private track: 'menu' | 'game' | 'none' = 'none';
   private root = 57; private step = 0; private nextTime = 0;
   private duck = 1;
+  /** Portal-forced mute (CrazyGames muteAudio): wins over the in-game toggles. */
+  platformMuted = false;
+  setPlatformMuted(m: boolean) { this.platformMuted = m; this.applySettings(); }
 
   /** Call from a user gesture. */
   unlock() {
@@ -38,9 +41,10 @@ class AudioSystem {
   applySettings() {
     if (!this.ctx) return;
     const s = save.data.settings;
-    this.sfxBus.gain.value = s.sound ? 1 : 0;
-    this.musicBus.gain.value = s.music ? 0.22 * this.duck : 0;
-    if (s.music && this.track !== 'none') this.startLoop(); else this.stopLoop();
+    const pm = this.platformMuted;
+    this.sfxBus.gain.value = s.sound && !pm ? 1 : 0;
+    this.musicBus.gain.value = s.music && !pm ? 0.22 * this.duck : 0;
+    if (s.music && !pm && this.track !== 'none') this.startLoop(); else this.stopLoop();
   }
   /** Mute everything (e.g. while a portal ad is playing). */
   setSuspended(v: boolean) { if (!this.ctx) return; this.master.gain.value = v ? 0 : 0.9; }
@@ -92,7 +96,7 @@ class AudioSystem {
     this.startLoop();
   }
   stopMusic() { this.track = 'none'; this.stopLoop(); }
-  setDuck(v: number) { this.duck = v; if (this.ctx && save.data.settings.music) this.musicBus.gain.setTargetAtTime(0.22 * v, this.ctx.currentTime, 0.1); }
+  setDuck(v: number) { this.duck = v; if (this.ctx && save.data.settings.music && !this.platformMuted) this.musicBus.gain.setTargetAtTime(0.22 * v, this.ctx.currentTime, 0.1); }
   private startLoop() {
     if (!this.ctx || this.track === 'none') return;
     this.stopLoop(); this.step = 0; this.nextTime = this.ctx.currentTime + 0.1;

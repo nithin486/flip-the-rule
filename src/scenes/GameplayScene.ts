@@ -16,6 +16,8 @@ import { computeResult } from '../systems/ScoreSystem';
 import { bgKey, playerKey } from '../ui/Textures';
 import { HUD } from '../ui/HUD';
 import { TouchControls } from '../ui/TouchControls';
+import { Coach } from '../ui/Coach';
+import { Button } from '../ui/Buttons';
 import type { GravityDir, LevelData, LevelResult } from '../types';
 
 export interface GameplayInit { levelId?: number; daily?: boolean; level?: LevelData; headless?: boolean }
@@ -40,6 +42,10 @@ export class GameplayScene extends Phaser.Scene {
   t = 0; elapsed = 0; started = false; flips = 0; acc = 0; collected = false; teleCd = 0;
   cpIndex = -1; startSnap!: Snap; cpSnap: Snap | null = null; zin: boolean[] = [];
   rider: Platform | null = null; deaths = 0;
+  /** Failed attempts on this level in this visit (deaths + restarts). Drives the stuck-helpers (free ghost, skip). */
+  fails = 0; private coach?: Coach; private skipBtn?: Button; private edgeX = 0;
+  /** Hard mode = the original flip limits (out of flips = retry). Default: flips only decide the 3rd star. Headless solver keeps limits. */
+  get hard(): boolean { return !this.fx || save.data.settings.hardMode; }
   /** When true the scene's own update loop is idle and an external driver (solver/tests) calls stepSim. */
   manual = false; hintShown = false; hintBusy = false; pendingFlip = false; flipBuf = 0;
   private bgDown?: Phaser.GameObjects.Image; private bgUp?: Phaser.GameObjects.Image;
@@ -62,7 +68,7 @@ export class GameplayScene extends Phaser.Scene {
     const L = this.level, world = L.world;
     this.platforms = []; this.doors = []; this.spikes = []; this.saws = []; this.checkpoints = []; this.switches = []; this.zones = []; this.teles = []; this.refills = []; this.refillsTaken = 0;
     this.hintTxt = undefined; this.ghost = undefined; this.bgDown = this.bgUp = this.halo = undefined; this.trail = this.burst = this.dust = undefined; this.hud = undefined; this.touch = undefined; this.shutdownFns = [];
-    this.status = 'play'; this.manual = false; this.hintShown = false; this.hintBusy = false; this.pendingFlip = false; this.t = 0; this.elapsed = 0; this.started = false; this.flips = 0; this.acc = 0; this.collected = false; this.teleCd = 0; this.cpIndex = -1; this.cpSnap = null; this.rider = null; this.deaths = 0;
+    this.status = 'play'; this.manual = false; this.hintShown = false; this.hintBusy = false; this.pendingFlip = false; this.t = 0; this.elapsed = 0; this.started = false; this.flips = 0; this.acc = 0; this.collected = false; this.teleCd = 0; this.cpIndex = -1; this.cpSnap = null; this.rider = null; this.deaths = 0; this.fails = 0; this.coach = undefined; this.skipBtn = undefined;
 
     // physics: stepped manually at a fixed 60 Hz for determinism (see stepWorld)
     const w = this.physics.world; w.pause(); w.setBounds(0, -600, W, H + 1200); w.setBoundsCollision(true, true, false, false);
@@ -101,12 +107,20 @@ export class GameplayScene extends Phaser.Scene {
       }, WORLDS[Math.min(WORLDS.length, Math.max(1, world)) - 1].accent);
       this.hud.setFlips(0, this.flipCap, L.flipTarget);
       this.hud.setGravity(L.gravity);
-      if (L.flipLimit) {
-        const bn = this.add.container(W / 2, 118).setScrollFactor(0).setDepth(60).setAlpha(0);
-        bn.add([this.add.rectangle(0, 0, 300, 44, 0x0b0b1a, 0.78).setStrokeStyle(2, 0x67e8f9, 0.9), this.add.text(0, -7, `FLIP LIMIT  ${L.flipLimit}`, { fontFamily: FONT_HEAD, fontSize: '20px', color: '#a5f3fc', fontStyle: '800' }).setOrigin(0.5), this.add.text(0, 13, `par ${L.flipTarget} · out of flips = restart`, { fontFamily: FONT_BODY, fontSize: '12px', color: '#e2e8f0' }).setOrigin(0.5)]);
-        this.tweens.add({ targets: bn, alpha: 1, y: 112, duration: 300, hold: 1800, yoyo: true, onComplete: () => bn.destroy() });
+      {
+        const hardTxt = `FLIP LIMIT ${L.flipLimit} · out of flips = retry`, softTxt = `★★★  finish in ${L.flipTarget} flip${L.flipTarget === 1 ? '' : 's'}${L.collectible ? ' + grab the star' : ''}`;
+        const msg = this.hard && L.flipLimit ? hardTxt : softTxt;
+        const bn = this.add.container(W / 2, H - 34).setScrollFactor(0).setDepth(60).setAlpha(0);
+        const tx = this.add.text(0, 0, msg, { fontFamily: FONT_BODY, fontSize: '16px', color: '#fde68a', fontStyle: '700' }).setOrigin(0.5);
+        bn.add([this.add.rectangle(0, 0, tx.width + 34, 34, 0x0b0b1a, 0.78).setStrokeStyle(2, 0xfbbf24, 0.8), tx]);
+        this.tweens.add({ targets: bn, alpha: 1, y: H - 40, duration: 300, delay: 600, hold: 2600, yoyo: true, onComplete: () => bn.destroy() });
       }
       this.showHint(true);
+      if (L.id === 1 && !this.daily && save.data.unlockedLevel <= 2) {
+        const floor = L.platforms.find((p) => p.y > L.playerStart.y && p.x <= L.playerStart.x && p.x + p.width >= L.playerStart.x);
+        this.edgeX = floor ? floor.x + floor.width : L.playerStart.x + 200;
+        this.coach = new Coach(this, L.playerStart.x, !!this.touch?.visible, (w) => this.touch?.pulse(w));
+      }
       const th = WORLDS[Math.min(WORLDS.length, Math.max(1, world)) - 1];
       audio.play('game', th.root);
       platform.gameplayStart();
@@ -125,7 +139,7 @@ export class GameplayScene extends Phaser.Scene {
   }
 
   private cleanup() {
-    this.shutdownFns.forEach((f) => f()); this.shutdownFns = [];
+    this.shutdownFns.forEach((f) => f()); this.shutdownFns = []; this.coach?.destroy(); this.coach = undefined;
     this.inp?.destroy(); this.tweens.killAll(); this.time.removeAllEvents();
     this.events.off('fall-gone'); this.events.off('fall-warn');
     if (this.fx) platform.gameplayStop();
@@ -175,7 +189,7 @@ export class GameplayScene extends Phaser.Scene {
     (w as any).stepsLastFrame = 1; w.postUpdate();
   }
   /** Geometric ground test (face-on contact within 1.2px along gravity). */
-  get flipCap(): number { return this.level.flipLimit ? this.level.flipLimit + this.refillsTaken : Infinity; }
+  get flipCap(): number { return this.level.flipLimit && this.hard ? this.level.flipLimit + this.refillsTaken : Infinity; }
   private supportPlat(): Platform | null | 'door' {
     const P = this.player, c = P.b.center, r = P.b.halfWidth, down = P.grav === 'down';
     const test = (b: Phaser.Physics.Arcade.Body) => {
@@ -225,7 +239,7 @@ export class GameplayScene extends Phaser.Scene {
     P.post(dt, this.fx);
     this.teleCd = Math.max(0, this.teleCd - dt);
     this.checkInteractions();
-    if (this.fx) { this.trail?.setPosition(P.x, P.y); this.hud?.setTime(this.elapsed); }
+    if (this.fx) { this.trail?.setPosition(P.x, P.y); this.hud?.setTime(this.elapsed); this.coach?.update(P.x, P.y, P.grav === 'up', this.flips, this.edgeX); }
     return this.status;
   }
   /** Advance `n` frames with a constant input (flip only on the first). Used by the solver. */
@@ -237,8 +251,8 @@ export class GameplayScene extends Phaser.Scene {
   private checkInteractions() {
     const P = this.player, c = P.b.center, cx = c.x, cy = c.y, r = PHYS.radius;
     // hidden hazards reveal themselves as the player closes in (and hide again on every retry/respawn)
-    if (this.fx) { for (const s of this.spikes) if (!s.revealed && (cx - (s.rect.x + s.rect.w / 2)) ** 2 + (cy - (s.rect.y + s.rect.h / 2)) ** 2 < 150 ** 2 + (s.rect.w / 2) ** 2) { s.reveal(this); audio.sfx('click'); }
-      for (const s of this.saws) if (!s.revealed && (cx - s.x) ** 2 + (cy - s.y) ** 2 < 170 ** 2) { s.reveal(this); audio.sfx('click'); } }
+    if (this.fx) { for (const s of this.spikes) if (!s.revealed && (cx - (s.rect.x + s.rect.w / 2)) ** 2 + (cy - (s.rect.y + s.rect.h / 2)) ** 2 < 230 ** 2 + (s.rect.w / 2) ** 2) { s.reveal(this); audio.sfx('click'); }
+      for (const s of this.saws) if (!s.revealed && (cx - s.x) ** 2 + (cy - s.y) ** 2 < 250 ** 2) { s.reveal(this); audio.sfx('click'); } }
     // hazards
     for (const s of this.spikes) if (s.active && circleRect(cx, cy, r - 2, s.hit)) return this.die();
     for (const s of this.saws) if ((cx - s.x) ** 2 + (cy - s.y) ** 2 <= (s.r * 0.82 + r - 3) ** 2) return this.die();
@@ -317,7 +331,6 @@ export class GameplayScene extends Phaser.Scene {
     this.flips = s.flips; this.collected = s.collected; this.star?.setCollected(s.collected);
     this.refills.forEach((r, i) => r.setCollected((s.rf ?? []).includes(i))); this.refillsTaken = (s.rf ?? []).length;
     for (const sp of this.spikes) sp.update(s.t, this.fx);
-    if (this.fx) { for (const sp of this.spikes) sp.conceal(this); for (const sw of this.saws) sw.conceal(this); }
     this.teleCd = s.teleCd; this.zin = s.zin.slice();
     this.switches.forEach((sw) => sw.setOn(s.sw.includes(sw.def.id)));
     this.platforms.forEach((p, i) => {
@@ -336,6 +349,7 @@ export class GameplayScene extends Phaser.Scene {
   restartLevel() {
     if (this.status === 'won') return;
     this.cpSnap = null; this.cpIndex = -1; this.checkpoints.forEach((k) => k.setActive(false));
+    if (this.started) this.noteFail();
     this.restore(this.startSnap); this.elapsed = 0; this.started = false; this.deaths = 0;
     if (this.fx) { audio.sfx('click'); this.cameras.main.fadeIn(180, 11, 11, 26); this.hud?.setTime(0); }
   }
@@ -354,6 +368,7 @@ export class GameplayScene extends Phaser.Scene {
     if (this.status !== 'play') return;
     this.status = 'dead'; this.deaths++;
     if (!this.fx) return;
+    this.noteFail();
     const P = this.player; audio.sfx('death'); P.setExpr('dead'); P.b.setVelocity(0, 0); P.b.setAcceleration(0, 0);
     if (!save.data.settings.reduceMotion) { this.cameras.main.shake(220, 0.012); this.burst?.setParticleTint(0xef4444).explode(34, P.x, P.y); }
     this.tweens.add({ targets: P, alpha: 0, scale: 1.6, duration: 260 });
@@ -386,15 +401,45 @@ export class GameplayScene extends Phaser.Scene {
       } else if (res.score > d.daily.completed[key]) { d.daily.completed[key] = res.score; newBest = true; }
     } else {
       // replay never erases a better result
+      const firstClear = !((d.stars[k] ?? 0) > 0);
       if (res.stars > (d.stars[k] ?? 0)) d.stars[k] = res.stars;
       if (res.score > (d.bestScores[k] ?? 0)) { d.bestScores[k] = res.score; newBest = true; }
       if (!d.bestTimes[k] || res.time < d.bestTimes[k]) d.bestTimes[k] = res.time;
       if (!d.bestFlips[k] || res.flips < d.bestFlips[k]) d.bestFlips[k] = res.flips;
       d.unlockedLevel = Math.max(d.unlockedLevel, Math.min(TOTAL_LEVELS, this.level.id + 1));
       d.totalScore = Object.values(d.bestScores).reduce((a, b) => a + b, 0);
+      if (firstClear && worldOfLevel(this.level.id).last === this.level.id) platform.happytime();
     }
+    platform.progress(save.progressPct());
     save.save();
     return { ...res, newBest };
+  }
+
+  /** Stuck helpers: after 3 failed tries the ghost hint becomes free and the ? button glows; after 6 a free SKIP appears. */
+  private noteFail() {
+    this.fails++;
+    if (this.fails === 3) {
+      this.hud?.hintBtn && this.tweens.add({ targets: this.hud.hintBtn, scale: 1.25, duration: 380, yoyo: true, repeat: 5, ease: 'Sine.easeInOut' });
+      this.toast(this.daily ? 'Tip: tap ? for a hint' : 'Stuck? Tap ? — the ghost hint is free now');
+    }
+    if (this.fails >= 6 && !this.daily && !this.skipBtn && this.level.id < TOTAL_LEVELS) {
+      this.skipBtn = new Button(this, W - 96, H - 34, 'SKIP LEVEL ›', () => this.skipLevel(), { w: 170, h: 42, size: 18, color: 0x475569, depth: 61 });
+      this.skipBtn.setAlpha(0); this.tweens.add({ targets: this.skipBtn, alpha: 1, duration: 300 });
+    }
+  }
+  private toast(msg: string) {
+    const t = this.add.text(W / 2, H - 92, msg, { fontFamily: FONT_BODY, fontSize: '18px', color: '#ffffff', fontStyle: '700', backgroundColor: 'rgba(8,145,178,0.92)', padding: { x: 16, y: 8 } }).setOrigin(0.5).setDepth(62).setAlpha(0);
+    this.tweens.add({ targets: t, alpha: 1, y: H - 100, duration: 250, hold: 2800, yoyo: true, onComplete: () => t.destroy() });
+  }
+  /** Free skip: unlocks the next level without stars, so a stuck player keeps playing instead of leaving. */
+  skipLevel() {
+    if (this.status !== 'play' || this.daily) return;
+    const d = save.data, id = this.level.id;
+    if (!d.skipped.includes(id)) d.skipped.push(id);
+    d.unlockedLevel = Math.max(d.unlockedLevel, Math.min(TOTAL_LEVELS, id + 1)); save.save();
+    audio.sfx('click'); this.status = 'won'; platform.gameplayStop();
+    this.cameras.main.fadeOut(200, 11, 11, 26);
+    this.time.delayedCall(220, () => this.scene.restart({ levelId: id + 1 }));
   }
 
   pauseGame() {
@@ -410,10 +455,10 @@ export class GameplayScene extends Phaser.Scene {
   openHint() {
     if (this.status !== 'play' || !this.fx) return;
     const par = this.level.flipTarget, txt = this.level.hint ? this.tokens(this.level.hint) : '';
-    const tip = `${txt ? txt + '\n\n' : ''}Par is ${par} flip${par === 1 ? '' : 's'}; you have ${this.level.flipLimit ?? par}.`;
+    const tip = `${txt ? txt + '\n\n' : ''}Finish in ${par} flip${par === 1 ? '' : 's'} for the 3rd star.${this.hard && this.level.flipLimit ? ` Hard mode: you have ${this.level.flipLimit}.` : ''}`;
     const canGhost = !this.daily && !!LevelSystem.solution(this.level.id) && !this.ghost;
     this.status = 'paused'; platform.gameplayStop(); audio.sfx('hint');
-    this.scene.pause(); this.scene.launch('Hint', { tip, canGhost });
+    this.scene.pause(); this.scene.launch('Hint', { tip, canGhost, free: this.fails >= 3 });
   }
   /** Ghost ball replays a verified solution. */
   playGhost() {
@@ -434,7 +479,7 @@ export class GameplayScene extends Phaser.Scene {
     if (!this.hintTxt) {
       this.hintTxt = this.add.text(W / 2, 74, '', { fontFamily: FONT_BODY, fontSize: '17px', color: '#fff', fontStyle: '600', backgroundColor: 'rgba(11,11,26,0.72)', padding: { x: 16, y: 8 }, align: 'center' }).setOrigin(0.5, 0).setDepth(45);
     }
-    const par = this.level.flipTarget, tip = `Par is ${par} flip${par === 1 ? '' : 's'} · you have ${this.level.flipLimit ?? par}.${this.daily ? '' : '  Tap ? again to watch a ghost show the way.'}`;
+    const par = this.level.flipTarget, tip = `★★★ in ${par} flip${par === 1 ? '' : 's'}.${this.daily ? '' : '  Tap ? to watch a ghost show the way.'}`;
     if (!txt) { if (!auto) this.hintTxt.setText(tip).setAlpha(1); else this.hintTxt.setAlpha(0); }
     else this.hintTxt.setText(auto || this.daily ? txt : `${txt}\n${tip}`).setAlpha(1);
     this.tweens.killTweensOf(this.hintTxt);

@@ -21,7 +21,7 @@ const rr = (c: CanvasRenderingContext2D, x: number, y: number, w: number, h: num
 
 // ---------------- player ----------------
 export type Expr = 'idle' | 'blink' | 'happy' | 'dead' | 'flip';
-export interface Skin { name: string; need: number; c0: string; c1: string; c2: string; glow: string; line: string }
+export interface Skin { name: string; need: number; /** login-streak days needed instead of stars */ streak?: number; c0: string; c1: string; c2: string; glow: string; line: string }
 /** Unlock by total stars collected (max 120). */
 export const SKINS: Skin[] = [
   { name: 'Violet', need: 0, c0: '#c4b5fd', c1: '#8b5cf6', c2: '#5b21b6', glow: 'rgba(124,58,237,0.7)', line: '#2e1065' },
@@ -29,7 +29,14 @@ export const SKINS: Skin[] = [
   { name: 'Mint', need: 30, c0: '#bbf7d0', c1: '#34d399', c2: '#047857', glow: 'rgba(16,185,129,0.7)', line: '#022c22' },
   { name: 'Bubblegum', need: 55, c0: '#fbcfe8', c1: '#f472b6', c2: '#be185d', glow: 'rgba(236,72,153,0.7)', line: '#500724' },
   { name: 'Gold', need: 90, c0: '#fef9c3', c1: '#fbbf24', c2: '#b45309', glow: 'rgba(245,158,11,0.8)', line: '#451a03' },
+  { name: 'Frost', need: 0, streak: 2, c0: '#e0f2fe', c1: '#38bdf8', c2: '#0369a1', glow: 'rgba(56,189,248,0.8)', line: '#082f49' },
+  { name: 'Ember', need: 0, streak: 3, c0: '#fecaca', c1: '#ef4444', c2: '#7f1d1d', glow: 'rgba(239,68,68,0.8)', line: '#450a0a' },
+  { name: 'Galaxy', need: 0, streak: 5, c0: '#f5d0fe', c1: '#6366f1', c2: '#1e1b4b', glow: 'rgba(129,140,248,0.9)', line: '#020617' },
 ];
+/** Is this skin unlocked for the current save? */
+export const skinOpen = (i: number) => { const sk = SKINS[i]; if (!sk) return false; return sk.streak ? save.data.visits.best >= sk.streak : save.totalStars() >= sk.need; };
+/** The next login-streak reward still locked (for "come back tomorrow" teasers). */
+export const nextStreakSkin = () => SKINS.find((sk) => sk.streak && save.data.visits.best < sk.streak) ?? null;
 export const playerKey = (e: Expr, look: number, skin = save.data.skin) => `p${skin}_${e}_${look}`;
 function drawPlayer(c: CanvasRenderingContext2D, e: Expr, look: number, sk: Skin) {
   const S = 44, cx = S / 2, cy = S / 2, R = 19;

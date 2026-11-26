@@ -27,6 +27,8 @@ export class TouchControls {
 #touch-ui #tb-f{right:max(14px,env(safe-area-inset-right,0px));width:calc(var(--s)*1.55);height:calc(var(--s)*1.55);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;
  font:800 calc(var(--s)*.4)/1 'Baloo 2','Trebuchet MS',sans-serif;letter-spacing:.05em;opacity:.8;transition:transform .05s,opacity .05s;
  background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.32),rgba(124,58,237,.55) 55%,rgba(60,20,120,.7));border:3px solid rgba(216,180,254,.9);box-shadow:0 0 20px rgba(168,85,247,.6),inset 0 0 16px rgba(255,255,255,.16)}
+@keyframes tbpulse{0%,100%{filter:brightness(1);transform:scale(1)}50%{filter:brightness(1.6);transform:scale(1.12)}}
+#touch-ui .coach{animation:tbpulse .8s ease-in-out infinite;opacity:1!important}
 #touch-ui #tb-f.on{opacity:1;transform:scale(.93);box-shadow:0 0 32px rgba(192,132,252,1),inset 0 0 20px rgba(255,255,255,.4)}`;
       document.head.appendChild(st);
     }
@@ -37,7 +39,7 @@ export class TouchControls {
     const R = document.createElement('div'); R.className = 'ar'; R.textContent = '›';
     pad.append(L, R); root.appendChild(pad);
     const F = document.createElement('div'); F.id = 'tb-f'; F.className = 'tb'; F.textContent = 'FLIP'; root.appendChild(F);
-    document.body.appendChild(root);
+    document.body.appendChild(root); this.padEl = pad; this.flipEl = F;
     // One slidable pad: a finger can roll from ‹ to › without lifting. Direction follows the finger's x position on the pad.
     const held = new Map<number, 'l' | 'r'>();
     const setDir = (id: number, d: 'l' | 'r' | null) => {
@@ -75,6 +77,12 @@ export class TouchControls {
     scene.events.on('pause', () => { root.style.display = 'none'; input.touchLeft.clear(); input.touchRight.clear(); });
     scene.events.on('resume', apply);
     apply();
+  }
+  private padEl?: HTMLElement; private flipEl?: HTMLElement;
+  /** Onboarding: make one control throb so a new player sees exactly what to press. */
+  pulse(which: 'pad' | 'flip' | null) {
+    this.padEl?.querySelectorAll('.ar')[1]?.classList.toggle('coach', which === 'pad');
+    this.flipEl?.classList.toggle('coach', which === 'flip');
   }
   get visible() { return this.shown; }
 }

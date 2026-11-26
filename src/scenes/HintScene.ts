@@ -12,7 +12,7 @@ import { Button, panel, title } from '../ui/Buttons';
  */
 export class HintScene extends Phaser.Scene {
   constructor() { super('Hint'); }
-  create(data: { tip: string; canGhost: boolean }) {
+  create(data: { tip: string; canGhost: boolean; free?: boolean }) {
     audio.setDuck(0.5);
     this.add.rectangle(W / 2, H / 2, W, H, 0x0b0b1a, 0.72).setInteractive();
     panel(this, W / 2, H / 2, 620, 410);
@@ -22,15 +22,15 @@ export class HintScene extends Phaser.Scene {
     const close = (ghost: boolean) => { audio.setDuck(1); this.scene.stop(); this.scene.resume('Gameplay'); gp.resumeGame(); if (ghost) gp.playGhost(); };
     const note = this.add.text(W / 2, H / 2 + 22, '', { fontFamily: FONT_BODY, fontSize: '15px', color: '#fbbf24', fontStyle: '600', align: 'center', wordWrap: { width: 540 } }).setOrigin(0.5, 0);
     if (data.canGhost) {
-      const needsAd = platform.hasAds;
-      const gb = new Button(this, W / 2, H / 2 + 108, needsAd ? '▶  WATCH AD · SHOW GHOST' : 'SHOW GHOST', async () => {
+      const needsAd = platform.hasAds && !data.free;
+      const gb = new Button(this, W / 2, H / 2 + 108, needsAd ? '▶  WATCH AD · SHOW GHOST' : (data.free && platform.hasAds ? 'SHOW GHOST (FREE)' : 'SHOW GHOST'), async () => {
         if (!needsAd) return close(true);
         gb.setEnabled(false); gb.setLabel('Loading video…');
         const ok = await platform.requestRewardedAd(() => audio.setSuspended(true)).catch(() => false);
         audio.setSuspended(false);
         if (!this.sys.isActive()) return;
         if (ok) close(true);
-        else { gb.setEnabled(true); gb.setLabel('▶  WATCH AD · SHOW GHOST'); note.setText('No video is available right now - try again in a moment. The tip above is always free.'); }
+        else { gb.setEnabled(true); gb.setLabel('▶  WATCH AD · SHOW GHOST'); note.setText('No video is available right now - try again later. The tip above is always free, and the ghost becomes free after 3 tries.'); }
       }, { w: 380, h: 52, size: 20, color: 0x0891b2, solid: true });
     }
     new Button(this, W / 2, H / 2 + 166, 'BACK TO GAME', () => close(false), { w: 260, h: 44, size: 18, color: 0x475569 });

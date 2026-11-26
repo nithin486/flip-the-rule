@@ -16,6 +16,13 @@ export interface PlatformAdapter {
   /** Portal cloud save (CrazyGames Data module). */
   readRemote(): string | null;
   writeRemote(v: string): void;
+  /** Celebrate a real achievement (CrazyGames happytime). Use sparingly. */
+  happytime(): void;
+  /** Overall completion 0-100 (CrazyGames reportGameCompletedPercentage). */
+  progress(pct: number): void;
+  /** Platform-forced mute (CrazyGames settings.muteAudio). Takes priority over in-game audio toggles. */
+  readonly muted: boolean;
+  onMuteChange(fn: (muted: boolean) => void): void;
 }
 
 export class LocalAdapter implements PlatformAdapter {
@@ -23,6 +30,8 @@ export class LocalAdapter implements PlatformAdapter {
   readonly hasAds = false;
   async init() {}
   device() { return null; } readRemote() { return null; } writeRemote(_v: string) {}
+  happytime() {} progress(_p: number) {}
+  readonly muted = false; onMuteChange(_fn: (m: boolean) => void) {}
   loadingStart() {} loadingStop() {} gameplayStart() {} gameplayStop() {}
   async requestMidgameAd() {}
   async requestRewardedAd() { return true; } // no ads locally: hint is free
