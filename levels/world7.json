@@ -625,7 +625,7 @@
     "wind": -240
    }
   ],
-  "flipLimit": 4,
+  "flipLimit": 3,
   "parTime": 16
  }
 ]

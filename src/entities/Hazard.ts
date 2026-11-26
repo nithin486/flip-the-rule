@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import type { SawDef, SpikeDef } from '../types';
+import type { LaserDef, SawDef, SpikeDef } from '../types';
 import { pathAt } from './path';
 
 export interface Rect { x: number; y: number; w: number; h: number }
@@ -59,5 +59,40 @@ export class Saw {
   update(t: number) {
     if (this.def.path) { const p = pathAt(this.def.x, this.def.y, this.def.path, t); this.x = p.x; this.y = p.y; }
     if (this.fx) { this.img.setPosition(this.x, this.y); this.img.rotation = t * 7; }
+  }
+}
+
+/** Timed laser beam: two emitters and a beam that is deadly while on. Off = faint guide line; a flicker warns before it fires. */
+export class Laser {
+  rect: Rect; active = false; private g?: Phaser.GameObjects.Graphics; private glow?: Phaser.GameObjects.Image; private vert: boolean;
+  constructor(scene: Phaser.Scene, public def: LaserDef, private fx: boolean) {
+    this.rect = { x: def.x, y: def.y, w: def.width, h: def.height };
+    this.vert = def.height >= def.width;
+    if (!fx) return;
+    const { x, y, width: w, height: h } = def, cx = x + w / 2, cy = y + h / 2;
+    // emitter caps at both ends (static)
+    const caps = scene.add.graphics().setDepth(7);
+    const cap = (px: number, py: number) => { caps.fillStyle(0x1e293b, 1).fillRoundedRect(px - 11, py - 11, 22, 22, 6).lineStyle(2, 0xfda4af, 1).strokeRoundedRect(px - 11, py - 11, 22, 22, 6).fillStyle(0xf43f5e, 1).fillCircle(px, py, 5).fillStyle(0xffffff, 0.8).fillCircle(px - 1.5, py - 1.5, 1.6); };
+    if (this.vert) { cap(cx, y); cap(cx, y + h); } else { cap(x, cy); cap(x + w, cy); }
+    this.glow = scene.add.image(cx, cy, 'glow').setTint(0xff2d55).setBlendMode(Phaser.BlendModes.ADD).setDepth(6).setDisplaySize(this.vert ? 46 : w + 20, this.vert ? h + 20 : 46).setAlpha(0);
+    this.g = scene.add.graphics().setDepth(6);
+  }
+  update(t: number) {
+    const ph = ((t / this.def.period + (this.def.phase ?? 0)) % 1 + 1) % 1, on = this.def.on ?? 0.5;
+    this.active = ph < on;
+    if (!this.g) return;
+    const { x, y, width: w, height: h } = this.def, g = this.g; g.clear();
+    if (this.active) {
+      const k = 3 + Math.sin(t * 60) * 0.8;
+      g.fillStyle(0xff2d55, 0.45); this.vert ? g.fillRect(x + w / 2 - k * 2, y, k * 4, h) : g.fillRect(x, y + h / 2 - k * 2, w, k * 4);
+      g.fillStyle(0xffe4e6, 1); this.vert ? g.fillRect(x + w / 2 - k / 2, y, k, h) : g.fillRect(x, y + h / 2 - k / 2, w, k);
+      this.glow!.setAlpha(0.55);
+    } else {
+      const warn = ph > 0.88; // about to fire: flicker
+      g.lineStyle(2, 0xff2d55, warn ? (Math.sin(t * 50) > 0 ? 0.9 : 0.2) : 0.22);
+      const n = Math.floor((this.vert ? h : w) / 12);
+      for (let i = 0; i < n; i += 2) { const a = i / n, b = (i + 1) / n; this.vert ? g.lineBetween(x + w / 2, y + h * a, x + w / 2, y + h * b) : g.lineBetween(x + w * a, y + h / 2, x + w * b, y + h / 2); }
+      this.glow!.setAlpha(warn ? 0.2 : 0);
+    }
   }
 }

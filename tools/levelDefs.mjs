@@ -17,6 +17,7 @@ export const L = (id, name, o) => ({
   ...(o.switches ? { switches: o.switches } : {}), ...(o.doors ? { doors: o.doors } : {}),
   ...(o.portals ? { portals: o.portals } : {}), ...(o.zones ? { zones: o.zones } : {}),
   ...(o.refills ? { refills: o.refills.map(([x, y]) => ({ x, y })) } : {}),
+  ...(o.orbs ? { orbs: o.orbs.map(([x, y]) => ({ x, y })) } : {}),
 });
 
 // v3 extras
@@ -33,3 +34,13 @@ export const lockZone = (x, y, width, height) => ({ x, y, width, height, kind: '
 export const reverseZone = (x, y, width, height) => ({ x, y, width, height, kind: 'reverse' });
 export const windZone = (x, y, width, height, wind) => ({ x, y, width, height, kind: 'wind', wind });
 export const gravZone = (x, y, width, height, gravity) => ({ x, y, width, height, gravity });
+
+// v6 (worlds 9-12)
+/** Polar platform: solid only while gravity points `pol` ('down' = cyan floor-style, 'up' = pink ceiling-style). */
+export const POL = (x, y, width, pol = 'down') => P(x, y, width, T, { kind: 'polar', pol });
+/** Dash pad: standing on it flings you sideways at `speed` px/s (negative = left), carrying on ~0.6 s. */
+export const DASH = (x, y, width, speed = 420) => P(x, y, width, T, { kind: 'boost', speed });
+/** Vertical laser at x from y1 to y2; on for the first `on` share of each `period`. */
+export const laserV = (x, y1, y2, period = 2.4, phase = 0, on = 0.5) => ({ type: 'laser', x: x - 3, y: y1, width: 6, height: y2 - y1, period, phase, on });
+/** Horizontal laser at y from x1 to x2. */
+export const laserH = (x1, x2, y, period = 2.4, phase = 0, on = 0.5) => ({ type: 'laser', x: x1, y: y - 3, width: x2 - x1, height: 6, period, phase, on });

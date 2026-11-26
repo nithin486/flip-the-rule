@@ -1,11 +1,11 @@
 import Phaser from 'phaser';
 import { COLORS, TOTAL_LEVELS, FONT_BODY, FONT_HEAD, H, PHYS, W, WORLDS, worldOfLevel } from '../config/gameConfig';
 import { Collectible } from '../entities/Collectible';
-import { Saw, Spike, type Rect } from '../entities/Hazard';
+import { Laser, Saw, Spike, type Rect } from '../entities/Hazard';
 import { Door, Platform } from '../entities/Platform';
 import { Player } from '../entities/Player';
 import { ExitPortal, TelePortal } from '../entities/Portal';
-import { Refill } from '../entities/Refill';
+import { Orb, Refill } from '../entities/Refill';
 import { Checkpoint, GravityZone, Switch } from '../entities/Props';
 import { platform } from '../platform';
 import { audio } from '../systems/AudioSystem';
@@ -25,7 +25,7 @@ import type { GravityDir, LevelData, LevelResult } from '../types';
 export interface GameplayInit { levelId?: number; daily?: boolean; level?: LevelData; headless?: boolean }
 export interface Snap {
   px: number; py: number; vx: number; vy: number; grav: GravityDir; cd: number; t: number; elapsed: number; started: boolean;
-  flips: number; collected: boolean; rf: number[]; sw: string[]; falls: Array<[number, number]>; teleCd: number; zin: boolean[]; cp: number; gr: boolean;
+  flips: number; collected: boolean; rf: number[]; ob?: number[]; dash?: number; dashV?: number; sw: string[]; falls: Array<[number, number]>; teleCd: number; zin: boolean[]; cp: number; gr: boolean;
 }
 type Status = 'play' | 'dead' | 'won' | 'paused';
 const PAIR_COLORS = [0xfb923c, 0x38bdf8, 0xf472b6, 0xa3e635];
@@ -39,17 +39,18 @@ export class GameplayScene extends Phaser.Scene {
   player!: Player; inp!: InputSystem; hud?: HUD; touch?: TouchControls;
   platforms: Platform[] = []; doors: Door[] = []; spikes: Spike[] = []; saws: Saw[] = [];
   checkpoints: Checkpoint[] = []; switches: Switch[] = []; zones: GravityZone[] = []; teles: TelePortal[] = [];
-  star?: Collectible; exit!: ExitPortal; refills: Refill[] = []; refillsTaken = 0;
+  star?: Collectible; exit!: ExitPortal; refills: Refill[] = []; refillsTaken = 0; lasers: Laser[] = []; orbs: Orb[] = []; dashT = 0; dashV = 0;
   status: Status = 'play';
   t = 0; elapsed = 0; started = false; flips = 0; acc = 0; collected = false; teleCd = 0;
   cpIndex = -1; startSnap!: Snap; cpSnap: Snap | null = null; zin: boolean[] = [];
-  rider: Platform | null = null; deaths = 0;
+  rider: Platform | null = null; deaths = 0; private wasBoost = false;
   /** Failed attempts on this level in this visit (deaths + restarts). Drives the stuck-helpers (free ghost, skip). */
   fails = 0; private coach?: Coach; private skipBtn?: Button; private edgeX = 0;
   /** Hard mode = the original flip limits (out of flips = retry). Default: flips only decide the 3rd star. Headless solver keeps limits. */
   /** Screen-space frame for UI (HUD top edge, bottom of the play area, width). Portrait differs from the 960x540 landscape. */
   uiW = W; uiTop = 50; uiBot = H; private uiCam?: Phaser.Cameras.Scene2D.Camera;
-  get hard(): boolean { return !this.fx || save.data.settings.hardMode; }
+  /** Every level has a flip limit: generous early (spare flips), exact on world finales. Out of flips = retry. */
+  get hard(): boolean { return true; }
   /** When true the scene's own update loop is idle and an external driver (solver/tests) calls stepSim. */
   manual = false; hintShown = false; hintBusy = false; pendingFlip = false; flipBuf = 0;
   private bgDown?: Phaser.GameObjects.Image; private bgUp?: Phaser.GameObjects.Image;
@@ -70,7 +71,7 @@ export class GameplayScene extends Phaser.Scene {
     const problems = validateLevel(this.level);
     if (problems.length) console.warn('[level validation]', problems);
     const L = this.level, world = L.world;
-    this.platforms = []; this.doors = []; this.spikes = []; this.saws = []; this.checkpoints = []; this.switches = []; this.zones = []; this.teles = []; this.refills = []; this.refillsTaken = 0;
+    this.platforms = []; this.doors = []; this.spikes = []; this.saws = []; this.checkpoints = []; this.switches = []; this.zones = []; this.teles = []; this.refills = []; this.refillsTaken = 0; this.lasers = []; this.orbs = []; this.dashT = 0; this.dashV = 0;
     this.hintTxt = undefined; this.ghost = undefined; this.bgDown = this.bgUp = this.halo = undefined; this.trail = this.burst = this.dust = undefined; this.hud = undefined; this.touch = undefined; this.shutdownFns = [];
     this.status = 'play'; this.manual = false; this.hintShown = false; this.hintBusy = false; this.pendingFlip = false; this.t = 0; this.elapsed = 0; this.started = false; this.flips = 0; this.acc = 0; this.collected = false; this.teleCd = 0; this.cpIndex = -1; this.cpSnap = null; this.rider = null; this.deaths = 0; this.fails = 0; this.coach = undefined; this.skipBtn = undefined;
 
@@ -85,7 +86,7 @@ export class GameplayScene extends Phaser.Scene {
 
     // ---- level objects ----
     L.zones?.forEach((z) => this.zones.push(new GravityZone(this, z, this.fx)));
-    L.hazards.forEach((h) => { if (h.type === 'spike') this.spikes.push(new Spike(this, h)); else this.saws.push(new Saw(this, h, this.fx)); });
+    L.hazards.forEach((h) => { if (h.type === 'spike') this.spikes.push(new Spike(this, h)); else if (h.type === 'laser') this.lasers.push(new Laser(this, h, this.fx)); else this.saws.push(new Saw(this, h, this.fx)); });
     L.platforms.forEach((p) => this.platforms.push(new Platform(this, p, world, this.fx)));
     const swIds = (L.switches ?? []).map((s) => s.id);
     const colOf = (id: string) => [0xf43f5e, 0x22d3ee, 0xfacc15, 0xa3e635][swIds.indexOf(id) % 4];
@@ -95,6 +96,7 @@ export class GameplayScene extends Phaser.Scene {
     const pids = (L.portals ?? []).map((p) => p.id);
     (L.portals ?? []).forEach((p) => this.teles.push(new TelePortal(this, p, PAIR_COLORS[Math.floor(pids.indexOf(p.id) / 2) % 4], this.fx)));
     (L.refills ?? []).forEach((r) => this.refills.push(new Refill(this, r.x, r.y, this.fx)));
+    (L.orbs ?? []).forEach((o) => this.orbs.push(new Orb(this, o.x, o.y, this.fx)));
     if (L.collectible) this.star = new Collectible(this, L.collectible.x, L.collectible.y, this.fx);
     this.exit = new ExitPortal(this, L.exit.x, L.exit.y, !!L.exit.switch, this.fx);
     this.zin = this.zones.map(() => false);
@@ -270,7 +272,7 @@ export class GameplayScene extends Phaser.Scene {
     const b = this.player.b, onFace = this.player.grav === 'down' ? b.touching.down : b.touching.up;
     if (onFace) { this.rider = plat; plat.touch(); }
   }
-  private stepPlatformsOnly() { for (const p of this.platforms) p.update(this.t, PHYS.step); for (const s of this.saws) s.update(this.t); }
+  private stepPlatformsOnly() { for (const p of this.platforms) { p.update(this.t, PHYS.step); p.setPolar(this.player.grav); } for (const s of this.saws) s.update(this.t); for (const l of this.lasers) l.update(this.t); }
 
   /** One fixed simulation step. Returns the resulting status. */
   stepSim(f: InputFrame): Status {
@@ -281,6 +283,7 @@ export class GameplayScene extends Phaser.Scene {
     this.t += dt;
     for (const p of this.platforms) p.update(this.t, dt);
     for (const s of this.saws) s.update(this.t);
+    for (const l of this.lasers) l.update(this.t);
     // gravity flip: acceleration only
     for (const sp of this.spikes) sp.update(this.t, this.fx);
     const pcx = P.b.center.x, pcy = P.b.center.y;
@@ -291,6 +294,7 @@ export class GameplayScene extends Phaser.Scene {
     if (reversed) f = { ...f, left: f.right, right: f.left };
     if (f.flip && P.flipCooldown <= 0 && this.flips >= this.flipCap) { this.outOfFlips(); return this.status; }
     if (f.flip && P.flipCooldown <= 0) { this.flips++; P.flip(); P.flipCooldown = PHYS.flipCooldownMs / 1000; if (this.fx) { this.flipFx(); this.hud?.setFlips(this.flips, this.flipCap, this.level.flipTarget); } }
+    for (const p of this.platforms) p.setPolar(P.grav);
     const sup = this.supportPlat();
     if (sup && sup !== 'door') { this.rider = sup; sup.touch(); }
     const kind = sup && sup !== 'door' ? sup.kind : null;
@@ -298,6 +302,10 @@ export class GameplayScene extends Phaser.Scene {
     if (kind === 'bounce') { P.b.setVelocityY(P.grav === 'down' ? -640 : 640); P.squash = 0.3; if (this.fx) audio.sfx('boing'); }
     if (this.rider && this.rider.kind === 'moving' && this.rider.active) { P.x += this.rider.vx * dt; P.y += this.rider.vy * dt; }
     if (kind === 'conveyor') P.x += ((sup as Platform).def.speed ?? 90) * dt;
+    // dash pads: a burst of sideways speed that carries on through the air for a moment
+    if (kind === 'boost') { this.dashT = 0.6; this.dashV = (sup as Platform).def.speed ?? 420; if (this.fx && P.grounded && !this.wasBoost) audio.sfx('boing'); }
+    this.wasBoost = kind === 'boost';
+    if (this.dashT > 0) { P.x += this.dashV * dt; this.dashT = Math.max(0, this.dashT - dt); }
     if (windZ) P.b.velocity.x += (windZ.def.wind ?? 0) * dt;
     this.rider = null;
     this.stepWorld(dt);
@@ -321,11 +329,14 @@ export class GameplayScene extends Phaser.Scene {
     // hazards
     for (const s of this.spikes) if (s.active && circleRect(cx, cy, r - 2, s.hit)) return this.die();
     for (const s of this.saws) if ((cx - s.x) ** 2 + (cy - s.y) ** 2 <= (s.r * 0.82 + r - 3) ** 2) return this.die();
+    for (const l of this.lasers) if (l.active && circleRect(cx, cy, r - 3, l.rect)) return this.die();
     if (cy < -24 || cy > H + 24) return this.die();
     // collectible
     if (this.star && !this.collected && (cx - this.star.x) ** 2 + (cy - this.star.y) ** 2 <= (r + 15) ** 2) this.collect();
     // flip crystals
     for (const rf of this.refills) if (!rf.got && (cx - rf.x) ** 2 + (cy - rf.y) ** 2 <= (r + 16) ** 2) { rf.setCollected(true); this.refillsTaken++; if (this.fx) { audio.sfx('crystal'); this.burst?.setParticleTint(0x22d3ee).explode(18, rf.x, rf.y); this.hud?.setFlips(this.flips, this.flipCap, this.level.flipTarget); } }
+    // gravity orbs: a free flip
+    for (const o of this.orbs) if (!o.got && (cx - o.x) ** 2 + (cy - o.y) ** 2 <= (r + 14) ** 2) { o.setCollected(true); P.flip(); for (const p of this.platforms) p.setPolar(P.grav); if (this.fx) { this.flipFx(); this.burst?.setParticleTint(0xf0abfc).explode(16, o.x, o.y); } }
     // switches
     for (const s of this.switches) if (!s.on && circleRect(cx, cy, r, s.rect)) this.activateSwitch(s);
     // checkpoints
@@ -385,7 +396,7 @@ export class GameplayScene extends Phaser.Scene {
     const b = this.player.b;
     return {
       px: b.center.x, py: b.center.y, vx: b.velocity.x, vy: b.velocity.y, grav: this.player.grav, cd: this.player.flipCooldown,
-      t: this.t, elapsed: this.elapsed, started: this.started, flips: this.flips, collected: this.collected, rf: this.refills.map((r, i) => (r.got ? i : -1)).filter((i) => i >= 0),
+      t: this.t, elapsed: this.elapsed, started: this.started, flips: this.flips, collected: this.collected, rf: this.refills.map((r, i) => (r.got ? i : -1)).filter((i) => i >= 0), ob: this.orbs.map((o, i) => (o.got ? i : -1)).filter((i) => i >= 0), dash: this.dashT, dashV: this.dashV,
       sw: this.switches.filter((s) => s.on).map((s) => s.def.id), falls: this.platforms.map((p) => [p.state, p.timer] as [number, number]),
       teleCd: this.teleCd, zin: this.zin.slice(), cp: this.cpIndex, gr: this.player.grounded,
     };
@@ -395,6 +406,9 @@ export class GameplayScene extends Phaser.Scene {
     this.t = s.t; if (!opts.keepClock) { this.elapsed = s.elapsed; this.started = s.started; }
     this.flips = s.flips; this.collected = s.collected; this.star?.setCollected(s.collected);
     this.refills.forEach((r, i) => r.setCollected((s.rf ?? []).includes(i))); this.refillsTaken = (s.rf ?? []).length;
+    this.orbs.forEach((o, i) => o.setCollected((s.ob ?? []).includes(i))); this.dashT = s.dash ?? 0; this.dashV = s.dashV ?? 0; this.wasBoost = false;
+    // hidden hazards hide again on every attempt (restart, death respawn, checkpoint) so the surprise is always there
+    if (this.fx) { for (const sp of this.spikes) sp.conceal(this); for (const sw of this.saws) sw.conceal(this); }
     for (const sp of this.spikes) sp.update(s.t, this.fx);
     this.teleCd = s.teleCd; this.zin = s.zin.slice();
     this.switches.forEach((sw) => sw.setOn(s.sw.includes(sw.def.id)));
@@ -405,9 +419,10 @@ export class GameplayScene extends Phaser.Scene {
     });
     this.applySwitches();
     this.doors.forEach((d) => d.apply(s.sw.includes(d.def.switch), true));
-    this.rider = null; P.setGravityDir(s.grav); b.reset(s.px, s.py); b.updateFromGameObject(); b.updateCenter(); b.setVelocity(s.vx, s.vy); b.setAcceleration(0, 0); P.resync(); P.grounded = !!s.gr; P.flipCooldown = s.cd;
+    this.rider = null; P.setGravityDir(s.grav); for (const p of this.platforms) p.setPolar(s.grav); b.reset(s.px, s.py); b.updateFromGameObject(); b.updateCenter(); b.setVelocity(s.vx, s.vy); b.setAcceleration(0, 0); P.resync(); P.grounded = !!s.gr; P.flipCooldown = s.cd;
     P.setExpr('idle'); P.setAlpha(1).setVisible(true).setScale(1);
     for (const sw of this.saws) sw.update(this.t);
+    for (const l of this.lasers) l.update(this.t);
     this.status = 'play';
     if (this.fx) { this.hud?.setGravity(s.grav); this.hud?.setFlips(this.flips, this.flipCap, this.level.flipTarget); this.hud?.setStar(this.collected); if (this.bgUp) this.bgUp.setAlpha(s.grav === 'up' ? 1 : 0); this.trail?.setParticleTint(s.grav === 'up' ? 0xf0abfc : 0x67e8f9); }
   }

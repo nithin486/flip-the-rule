@@ -171,13 +171,13 @@ export function bgKey(scene: Phaser.Scene, world: number, flipped: boolean, vari
 }
 
 // ---------------- platforms ----------------
-export type PlatKind = 'solid' | 'falling' | 'moving' | 'ice' | 'conveyor' | 'bounce' | 'phase';
+export type PlatKind = 'solid' | 'falling' | 'moving' | 'ice' | 'conveyor' | 'bounce' | 'phase' | 'polar' | 'boost';
 export function platformKey(scene: Phaser.Scene, w: number, h: number, world: number, kind: PlatKind, dir = 1) {
   const th = WORLDS.find((x) => x.id === world) ?? WORLDS[0];
   const key = `plat_${world}_${kind}${dir < 0 ? 'L' : ''}_${w}x${h}`;
   return canvasTex(scene, key, w, h, (c) => {
-    const base = kind === 'falling' ? mix(th.rock, 0xb45309, 0.55) : kind === 'moving' ? mix(th.rock, 0x0e7490, 0.4) : kind === 'ice' ? 0x5fb8e8 : kind === 'conveyor' ? mix(th.rock, 0x475569, 0.65) : kind === 'bounce' ? 0x16a34a : kind === 'phase' ? mix(th.rock, 0xc026d3, 0.35) : mix(th.rock, th.accent, 0.12);
-    const rim = kind === 'falling' ? 0xfcd34d : kind === 'moving' ? 0x67e8f9 : kind === 'ice' ? 0xffffff : kind === 'conveyor' ? 0xfde047 : kind === 'bounce' ? 0x86efac : kind === 'phase' ? 0xff9bf0 : th.rim;
+    const base = kind === 'falling' ? mix(th.rock, 0xb45309, 0.55) : kind === 'moving' ? mix(th.rock, 0x0e7490, 0.4) : kind === 'ice' ? 0x5fb8e8 : kind === 'conveyor' ? mix(th.rock, 0x475569, 0.65) : kind === 'bounce' ? 0x16a34a : kind === 'phase' ? mix(th.rock, 0xc026d3, 0.35) : kind === 'polar' ? (dir < 0 ? 0x9d2a9a : 0x0e7490) : kind === 'boost' ? 0xc2410c : mix(th.rock, th.accent, 0.12);
+    const rim = kind === 'falling' ? 0xfcd34d : kind === 'moving' ? 0x67e8f9 : kind === 'ice' ? 0xffffff : kind === 'conveyor' ? 0xfde047 : kind === 'bounce' ? 0x86efac : kind === 'phase' ? 0xff9bf0 : kind === 'polar' ? (dir < 0 ? 0xf0abfc : 0x67e8f9) : kind === 'boost' ? 0xfdba74 : th.rim;
     const R = Math.min(10, h / 2), lip = Math.min(5, Math.max(3, h * 0.2));
     // body: lit top band, darker core, softly lit underside (both faces are walkable)
     const g = c.createLinearGradient(0, 0, 0, h);
@@ -202,6 +202,10 @@ export function platformKey(scene: Phaser.Scene, w: number, h: number, world: nu
     if (kind === 'conveyor') { c.fillStyle = 'rgba(15,23,42,0.55)'; c.fillRect(0, lip, w, h - lip * 2); c.fillStyle = 'rgba(253,224,71,0.95)'; for (let x = 10; x < w - 10; x += 22) { c.beginPath(); if (dir > 0) { c.moveTo(x, h / 2 - 5); c.lineTo(x + 9, h / 2); c.lineTo(x, h / 2 + 5); } else { c.moveTo(x + 9, h / 2 - 5); c.lineTo(x, h / 2); c.lineTo(x + 9, h / 2 + 5); } c.closePath(); c.fill(); } }
     if (kind === 'bounce') { c.strokeStyle = 'rgba(255,255,255,0.8)'; c.lineWidth = 2.5; for (let x = 10; x < w - 6; x += 14) { c.beginPath(); c.moveTo(x, 6); c.lineTo(x + 7, h / 2); c.lineTo(x, h - 6); c.stroke(); } }
     if (kind === 'phase') { c.fillStyle = 'rgba(255,155,240,0.18)'; for (let x = 0; x < w; x += 12) c.fillRect(x, 0, 6, h); }
+    // polar: arrows show which gravity makes it solid (cyan = gravity down, pink = gravity up)
+    if (kind === 'polar') { c.fillStyle = dir < 0 ? 'rgba(250,232,255,0.85)' : 'rgba(207,250,254,0.85)'; for (let x = 16; x < w - 10; x += 30) { c.beginPath(); if (dir < 0) { c.moveTo(x, h / 2 + 4); c.lineTo(x + 6, h / 2 - 4); c.lineTo(x + 12, h / 2 + 4); } else { c.moveTo(x, h / 2 - 4); c.lineTo(x + 6, h / 2 + 4); c.lineTo(x + 12, h / 2 - 4); } c.lineWidth = 2.5; c.strokeStyle = c.fillStyle as string; c.stroke(); } }
+    // dash pad: double chevrons pointing the launch direction
+    if (kind === 'boost') { c.fillStyle = 'rgba(15,23,42,0.45)'; c.fillRect(0, lip, w, h - lip * 2); c.fillStyle = 'rgba(254,215,170,0.95)'; for (let x = 8; x < w - 14; x += 18) for (const o of [0, 7]) { c.beginPath(); if (dir > 0) { c.moveTo(x + o, h / 2 - 6); c.lineTo(x + o + 6, h / 2); c.lineTo(x + o, h / 2 + 6); } else { c.moveTo(x + o + 6, h / 2 - 6); c.lineTo(x + o, h / 2); c.lineTo(x + o + 6, h / 2 + 6); } c.lineTo(x + o + (dir > 0 ? 2 : 4), h / 2); c.closePath(); c.fill(); } }
     // inner bevel: light from above, shade below the lip
     c.fillStyle = 'rgba(255,255,255,0.22)'; c.fillRect(0, lip - 1, w, 1);
     c.fillStyle = 'rgba(0,0,0,0.3)'; c.fillRect(0, lip, w, 2); c.fillRect(0, h - lip - 2, w, 2);
@@ -317,6 +321,14 @@ export function makeBaseTextures(scene: Phaser.Scene) {
     c.fillStyle = g; c.strokeStyle = '#083344'; c.lineWidth = 2; c.lineJoin = 'round'; c.beginPath(); c.moveTo(20, 3); c.lineTo(34, 18); c.lineTo(28, 44); c.lineTo(12, 44); c.lineTo(6, 18); c.closePath(); c.fill(); c.shadowBlur = 0; c.stroke();
     c.strokeStyle = 'rgba(255,255,255,0.7)'; c.lineWidth = 1.5; c.beginPath(); c.moveTo(6, 18); c.lineTo(34, 18); c.moveTo(20, 3); c.lineTo(16, 18); c.lineTo(20, 44); c.stroke();
     c.fillStyle = '#fff'; c.font = '800 13px Poppins, sans-serif'; c.textAlign = 'center'; c.fillText('+1', 20, 34);
+  });
+  // gravity orb: swirling two-colour sphere with up/down arrows
+  canvasTex(scene, 'orb', 40, 40, (c) => {
+    const g = c.createRadialGradient(15, 14, 2, 20, 20, 17); g.addColorStop(0, '#fdf4ff'); g.addColorStop(0.45, '#e879f9'); g.addColorStop(1, '#6d28d9');
+    c.shadowColor = '#f0abfc'; c.shadowBlur = 8; c.fillStyle = g; c.beginPath(); c.arc(20, 20, 16, 0, 7); c.fill(); c.shadowBlur = 0;
+    c.strokeStyle = '#3b0764'; c.lineWidth = 1.8; c.stroke();
+    c.strokeStyle = '#67e8f9'; c.lineWidth = 2.5; c.lineCap = 'round'; c.beginPath(); c.moveTo(14, 12); c.lineTo(14, 26); c.moveTo(10, 22); c.lineTo(14, 27); c.lineTo(18, 22); c.stroke();
+    c.strokeStyle = '#fff'; c.beginPath(); c.moveTo(26, 28); c.lineTo(26, 14); c.moveTo(22, 18); c.lineTo(26, 13); c.lineTo(30, 18); c.stroke();
   });
   // checkpoint flag
   for (const on of [0, 1]) canvasTex(scene, `flag${on}`, 30, 46, (c) => {

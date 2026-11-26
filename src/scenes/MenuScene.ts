@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { FONT_BODY, FONT_HEAD, H, TOTAL_LEVELS, W } from '../config/gameConfig';
+import { FONT_BODY, FONT_HEAD, H, TOTAL_LEVELS, W, WORLDS } from '../config/gameConfig';
 import { audio } from '../systems/AudioSystem';
 import { LevelSystem } from '../systems/LevelSystem';
 import { save } from '../systems/SaveSystem';
@@ -73,7 +73,7 @@ export class MenuScene extends Phaser.Scene {
     // --- badge ---
     const badge = this.add.container(W / 2 + 160, 168).setDepth(2);
     const bgr = this.add.graphics(); bgr.fillStyle(0x0b0b1a, 0.55).fillRoundedRect(-170, -14, 340, 28, 14).lineStyle(1.5, 0x67e8f9, 0.8).strokeRoundedRect(-170, -14, 340, 28, 14);
-    badge.add([bgr, this.add.text(0, 0, `${TOTAL_LEVELS} LEVELS  ·  8 WORLDS  ·  DAILY CHALLENGE`, { fontFamily: FONT_BODY, fontSize: '13px', color: '#a5f3fc', fontStyle: '800' }).setOrigin(0.5)]);
+    badge.add([bgr, this.add.text(0, 0, `${TOTAL_LEVELS} LEVELS  ·  ${WORLDS.length} WORLDS  ·  DAILY CHALLENGE`, { fontFamily: FONT_BODY, fontSize: '13px', color: '#a5f3fc', fontStyle: '800' }).setOrigin(0.5)]);
 
     // --- buttons ---
     const next = Math.min(TOTAL_LEVELS, save.data.unlockedLevel);

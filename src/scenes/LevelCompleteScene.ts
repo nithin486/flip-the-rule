@@ -27,7 +27,7 @@ export class LevelCompleteScene extends Phaser.Scene {
       }
     }
     const rows: Array<[string, string]> = [
-      ['Flips', save.data.settings.hardMode && level.flipLimit ? `${r.flips} of ${level.flipLimit} allowed  ·  par ${level.flipTarget}` : `${r.flips}  ·  ★★★ target ${level.flipTarget}`], ['Time', `${r.time.toFixed(1)}s`], ['Star collected', r.collected ? 'Yes  +500' : 'No'],
+      ['Flips', level.flipLimit ? `${r.flips} of ${level.flipLimit} allowed  ·  par ${level.flipTarget}` : `${r.flips}  ·  ★★★ target ${level.flipTarget}`], ['Time', `${r.time.toFixed(1)}s`], ['Star collected', r.collected ? 'Yes  +500' : 'No'],
       ['Efficiency', `+${r.breakdown.efficiency}`], ['Time bonus', `+${r.breakdown.time}`],
     ];
     rows.forEach(([a, b], i) => {

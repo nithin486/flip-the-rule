@@ -128,7 +128,7 @@
     "wind": -220
    }
   ],
-  "flipLimit": 4,
+  "flipLimit": 5,
   "parTime": 17,
   "hint": "No spare flips from here on. Plan every one."
  },
@@ -261,7 +261,7 @@
     "kind": "lock"
    }
   ],
-  "flipLimit": 5,
+  "flipLimit": 6,
   "parTime": 16
  },
  {
@@ -412,7 +412,7 @@
     "wind": 240
    }
   ],
-  "flipLimit": 4,
+  "flipLimit": 5,
   "parTime": 16
  },
  {
@@ -568,7 +568,7 @@
     "wind": -220
    }
   ],
-  "flipLimit": 5,
+  "flipLimit": 6,
   "parTime": 16
  },
  {

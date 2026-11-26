@@ -4,7 +4,7 @@ const require = createRequire(import.meta.url); const { chromium } = require('pl
 const b = await chromium.launch(); const p = await (await b.newContext({ viewport: { width: 960, height: 540 } })).newPage();
 await p.goto('http://localhost:5173'); await p.waitForTimeout(3000);
 let bad = 0;
-for (let id = 1; id <= 40; id++) {
+for (let id = 1; id <= 60; id++) {
   const j = JSON.parse(fs.readFileSync(`tools/proved/L${id}.json`));
   const r = await p.evaluate(async ([id, j]) => {
     const g = window.__ftr.game; const fr = () => new Promise((r) => requestAnimationFrame(() => r()));
@@ -17,4 +17,4 @@ for (let id = 1; id <= 40; id++) {
   }, [id, j]);
   if (r.st !== 'won') { bad++; console.log('FAIL L' + id, JSON.stringify(r)); }
 }
-console.log(bad ? bad + ' failing' : 'all 40 proven solutions win in the real game scene'); await b.close();
+console.log(bad ? bad + ' failing' : 'all 60 proven solutions win in the real game scene (flip limits on)'); await b.close();

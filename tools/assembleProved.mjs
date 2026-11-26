@@ -18,15 +18,28 @@ const HINTS = {
   31: 'In a no-flip zone your flip is ignored. Commit before you enter.',
   32: 'Inside a reversed zone, left and right swap.',
   36: 'No spare flips from here on. Plan every one.',
+  41: 'Cyan slabs hold you only while gravity points DOWN. Pink ones only while it points UP.',
+  43: 'No floor in the middle: hop from colour to colour.',
+  46: 'Lasers fire on a beat. Watch them blink, then cross while they are off.',
+  48: 'Beams can sweep along the ceiling too.',
+  51: 'Dash pads fling you sideways - fast enough to clear a pit.',
+  53: 'Some pads throw you LEFT. Flip off them in time.',
+  56: 'Orbs flip your gravity for free. They do not count as flips.',
+  58: 'An orb flip changes which coloured slabs are solid.',
 };
 const dir = new URL('./proved/', import.meta.url);
 const sol = {}, tg = {};
-for (let w = 1; w <= 8; w++) {
+/** Spare flips on top of the proven minimum: generous while learning, none on each world's finale. */
+const spare = (i) => (i <= 5 ? 3 : i <= 15 ? 2 : i % 5 === 0 ? 0 : 1);
+for (let w = 1; w <= 12; w++) {
   const arr = [];
   for (let i = (w - 1) * 5 + 1; i <= w * 5; i++) {
     const j = JSON.parse(fs.readFileSync(new URL(`L${i}.json`, dir)));
     const l = j.level; l.world = w;
-    l.flipLimit += i <= 4 ? 3 : 0; // gentler ramp-up: extra spare flips early (solutions stay valid, 3 stars still need par)
+    // proveOne wrote limit = (par - crystals taken, min 1) + 1; rebuild it with the difficulty curve
+    // (levels 36-40 were proven with SPARE=0, so their stored limit is already the minimum)
+    const base = i >= 36 && i <= 40 ? l.flipLimit : Math.max(1, l.flipLimit - 1);
+    l.flipLimit = base + spare(i);
     if (HINTS[i]) l.hint = HINTS[i]; else delete l.hint;
     arr.push(l); sol[i] = j.track; tg[i] = { flipTarget: l.flipTarget, parTime: l.parTime };
   }

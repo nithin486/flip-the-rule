@@ -3,7 +3,7 @@
   "id": 1,
   "world": 1,
   "name": "First Flip",
-  "hint": "Roll right, then press {flip} to fall UP!",
+  "hint": "Flip gravity with {flip}. Your flips are limited!",
   "playerStart": {
    "x": 90,
    "y": 423
@@ -26,14 +26,14 @@
     "height": 28
    },
    {
-    "x": 0,
+    "x": 430,
     "y": 100,
-    "width": 960,
+    "width": 530,
     "height": 28
    }
   ],
   "hazards": [],
-  "flipLimit": 5,
+  "flipLimit": 4,
   "parTime": 15
  },
  {
@@ -90,7 +90,7 @@
     "dir": "down"
    }
   ],
-  "flipLimit": 6,
+  "flipLimit": 5,
   "parTime": 15
  },
  {
@@ -180,7 +180,7 @@
     "dir": "down"
    }
   ],
-  "flipLimit": 10,
+  "flipLimit": 9,
   "parTime": 16
  },
  {
@@ -257,7 +257,7 @@
     "dir": "up"
    }
   ],
-  "flipLimit": 7,
+  "flipLimit": 6,
   "parTime": 15
  },
  {
@@ -327,7 +327,7 @@
     "dir": "down"
    }
   ],
-  "flipLimit": 4,
+  "flipLimit": 6,
   "parTime": 16
  }
 ]

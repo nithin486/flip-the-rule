@@ -43,6 +43,10 @@ export const WORLDS: WorldTheme[] = [
   { id: 6, name: 'Crystal Caverns', first: 26, last: 30, blurb: 'Flip crystals and pulse spikes', skyTop: 0x02140f, skyBottom: 0x0b6b57, rock: 0x073a30, rim: 0x6dffd2, accent: 0x1de9b6, root: 54 },
   { id: 7, name: 'Chaos Engine', first: 31, last: 35, blurb: 'Everything at once', skyTop: 0x160603, skyBottom: 0x93310c, rock: 0x45180a, rim: 0xffb86b, accent: 0xff7a1a, root: 53 },
   { id: 8, name: 'Gravity Master', first: 36, last: 40, blurb: 'Only masters finish', skyTop: 0x050505, skyBottom: 0x4a3200, rock: 0x241a05, rim: 0xffe36b, accent: 0xffc400, root: 50 },
+  { id: 9, name: 'Polarity Park', first: 41, last: 45, blurb: 'Cyan holds you down, pink holds you up', skyTop: 0x04061c, skyBottom: 0x223a8f, rock: 0x161a46, rim: 0x9ff3ff, accent: 0x22d3ee, root: 56 },
+  { id: 10, name: 'Laser Lab', first: 46, last: 50, blurb: 'Beams fire on a beat', skyTop: 0x0b0410, skyBottom: 0x6b1035, rock: 0x2c0f22, rim: 0xff8aa5, accent: 0xff2d55, root: 51 },
+  { id: 11, name: 'Dash Drive', first: 51, last: 55, blurb: 'Dash pads fling you sideways', skyTop: 0x140612, skyBottom: 0xb04a1a, rock: 0x3d1b0b, rim: 0xffc58a, accent: 0xff8a3d, root: 58 },
+  { id: 12, name: 'Orb Odyssey', first: 56, last: 60, blurb: 'Orbs flip you for free', skyTop: 0x040313, skyBottom: 0x3e1d93, rock: 0x1d1442, rim: 0xd8c8ff, accent: 0xa855f7, root: 49 },
 ];
-export const TOTAL_LEVELS = 40;
+export const TOTAL_LEVELS = 60;
 export const worldOfLevel = (id: number): WorldTheme => WORLDS.find((w) => id >= w.first && id <= w.last) ?? WORLDS[0];

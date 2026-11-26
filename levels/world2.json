@@ -75,7 +75,7 @@
     "dir": "up"
    }
   ],
-  "flipLimit": 4,
+  "flipLimit": 5,
   "parTime": 15,
   "hint": "Some spikes are hidden until you get close. Expect them on safe-looking landings."
  },
@@ -162,7 +162,7 @@
     "hidden": true
    }
   ],
-  "flipLimit": 7,
+  "flipLimit": 8,
   "parTime": 16
  },
  {
@@ -254,7 +254,7 @@
     "hidden": true
    }
   ],
-  "flipLimit": 4,
+  "flipLimit": 5,
   "parTime": 16
  },
  {
@@ -354,7 +354,7 @@
     "hidden": true
    }
   ],
-  "flipLimit": 6,
+  "flipLimit": 7,
   "parTime": 16
  },
  {
@@ -455,7 +455,7 @@
     "hidden": true
    }
   ],
-  "flipLimit": 5,
+  "flipLimit": 6,
   "parTime": 16
  }
 ]
