@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { FONT_BODY, H, W } from '../config/gameConfig';
 import { audio } from '../systems/AudioSystem';
 import { save } from '../systems/SaveSystem';
+import { fitOverlay } from '../ui/Layout';
 import { Button, panel, title, toggle } from '../ui/Buttons';
 
 export class SettingsScene extends Phaser.Scene {
@@ -26,5 +27,6 @@ export class SettingsScene extends Phaser.Scene {
       save.reset(); audio.applySettings(); this.scene.get('Menu').scene.restart(); this.scene.stop();
     }, { w: 250, h: 44, size: 16, color: 0x7f1d1d });
     new Button(this, W / 2 + 150, H / 2 + 200, 'DONE', () => this.scene.stop(), { w: 220, h: 50, size: 24, color: 0x22c55e });
+    fitOverlay(this, 600, 520);
   }
 }

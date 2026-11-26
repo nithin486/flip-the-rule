@@ -3,6 +3,7 @@ import { FONT_BODY, H, W } from '../config/gameConfig';
 import type { GameplayScene } from './GameplayScene';
 import { audio } from '../systems/AudioSystem';
 import { platform } from '../platform';
+import { fitOverlay } from '../ui/Layout';
 import { Button, panel, title } from '../ui/Buttons';
 
 /**
@@ -35,5 +36,6 @@ export class HintScene extends Phaser.Scene {
     }
     new Button(this, W / 2, H / 2 + 166, 'BACK TO GAME', () => close(false), { w: 260, h: 44, size: 18, color: 0x475569 });
     this.input.keyboard!.once('keydown-P', () => close(false));
+    fitOverlay(this, 620, 420);
   }
 }

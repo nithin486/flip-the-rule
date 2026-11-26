@@ -5,6 +5,7 @@ import { save } from '../systems/SaveSystem';
 import { LevelSystem } from '../systems/LevelSystem';
 import { Button, title } from '../ui/Buttons';
 import { bgKey } from '../ui/Textures';
+import { coverImage, view } from '../ui/Layout';
 
 export class LevelSelectScene extends Phaser.Scene {
   private world = 1;
@@ -20,27 +21,33 @@ export class LevelSelectScene extends Phaser.Scene {
   private shift(d: number) { const n = Phaser.Math.Clamp(this.world + d, 1, WORLDS.length); if (n !== this.world) { this.world = n; audio.sfx('click'); this.draw(true); } }
   private draw(animate = false) {
     this.children.removeAll(true); this.tweens.killAll();
-    const th = WORLDS[this.world - 1];
-    this.add.image(W / 2, H / 2, bgKey(this, this.world, false));
-    const shade = this.add.graphics(); shade.fillGradientStyle(0x0b0b1a, 0x0b0b1a, 0x1e1b4b, 0x1e1b4b, 0.72).fillRect(0, 0, W, H);
-    for (let i = 0; i < 3; i++) { const o = this.add.image(160 + i * 320, 470, 'isl_' + 'abc'[i]).setAlpha(0.35).setScale(1 + i * 0.1); this.tweens.add({ targets: o, y: o.y + 10, duration: 2400 + i * 600, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' }); }
-    this.add.image(W / 2, H / 2, 'vignette').setScale(2);
+    const th = WORLDS[this.world - 1], P = view.portrait, VW = view.w, VH = view.h;
+    coverImage(this, bgKey(this, this.world, false));
+    const shade = this.add.graphics(); shade.fillGradientStyle(0x0b0b1a, 0x0b0b1a, 0x1e1b4b, 0x1e1b4b, 0.72).fillRect(0, 0, VW, VH);
+    for (let i = 0; i < 3; i++) { const o = this.add.image((160 + i * 320) * VW / W, VH - 70, 'isl_' + 'abc'[i]).setAlpha(0.35).setScale(1 + i * 0.1); this.tweens.add({ targets: o, y: o.y + 10, duration: 2400 + i * 600, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' }); }
+    this.add.image(VW / 2, VH / 2, 'vignette').setDisplaySize(VW * 1.1, VH * 1.1);
     // header
-    const halo = this.add.image(W / 2, 60, 'glow').setScale(10, 2.6).setTint(th.accent).setAlpha(0.5).setBlendMode(Phaser.BlendModes.ADD);
+    const hy = P ? 110 : 56; const halo = this.add.image(VW / 2, hy + 4, 'glow').setScale(10, 2.6).setTint(th.accent).setAlpha(0.5).setBlendMode(Phaser.BlendModes.ADD);
     this.tweens.add({ targets: halo, alpha: 0.8, duration: 1500, yoyo: true, repeat: -1 });
-    title(this, W / 2, 56, th.name.toUpperCase(), 46);
-    this.add.text(W / 2, 100, `WORLD ${this.world} / ${WORLDS.length}  ·  ${th.blurb.toUpperCase()}`, { fontFamily: FONT_BODY, fontSize: '14px', color: '#e9d5ff', fontStyle: '700' }).setOrigin(0.5).setLetterSpacing(2);
+    title(this, VW / 2, hy, th.name.toUpperCase(), P ? 40 : 46);
+    this.add.text(VW / 2, hy + 44, `WORLD ${this.world} / ${WORLDS.length}  ·  ${th.blurb.toUpperCase()}`, { fontFamily: FONT_BODY, fontSize: '14px', color: '#e9d5ff', fontStyle: '700' }).setOrigin(0.5).setLetterSpacing(2);
     let got = 0; const n = th.last - th.first + 1; for (let id = th.first; id <= th.last; id++) got += save.stars(id);
-    const bw = 260, bx = W / 2 - bw / 2;
-    const bar = this.add.graphics(); bar.fillStyle(0x000000, 0.5).fillRoundedRect(bx, 118, bw, 12, 6).fillStyle(0xfbbf24, 1).fillRoundedRect(bx, 118, Math.max(12, bw * got / (n * 3)), 12, 6).lineStyle(1, 0xffffff, 0.4).strokeRoundedRect(bx, 118, bw, 12, 6);
-    this.add.text(W / 2 + bw / 2 + 12, 124, `★ ${got}/${n * 3}`, { fontFamily: FONT_BODY, fontSize: '13px', color: '#fde68a', fontStyle: '700' }).setOrigin(0, 0.5);
+    const bw = 260, bx = VW / 2 - bw / 2 - (P ? 30 : 0), by = hy + 62;
+    const bar = this.add.graphics(); bar.fillStyle(0x000000, 0.5).fillRoundedRect(bx, by, bw, 12, 6).fillStyle(0xfbbf24, 1).fillRoundedRect(bx, by, Math.max(12, bw * got / (n * 3)), 12, 6).lineStyle(1, 0xffffff, 0.4).strokeRoundedRect(bx, by, bw, 12, 6);
+    this.add.text(bx + bw + 12, by + 6, `★ ${got}/${n * 3}`, { fontFamily: FONT_BODY, fontSize: '13px', color: '#fde68a', fontStyle: '700' }).setOrigin(0, 0.5);
     new Button(this, 44, 40, '‹', () => this.back(), { w: 56, h: 46, size: 34, color: 0x475569 });
-    new Button(this, 66, H / 2 + 10, '‹', () => this.shift(-1), { w: 52, h: 92, size: 40, color: th.accent }).setEnabled(this.world > 1);
-    new Button(this, W - 66, H / 2 + 10, '›', () => this.shift(1), { w: 52, h: 92, size: 40, color: th.accent }).setEnabled(this.world < WORLDS.length);
+    if (P) {
+      new Button(this, 70, VH - 120, '‹', () => this.shift(-1), { w: 92, h: 70, size: 44, color: th.accent }).setEnabled(this.world > 1);
+      new Button(this, VW - 70, VH - 120, '›', () => this.shift(1), { w: 92, h: 70, size: 44, color: th.accent }).setEnabled(this.world < WORLDS.length);
+    } else {
+      new Button(this, 66, H / 2 + 10, '‹', () => this.shift(-1), { w: 52, h: 92, size: 40, color: th.accent }).setEnabled(this.world > 1);
+      new Button(this, W - 66, H / 2 + 10, '›', () => this.shift(1), { w: 52, h: 92, size: 40, color: th.accent }).setEnabled(this.world < WORLDS.length);
+    }
     // tiles
-    const cols = 5, tw = 118, gap = 20, x0 = W / 2 - (cols * tw + (cols - 1) * gap) / 2 + tw / 2, y0 = 262;
+    const cols = P ? 3 : 5, tw = P ? 132 : 118, gap = P ? 24 : 20, x0 = VW / 2 - (Math.min(cols, n) * tw + (Math.min(cols, n) - 1) * gap) / 2 + tw / 2, y0 = P ? Math.round(VH * 0.38) : 262, rowH = tw + 74;
     for (let i = 0; i < n; i++) {
-      const id = th.first + i, c = i % cols, x = x0 + c * (tw + gap), y = y0;
+      const id = th.first + i, row = Math.floor(i / cols), inRow = Math.min(cols, n - row * cols), c = i % cols;
+      const x = VW / 2 - (inRow * tw + (inRow - 1) * gap) / 2 + tw / 2 + c * (tw + gap), y = y0 + row * rowH; void x0;
       const unlocked = save.isUnlocked(id), stars = save.stars(id);
       const card = this.add.container(x, y);
       const g = this.add.graphics(); card.add(g);
@@ -71,6 +78,6 @@ export class LevelSelectScene extends Phaser.Scene {
       if (animate) { card.setAlpha(0).setScale(0.7); this.tweens.add({ targets: card, alpha: 1, scale: 1, duration: 320, delay: i * 55, ease: 'Back.easeOut' }); }
     }
     // world dots
-    WORLDS.forEach((w, i) => { const cur = i + 1 === this.world; const d = this.add.circle(W / 2 + (i - (WORLDS.length - 1) / 2) * 28, H - 34, cur ? 8 : 6, cur ? 0xfbbf24 : 0xffffff, cur ? 1 : 0.4).setStrokeStyle(2, 0x000000, 0.4).setInteractive({ useHandCursor: true }); d.on('pointerup', () => { this.world = i + 1; this.draw(true); }); });
+    WORLDS.forEach((w, i) => { const cur = i + 1 === this.world; const d = this.add.circle(VW / 2 + (i - (WORLDS.length - 1) / 2) * 28, P ? VH - 120 : H - 34, cur ? 8 : 6, cur ? 0xfbbf24 : 0xffffff, cur ? 1 : 0.4).setStrokeStyle(2, 0x000000, 0.4).setInteractive({ useHandCursor: true }); d.on('pointerup', () => { this.world = i + 1; this.draw(true); }); });
   }
 }

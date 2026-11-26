@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { FONT_BODY, H, TOTAL_LEVELS, W } from '../config/gameConfig';
 import { audio } from '../systems/AudioSystem';
 import { save } from '../systems/SaveSystem';
+import { fitOverlay } from '../ui/Layout';
 import { Button, panel, title } from '../ui/Buttons';
 import { bgKey } from '../ui/Textures';
 
@@ -20,5 +21,6 @@ export class GameOverScene extends Phaser.Scene {
     new Button(this, W / 2 - 130, H / 2 + 120, `RETRY LEVEL ${TOTAL_LEVELS}`, () => this.scene.start('Gameplay', { levelId: TOTAL_LEVELS }), { w: 240, h: 54, size: 20, color: 0x7c3aed });
     new Button(this, W / 2 + 130, H / 2 + 120, 'HOME', () => this.scene.start('Menu'), { w: 200, h: 54, size: 24, color: 0x22c55e });
     for (let i = 0; i < 50; i++) { const c = this.add.rectangle(Phaser.Math.Between(0, W), -20, 8, 14, Phaser.Utils.Array.GetRandom([0xfbbf24, 0x7c3aed, 0x06b6d4, 0x22c55e])); this.tweens.add({ targets: c, y: H + 30, angle: 360, duration: Phaser.Math.Between(2000, 4000), delay: Phaser.Math.Between(0, 2000), repeat: -1 }); }
+    fitOverlay(this, 560, 430);
   }
 }

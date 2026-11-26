@@ -5,12 +5,14 @@ import { LevelSystem } from '../systems/LevelSystem';
 import { save } from '../systems/SaveSystem';
 import { Button, body } from '../ui/Buttons';
 import { SKINS, bgKey, nextStreakSkin, playerKey, platformKey } from '../ui/Textures';
+import { coverImage, view } from '../ui/Layout';
 
 export class MenuScene extends Phaser.Scene {
   constructor() { super('Menu'); }
   create() {
     audio.play('menu', 57);
     this.cameras.main.fadeIn(300, 11, 11, 26);
+    if (view.portrait) { this.createPortrait(); return; }
     this.add.image(W / 2, H / 2, bgKey(this, 1, false));
     const up = this.add.image(W / 2, H / 2, bgKey(this, 1, true)).setAlpha(0);
 
@@ -92,6 +94,54 @@ export class MenuScene extends Phaser.Scene {
     }
     this.input.keyboard!.on('keydown-ENTER', () => this.go('Gameplay', { levelId: next }));
     this.input.keyboard!.on('keydown-SPACE', () => this.go('Gameplay', { levelId: next }));
+  }
+  /** Phones held upright: stacked logo, the flipping ball, then big thumb-sized buttons. */
+  private createPortrait() {
+    const VW = view.w, VH = view.h, cx = VW / 2;
+    coverImage(this, bgKey(this, 1, false));
+    const up = coverImage(this, bgKey(this, 1, true)).setAlpha(0);
+    const shade = this.add.graphics(); shade.fillGradientStyle(0x0b0b2e, 0x0b0b2e, 0x2e1065, 0x2e1065, 0.62).fillRect(0, 0, VW, VH);
+    for (let i = 0; i < 22; i++) { const st = this.add.image(Phaser.Math.Between(0, VW), Phaser.Math.Between(0, VH * 0.5), 'spark').setScale(Phaser.Math.FloatBetween(0.3, 0.8)).setAlpha(0.1); this.tweens.add({ targets: st, alpha: 0.9, duration: Phaser.Math.Between(900, 2200), delay: Phaser.Math.Between(0, 2000), yoyo: true, repeat: -1 }); }
+    const ly = Math.round(VH * 0.1);
+    const flip = this.add.text(cx, ly, 'UPSIDE', { fontFamily: FONT_HEAD, fontSize: '84px', color: '#fbbf24', fontStyle: '800' }).setOrigin(0.5).setStroke('#2e1065', 14);
+    const rule = this.add.text(cx, ly + 84, 'DOWN RUN', { fontFamily: FONT_HEAD, fontSize: '76px', color: '#ffffff', fontStyle: '800' }).setOrigin(0.5).setStroke('#2e1065', 14);
+    const gold = flip.context.createLinearGradient(0, 0, 0, flip.height); gold.addColorStop(0, '#fff7ad'); gold.addColorStop(0.5, '#fbbf24'); gold.addColorStop(1, '#f59e0b'); flip.setFill(gold);
+    const wh = rule.context.createLinearGradient(0, 0, 0, rule.height); wh.addColorStop(0, '#ffffff'); wh.addColorStop(1, '#c4b5fd'); rule.setFill(wh);
+    this.tweens.add({ targets: flip, scaleY: { from: 1, to: -1 }, duration: 500, ease: 'Back.easeInOut', yoyo: true, hold: 1800, repeatDelay: 1800, repeat: -1, onYoyo: () => this.tweens.add({ targets: up, alpha: 1, duration: 400 }), onRepeat: () => this.tweens.add({ targets: up, alpha: 0, duration: 400 }) });
+    this.add.text(cx, ly + 150, 'You can\'t jump. Flip gravity!', { fontFamily: FONT_BODY, fontSize: '22px', color: '#f5f3ff', fontStyle: '600' }).setOrigin(0.5).setShadow(0, 2, 'rgba(0,0,0,.5)', 3);
+    // flipping ball between two platforms
+    const key = platformKey(this, 240, 26, 1, 'solid'), top = Math.round(VH * 0.33), bot = top + 150;
+    this.add.image(cx, bot, key); this.add.image(cx, top, key);
+    const ball = this.add.image(cx, bot - 32, playerKey('idle', 1)).setScale(1.3);
+    const loop = () => {
+      this.tweens.add({ targets: ball, y: top + 32, duration: 650, ease: 'Quad.easeIn', onStart: () => audio.sfx('flipUp'), onComplete: () => { ball.setFlipY(true); this.time.delayedCall(1000, () => this.tweens.add({ targets: ball, y: bot - 32, duration: 650, ease: 'Quad.easeIn', onStart: () => audio.sfx('flipDown'), onComplete: () => { ball.setFlipY(false); this.time.delayedCall(1000, loop); } })); } });
+    };
+    this.time.delayedCall(900, loop);
+    // buttons
+    const next = Math.min(TOTAL_LEVELS, save.data.unlockedLevel);
+    const started = save.totalStars() > 0 || save.data.unlockedLevel > 1;
+    let y = Math.round(VH * 0.6);
+    const play = new Button(this, cx, y, started ? `PLAY · Level ${next}` : 'PLAY', () => this.go('Gameplay', { levelId: next }), { w: 440, h: 100, size: 44, color: 0x22c55e, radius: 26, solid: true });
+    this.tweens.add({ targets: play, scale: 1.04, duration: 700, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+    y += 104; new Button(this, cx, y, 'LEVEL SELECT', () => this.go('LevelSelect'), { w: 440, h: 72, size: 28, color: 0x7c3aed });
+    const done = !!save.data.daily.completed[LevelSystem.dateKey()];
+    y += 88; new Button(this, cx, y, done ? 'DAILY CHALLENGE ✓' : 'DAILY CHALLENGE', () => this.go('Gameplay', { daily: true }), { w: 440, h: 72, size: 28, color: 0x3b82f6 });
+    y += 88; new Button(this, cx - 112, y, 'SKINS', () => this.scene.launch('Skins', { from: 'Menu' }), { w: 212, h: 66, size: 24, color: 0xdb2777 });
+    new Button(this, cx + 112, y, 'SETTINGS', () => this.scene.launch('Settings', { from: 'Menu' }), { w: 212, h: 66, size: 24, color: 0x475569 });
+    // progress + streak
+    const s = save.totalStars();
+    const pill = (x: number, py: number, w: number, label: string, col: number, tc: string) => {
+      const g = this.add.graphics().setDepth(3); g.fillStyle(0x0b0b1a, 0.7).fillRoundedRect(x - w / 2, py - 18, w, 36, 18).lineStyle(2, col, 0.9).strokeRoundedRect(x - w / 2, py - 18, w, 36, 18);
+      return this.add.text(x, py, label, { fontFamily: FONT_BODY, fontSize: '17px', color: tc, fontStyle: '700' }).setOrigin(0.5).setDepth(3);
+    };
+    const vs = save.data.visits.streak;
+    pill(cx, Math.min(VH - 36, y + 70), 420, `★ ${s} / ${TOTAL_LEVELS * 3}${vs > 1 ? `    ·    🔥 ${vs}-day streak` : ''}`, 0xfbbf24, '#fef3c7');
+    const vi = save.visitInfo, got = vi.newDay ? SKINS.findIndex((sk) => sk.streak === vi.streak) : -1, nxt = nextStreakSkin();
+    if (got >= 0 || nxt) {
+      const msg = got >= 0 ? `🎁 Day ${vi.streak} in a row! New skin unlocked: ${SKINS[got].name.toUpperCase()}` : `🎁 Play tomorrow too: a ${nxt!.streak}-day streak unlocks the ${nxt!.name.toUpperCase()} skin`;
+      const t = this.add.text(cx, top - 44, msg, { fontFamily: FONT_BODY, fontSize: '16px', color: '#fff7ed', fontStyle: '700', backgroundColor: 'rgba(194,65,12,0.9)', padding: { x: 12, y: 7 }, wordWrap: { width: 460 }, align: 'center' }).setOrigin(0.5).setDepth(5);
+      if (got >= 0) { save.data.skin = got; save.save(); this.tweens.add({ targets: t, scale: 1.06, yoyo: true, repeat: 3, duration: 300 }); }
+    }
   }
   private go(scene: string, data?: object) { audio.stopMusic(); this.cameras.main.fadeOut(180, 11, 11, 26); this.time.delayedCall(190, () => this.scene.start(scene, data)); }
 }

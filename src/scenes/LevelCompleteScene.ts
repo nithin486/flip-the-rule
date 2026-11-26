@@ -3,6 +3,7 @@ import { FONT_BODY, FONT_HEAD, H, TOTAL_LEVELS, W } from '../config/gameConfig';
 import { platform } from '../platform';
 import { audio } from '../systems/AudioSystem';
 import { save } from '../systems/SaveSystem';
+import { fitOverlay } from '../ui/Layout';
 import { Button, panel, title } from '../ui/Buttons';
 import type { LevelData, LevelResult } from '../types';
 import { nextStreakSkin } from '../ui/Textures';
@@ -61,5 +62,6 @@ export class LevelCompleteScene extends Phaser.Scene {
       const c = this.add.rectangle(Phaser.Math.Between(0, W), -20, 8, 14, Phaser.Utils.Array.GetRandom([0xfbbf24, 0x7c3aed, 0x06b6d4, 0x22c55e, 0xef4444])).setAngle(Phaser.Math.Between(0, 360));
       this.tweens.add({ targets: c, y: H + 30, angle: c.angle + 360, x: c.x + Phaser.Math.Between(-80, 80), duration: Phaser.Math.Between(1500, 3000), delay: Phaser.Math.Between(0, 900) });
     }
+    fitOverlay(this, 580, 530);
   }
 }

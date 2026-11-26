@@ -17,6 +17,7 @@ import { PreloadScene } from './scenes/PreloadScene';
 import { SettingsScene } from './scenes/SettingsScene';
 import { SkinsScene } from './scenes/SkinsScene';
 import { LevelSystem } from './systems/LevelSystem';
+import { applyOrientation } from './ui/Layout';
 
 const game = new Phaser.Game({
   type: Phaser.AUTO,
@@ -33,6 +34,23 @@ const game = new Phaser.Game({
 });
 // Debug / test hooks (also used by the headless verifier).
 (window as any).__ftr = { game, LevelSystem };
-game.events.once('ready', () => { game.canvas.setAttribute('tabindex', '0'); game.canvas.style.outline = 'none'; });
+game.events.once('ready', () => { game.canvas.setAttribute('tabindex', '0'); game.canvas.style.outline = 'none'; applyOrientation(game); });
+/** Phone rotated (or the portal resized the frame across portrait/landscape): resize the game and rebuild the visible screens. */
+const OVERLAYS = ['Pause', 'Hint', 'LevelComplete', 'Settings', 'Skins'];
+export function relayout() {
+  if (!applyOrientation(game)) return;
+  const sm = game.scene, gp = sm.getScene('Gameplay') as GameplayScene;
+  const live = (k: string) => sm.isActive(k) || sm.isPaused(k);
+  if (live('Gameplay') && gp.level) {
+    OVERLAYS.forEach((k) => { if (live(k)) sm.stop(k); });
+    gp.scene.restart({ levelId: gp.daily ? undefined : gp.level.id, daily: gp.daily });
+    return;
+  }
+  OVERLAYS.forEach((k) => { if (live(k)) sm.stop(k); });
+  for (const k of ['Menu', 'LevelSelect', 'GameOver']) if (live(k)) sm.getScene(k).scene.restart();
+}
+let rt = 0;
+window.addEventListener('resize', () => { clearTimeout(rt); rt = window.setTimeout(relayout, 180); });
+window.addEventListener('orientationchange', () => { clearTimeout(rt); rt = window.setTimeout(relayout, 250); });
 // Keyboard focus: inside an iframe the game only receives keys after the frame has focus, so grab it on any click/tap.
 window.addEventListener('pointerdown', () => { try { window.focus(); } catch { /* ignore */ } }, { capture: true });

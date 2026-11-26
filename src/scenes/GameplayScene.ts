@@ -18,6 +18,7 @@ import { HUD } from '../ui/HUD';
 import { TouchControls } from '../ui/TouchControls';
 import { Coach } from '../ui/Coach';
 import { Button } from '../ui/Buttons';
+import { view } from '../ui/Layout';
 import type { GravityDir, LevelData, LevelResult } from '../types';
 
 export interface GameplayInit { levelId?: number; daily?: boolean; level?: LevelData; headless?: boolean }
@@ -45,6 +46,8 @@ export class GameplayScene extends Phaser.Scene {
   /** Failed attempts on this level in this visit (deaths + restarts). Drives the stuck-helpers (free ghost, skip). */
   fails = 0; private coach?: Coach; private skipBtn?: Button; private edgeX = 0;
   /** Hard mode = the original flip limits (out of flips = retry). Default: flips only decide the 3rd star. Headless solver keeps limits. */
+  /** Screen-space frame for UI (HUD top edge, bottom of the play area, width). Portrait differs from the 960x540 landscape. */
+  uiW = W; uiTop = 50; uiBot = H; private uiCam?: Phaser.Cameras.Scene2D.Camera;
   get hard(): boolean { return !this.fx || save.data.settings.hardMode; }
   /** When true the scene's own update loop is idle and an external driver (solver/tests) calls stepSim. */
   manual = false; hintShown = false; hintBusy = false; pendingFlip = false; flipBuf = 0;
@@ -70,6 +73,9 @@ export class GameplayScene extends Phaser.Scene {
     this.hintTxt = undefined; this.ghost = undefined; this.bgDown = this.bgUp = this.halo = undefined; this.trail = this.burst = this.dust = undefined; this.hud = undefined; this.touch = undefined; this.shutdownFns = [];
     this.status = 'play'; this.manual = false; this.hintShown = false; this.hintBusy = false; this.pendingFlip = false; this.t = 0; this.elapsed = 0; this.started = false; this.flips = 0; this.acc = 0; this.collected = false; this.teleCd = 0; this.cpIndex = -1; this.cpSnap = null; this.rider = null; this.deaths = 0; this.fails = 0; this.coach = undefined; this.skipBtn = undefined;
 
+    const P = this.fx && view.portrait;
+    this.uiW = P ? view.w : W; this.uiTop = P ? 124 : 50; this.uiBot = P ? view.h - Math.round(view.h * 0.2) : H; this.uiCam = undefined;
+    this.cameras.main.setViewport(0, 0, this.scale.width, this.scale.height).setZoom(1).setScroll(0, 0); this.cameras.main.stopFollow(); this.cameras.main.removeBounds(); this.exitInd = undefined;
     // physics: stepped manually at a fixed 60 Hz for determinism (see stepWorld)
     const w = this.physics.world; w.pause(); w.setBounds(0, -600, W, H + 1200); w.setBoundsCollision(true, true, false, false);
 
@@ -110,10 +116,10 @@ export class GameplayScene extends Phaser.Scene {
       {
         const hardTxt = `FLIP LIMIT ${L.flipLimit} · out of flips = retry`, softTxt = `★★★  finish in ${L.flipTarget} flip${L.flipTarget === 1 ? '' : 's'}${L.collectible ? ' + grab the star' : ''}`;
         const msg = this.hard && L.flipLimit ? hardTxt : softTxt;
-        const bn = this.add.container(W / 2, H - 34).setScrollFactor(0).setDepth(60).setAlpha(0);
+        const bn = this.add.container(this.uiW / 2, this.uiBot - 34).setScrollFactor(0).setDepth(60).setAlpha(0);
         const tx = this.add.text(0, 0, msg, { fontFamily: FONT_BODY, fontSize: '16px', color: '#fde68a', fontStyle: '700' }).setOrigin(0.5);
         bn.add([this.add.rectangle(0, 0, tx.width + 34, 34, 0x0b0b1a, 0.78).setStrokeStyle(2, 0xfbbf24, 0.8), tx]);
-        this.tweens.add({ targets: bn, alpha: 1, y: H - 40, duration: 300, delay: 600, hold: 2600, yoyo: true, onComplete: () => bn.destroy() });
+        this.tweens.add({ targets: bn, alpha: 1, y: this.uiBot - 40, duration: 300, delay: 600, hold: 2600, yoyo: true, onComplete: () => bn.destroy() });
       }
       this.showHint(true);
       if (L.id === 1 && !this.daily && save.data.unlockedLevel <= 2) {
@@ -121,6 +127,7 @@ export class GameplayScene extends Phaser.Scene {
         this.edgeX = floor ? floor.x + floor.width : L.playerStart.x + 200;
         this.coach = new Coach(this, L.playerStart.x, !!this.touch?.visible, (w) => this.touch?.pulse(w));
       }
+      if (P) this.setupPortrait();
       const th = WORLDS[Math.min(WORLDS.length, Math.max(1, world)) - 1];
       audio.play('game', th.root);
       platform.gameplayStart();
@@ -146,13 +153,50 @@ export class GameplayScene extends Phaser.Scene {
     this.ready = false;
   }
 
+  // ---------------------------------------------------------------- portrait
+  /** Portrait phones: the world camera zooms so the full level height fills the play band and follows the ball sideways;
+   *  a second, unzoomed camera draws the UI (everything at depth >= 45). The bottom band is left free for the touch controls. */
+  private setupPortrait() {
+    const cam = this.cameras.main, playH = this.uiBot - this.uiTop, worldH = 560;
+    cam.setViewport(0, this.uiTop, view.w, playH);
+    cam.setZoom(playH / worldH);
+    cam.setBounds(0, (H - worldH) / 2, W, worldH);
+    // quick look at the exit first (the narrow view cannot show the whole level), then glide back to the ball
+    const follow = () => { if (this.sys.isActive()) { cam.startFollow(this.player, true, 0.12, 0, 0, 0); cam.setFollowOffset(-40, 0); } };
+    const viewW = view.w / cam.zoom;
+    if (Math.abs(this.exit.x - this.player.x) > viewW * 0.6) {
+      cam.centerOn(this.exit.x, H / 2);
+      this.time.delayedCall(700, () => { if (this.started) return follow(); cam.pan(this.player.x + 40, H / 2, 900, 'Sine.easeInOut', false, (_c: unknown, prog: number) => { if (prog >= 1) follow(); }); });
+    } else { cam.centerOn(this.player.x, H / 2); follow(); }
+    this.exitInd = this.add.text(0, 0, '', { fontFamily: FONT_HEAD, fontSize: '22px', color: '#67e8f9', fontStyle: '800', backgroundColor: 'rgba(11,11,26,0.75)', padding: { x: 8, y: 4 } }).setOrigin(0.5).setDepth(55).setVisible(false);
+    this.uiCam = this.cameras.add(0, 0, view.w, view.h).setName('ui');
+    this.splitCameras();
+    this.events.on(Phaser.Scenes.Events.PRE_RENDER, this.splitCameras, this);
+    this.shutdownFns.push(() => { this.events.off(Phaser.Scenes.Events.PRE_RENDER, this.splitCameras, this); if (this.uiCam) this.cameras.remove(this.uiCam); this.uiCam = undefined; });
+  }
+  /** Each object is drawn by exactly one camera: UI (depth >= 45) by the UI camera, the level by the zoomed world camera. */
+  private exitInd?: Phaser.GameObjects.Text;
+  /** Portrait: an edge marker pointing at the exit while it is off-screen. */
+  private updateExitInd() {
+    const ind = this.exitInd, cam = this.cameras.main; if (!ind || !this.exit) return;
+    const sx = (this.exit.x - cam.worldView.x) * cam.zoom, sy = this.uiTop + (this.exit.y - cam.worldView.y) * cam.zoom;
+    const off = sx < 0 ? -1 : sx > view.w ? 1 : 0;
+    ind.setVisible(off !== 0 && this.status !== 'won');
+    if (off) ind.setText(off > 0 ? 'EXIT ›' : '‹ EXIT').setPosition(off > 0 ? view.w - 52 : 52, Phaser.Math.Clamp(sy, this.uiTop + 24, this.uiBot - 24));
+  }
+  private splitCameras() {
+    const ui = this.uiCam; if (!ui) return;
+    const main = this.cameras.main;
+    for (const o of this.children.list) (o as any).cameraFilter = (o as any).depth >= 45 ? main.id : ui.id;
+  }
+
   // ---------------------------------------------------------------- visuals
   private halo?: Phaser.GameObjects.Image;
   private buildBackground(world: number) {
     this.bgDown = this.add.image(W / 2, H / 2, bgKey(this, world, false, this.level.id)).setDepth(-20);
     this.bgUp = this.add.image(W / 2, H / 2, bgKey(this, world, true, this.level.id)).setDepth(-19).setAlpha(this.level.gravity === 'up' ? 1 : 0);
     const th = WORLDS[Math.min(WORLDS.length, Math.max(1, world)) - 1];
-    this.add.image(W / 2, H / 2, 'vignette').setScale(2).setDepth(45).setScrollFactor(0).setAlpha(0.8);
+    if (!view.portrait) this.add.image(W / 2, H / 2, 'vignette').setScale(2).setDepth(45).setScrollFactor(0).setAlpha(0.8);
     if (!save.data.settings.reduceMotion) this.add.particles(0, 0, 'glow', { x: { min: 0, max: W }, y: { min: 60, max: H }, lifespan: { min: 4000, max: 8000 }, speedY: { min: -14, max: -4 }, speedX: { min: -6, max: 6 }, scale: { start: 0.12, end: 0.02 }, alpha: { start: 0, end: 0.45, ease: 'Sine.easeInOut' }, frequency: 220, tint: th.accent, blendMode: 'ADD' }).setDepth(-17);
   }
   private buildFx() {
@@ -357,9 +401,9 @@ export class GameplayScene extends Phaser.Scene {
     if (this.status !== 'play') return;
     if (this.fx) {
       audio.sfx('out');
-      const t = this.add.text(W / 2, 250, 'OUT OF FLIPS!', { fontFamily: FONT_HEAD, fontSize: '64px', color: '#fb7185', fontStyle: '800' }).setOrigin(0.5).setDepth(70).setStroke('#450a0a', 10).setScale(0.6);
+      const t = this.add.text(this.uiW / 2, (this.uiTop + this.uiBot) / 2, 'OUT OF FLIPS!', { fontFamily: FONT_HEAD, fontSize: '64px', color: '#fb7185', fontStyle: '800' }).setOrigin(0.5).setDepth(70).setStroke('#450a0a', 10).setScale(0.6);
       this.tweens.add({ targets: t, scale: 1, duration: 200, ease: 'Back.easeOut' });
-      this.tweens.add({ targets: t, alpha: 0, y: 220, delay: 650, duration: 350, onComplete: () => t.destroy() });
+      this.tweens.add({ targets: t, alpha: 0, y: (this.uiTop + this.uiBot) / 2 - 30, delay: 650, duration: 350, onComplete: () => t.destroy() });
       this.hud?.flash();
     }
     this.die();
@@ -384,7 +428,7 @@ export class GameplayScene extends Phaser.Scene {
     audio.sfx('win'); P.setExpr('happy');
     this.tweens.add({ targets: P, x: this.exit.x, y: this.exit.y, scale: 0.2, angle: 360, duration: 500, ease: 'Cubic.easeIn' });
     this.burst?.setParticleTint(0xfbbf24).explode(50, this.exit.x, this.exit.y);
-    this.hud?.pauseBtn.setEnabled(false);
+    this.hud?.pauseBtn.setEnabled(false); this.touch?.hide();
     const result = this.commit(res);
     platform.gameplayStop();
     this.time.delayedCall(950, () => { this.scene.launch('LevelComplete', { result, level: L, daily: this.daily }); this.scene.bringToTop('LevelComplete'); });
@@ -423,13 +467,13 @@ export class GameplayScene extends Phaser.Scene {
       this.toast(this.daily ? 'Tip: tap ? for a hint' : 'Stuck? Tap ? — the ghost hint is free now');
     }
     if (this.fails >= 6 && !this.daily && !this.skipBtn && this.level.id < TOTAL_LEVELS) {
-      this.skipBtn = new Button(this, W - 96, H - 34, 'SKIP LEVEL ›', () => this.skipLevel(), { w: 170, h: 42, size: 18, color: 0x475569, depth: 61 });
+      this.skipBtn = new Button(this, this.uiW - 96, this.uiBot - 34, 'SKIP LEVEL ›', () => this.skipLevel(), { w: 170, h: 42, size: 18, color: 0x475569, depth: 61 });
       this.skipBtn.setAlpha(0); this.tweens.add({ targets: this.skipBtn, alpha: 1, duration: 300 });
     }
   }
   private toast(msg: string) {
-    const t = this.add.text(W / 2, H - 92, msg, { fontFamily: FONT_BODY, fontSize: '18px', color: '#ffffff', fontStyle: '700', backgroundColor: 'rgba(8,145,178,0.92)', padding: { x: 16, y: 8 } }).setOrigin(0.5).setDepth(62).setAlpha(0);
-    this.tweens.add({ targets: t, alpha: 1, y: H - 100, duration: 250, hold: 2800, yoyo: true, onComplete: () => t.destroy() });
+    const t = this.add.text(this.uiW / 2, this.uiBot - 92, msg, { fontFamily: FONT_BODY, fontSize: '18px', color: '#ffffff', fontStyle: '700', backgroundColor: 'rgba(8,145,178,0.92)', padding: { x: 16, y: 8 } }).setOrigin(0.5).setDepth(62).setAlpha(0);
+    this.tweens.add({ targets: t, alpha: 1, y: this.uiBot - 100, duration: 250, hold: 2800, yoyo: true, onComplete: () => t.destroy() });
   }
   /** Free skip: unlocks the next level without stars, so a stuck player keeps playing instead of leaving. */
   skipLevel() {
@@ -477,7 +521,7 @@ export class GameplayScene extends Phaser.Scene {
   showHint(auto = false) {
     const txt = this.level.hint ? this.tokens(this.level.hint) : '';
     if (!this.hintTxt) {
-      this.hintTxt = this.add.text(W / 2, 74, '', { fontFamily: FONT_BODY, fontSize: '17px', color: '#fff', fontStyle: '600', backgroundColor: 'rgba(11,11,26,0.72)', padding: { x: 16, y: 8 }, align: 'center' }).setOrigin(0.5, 0).setDepth(45);
+      this.hintTxt = this.add.text(this.uiW / 2, this.uiTop + 24, '', { fontFamily: FONT_BODY, fontSize: view.portrait ? '20px' : '17px', color: '#fff', fontStyle: '600', backgroundColor: 'rgba(11,11,26,0.72)', padding: { x: 16, y: 8 }, align: 'center', wordWrap: { width: this.uiW - 40 } }).setOrigin(0.5, 0).setDepth(45);
     }
     const par = this.level.flipTarget, tip = `★★★ in ${par} flip${par === 1 ? '' : 's'}.${this.daily ? '' : '  Tap ? to watch a ghost show the way.'}`;
     if (!txt) { if (!auto) this.hintTxt.setText(tip).setAlpha(1); else this.hintTxt.setAlpha(0); }
@@ -487,6 +531,7 @@ export class GameplayScene extends Phaser.Scene {
   }
 
   update(_t: number, delta: number) {
+    if (this.exitInd) this.updateExitInd();
     if (this.halo && this.player) this.halo.setPosition(this.player.x, this.player.y);
     if (!this.ready || this.manual) return;
     const { frame, restart, pause } = this.inp.poll();

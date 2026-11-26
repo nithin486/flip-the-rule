@@ -2,6 +2,7 @@ import { platform } from '../platform';
 import Phaser from 'phaser';
 import { save } from '../systems/SaveSystem';
 import type { InputSystem } from '../systems/InputSystem';
+import { view } from './Layout';
 
 /**
  * On-screen controls as real DOM buttons fixed to the screen corners (outside the canvas wherever the
@@ -17,7 +18,7 @@ export class TouchControls {
       const st = document.createElement('style'); st.id = 'touch-ui-css';
       st.textContent = `
 #touch-ui{position:fixed;inset:0;z-index:5;pointer-events:none;display:none;--s:60px}
-#touch-ui .tb{position:absolute;bottom:max(10px,env(safe-area-inset-bottom,0px));pointer-events:auto;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+#touch-ui .tb{position:absolute;bottom:max(14px,env(safe-area-inset-bottom,0px));pointer-events:auto;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 #touch-ui .tb::before{content:"";position:absolute;inset:-14px}
 #touch-ui #tb-pad{left:max(12px,env(safe-area-inset-left,0px));display:flex;gap:calc(var(--s)*.12);height:calc(var(--s)*1.3)}
 #touch-ui .ar{width:calc(var(--s)*.98);height:100%;border-radius:calc(var(--s)*.42);display:flex;align-items:center;justify-content:center;color:#fff;font:800 calc(var(--s)*.78)/1 'Baloo 2','Trebuchet MS',sans-serif;
@@ -59,10 +60,11 @@ export class TouchControls {
     // Reserve gutters for the buttons so the controls never sit on top of the play field (and a thumb never hides the ball).
     const gameEl = document.getElementById('game');
     const layout = () => {
-      const sz = Math.round(Math.min(84, Math.max(50, window.innerHeight * 0.16)));
+      const sz = view.portrait ? Math.round(Math.min(104, Math.max(60, window.innerWidth * 0.19))) : Math.round(Math.min(84, Math.max(50, window.innerHeight * 0.16)));
       root.style.setProperty('--s', `${sz}px`);
       if (!gameEl) return;
-      if (!this.shown) { gameEl.style.left = '0'; gameEl.style.right = '0'; } else {
+      // portrait: the canvas reserves its own bottom band for the controls, so no side gutters are needed
+      if (!this.shown || view.portrait) { gameEl.style.left = '0'; gameEl.style.right = '0'; } else {
         gameEl.style.left = `${Math.round(sz * 2.1 + 36)}px`; gameEl.style.right = `${Math.round(sz * 1.55 + 30)}px`;
       }
       const sm = scene.scale; sm.refresh(); setTimeout(() => sm.refresh(), 60); setTimeout(() => sm.refresh(), 300);
@@ -84,5 +86,6 @@ export class TouchControls {
     this.padEl?.querySelectorAll('.ar')[1]?.classList.toggle('coach', which === 'pad');
     this.flipEl?.classList.toggle('coach', which === 'flip');
   }
+  hide() { this.root.style.display = 'none'; }
   get visible() { return this.shown; }
 }
