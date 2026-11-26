@@ -117,7 +117,7 @@ export class GameplayScene extends Phaser.Scene {
       this.hud.setFlips(0, this.flipCap, L.flipTarget);
       this.hud.setGravity(L.gravity);
       {
-        const hardTxt = `FLIP LIMIT ${L.flipLimit} · out of flips = retry`, softTxt = `★★★  finish in ${L.flipTarget} flip${L.flipTarget === 1 ? '' : 's'}${L.collectible ? ' + grab the star' : ''}`;
+        const hardTxt = `⚡ ${L.flipLimit} flips max   ·   ★★★ in ${L.flipTarget}${L.collectible ? ' + star' : ''}`, softTxt = `★★★  finish in ${L.flipTarget} flip${L.flipTarget === 1 ? '' : 's'}${L.collectible ? ' + grab the star' : ''}`;
         const msg = this.hard && L.flipLimit ? hardTxt : softTxt;
         // goal card just under the HUD (it used to sit over the floor platforms); the level hint follows once it fades
         const by = this.uiTop + 30, bn = this.add.container(this.uiW / 2, by - 12).setDepth(60).setAlpha(0);
