@@ -44,7 +44,7 @@ export class LevelSelectScene extends Phaser.Scene {
       new Button(this, W - 66, H / 2 + 10, '›', () => this.shift(1), { w: 52, h: 92, size: 40, color: th.accent }).setEnabled(this.world < WORLDS.length);
     }
     // tiles
-    const cols = P ? 3 : 5, tw = P ? 132 : 118, gap = P ? 24 : 20, x0 = VW / 2 - (Math.min(cols, n) * tw + (Math.min(cols, n) - 1) * gap) / 2 + tw / 2, y0 = P ? Math.round(VH * 0.38) : 262, rowH = tw + 74;
+    const cols = P ? 3 : 5, tw = P ? 132 : 134, gap = P ? 24 : 20, x0 = VW / 2 - (Math.min(cols, n) * tw + (Math.min(cols, n) - 1) * gap) / 2 + tw / 2, y0 = P ? Math.round(VH * 0.38) : 284, rowH = tw + 74;
     for (let i = 0; i < n; i++) {
       const id = th.first + i, row = Math.floor(i / cols), inRow = Math.min(cols, n - row * cols), c = i % cols;
       const x = VW / 2 - (inRow * tw + (inRow - 1) * gap) / 2 + tw / 2 + c * (tw + gap), y = y0 + row * rowH; void x0;

@@ -14,10 +14,10 @@ export class SettingsScene extends Phaser.Scene {
     panel(this, W / 2, H / 2, 600, 500);
     title(this, W / 2, H / 2 - 210, 'SETTINGS', 42);
     const s = save.data.settings; const up = () => { save.save(); audio.applySettings(); };
-    toggle(this, W / 2 - 120, H / 2 - 150, 'Music', () => s.music, (v) => { s.music = v; up(); });
-    toggle(this, W / 2 - 120, H / 2 - 100, 'Sound effects', () => s.sound, (v) => { s.sound = v; up(); });
-    toggle(this, W / 2 - 120, H / 2 - 50, 'Reduce motion & flashes', () => s.reduceMotion, (v) => { s.reduceMotion = v; up(); });
-    toggle(this, W / 2 - 120, H / 2 - 0, 'Hard mode (limited flips)', () => s.hardMode, (v) => { s.hardMode = v; up(); });
+    toggle(this, W / 2 - 40, H / 2 - 150, 'Music', () => s.music, (v) => { s.music = v; up(); });
+    toggle(this, W / 2 - 40, H / 2 - 100, 'Sound effects', () => s.sound, (v) => { s.sound = v; up(); });
+    toggle(this, W / 2 - 40, H / 2 - 50, 'Reduce motion & flashes', () => s.reduceMotion, (v) => { s.reduceMotion = v; up(); });
+    toggle(this, W / 2 - 40, H / 2 - 0, 'Hard mode (limited flips)', () => s.hardMode, (v) => { s.hardMode = v; up(); });
     const modes = ['auto', 'on', 'off'] as const;
     const tc = new Button(this, W / 2, H / 2 + 52, '', () => { s.touchControls = modes[(modes.indexOf(s.touchControls) + 1) % 3]; tc.setLabel(`Touch controls: ${s.touchControls.toUpperCase()}`); up(); }, { w: 320, h: 40, size: 18, color: 0x475569, font: 'body' });
     tc.setLabel(`Touch controls: ${s.touchControls.toUpperCase()}`);

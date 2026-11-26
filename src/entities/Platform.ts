@@ -20,7 +20,12 @@ export class Platform {
     const b = this.sprite.body as Phaser.Physics.Arcade.Body;
     b.setAllowGravity(false); b.setImmovable(true); b.pushable = false;
     b.setSize(def.width, def.height);
+    // soft contact shadow so slabs sit in the scene instead of floating as flat strips (visual only)
+    if (fx) this.shade = scene.add.image(this.bx, this.by, 'glow').setTint(0x02010a).setAlpha(0.5).setDisplaySize(def.width + 46, def.height + 40).setDepth(1);
   }
+  shade?: Phaser.GameObjects.Image;
+  /** Keep the shadow under the slab (moving, shaking, collapsing, phasing). Called once per render frame. */
+  syncShade() { const s = this.shade; if (!s) return; s.setPosition(this.sprite.x, this.sprite.y).setAlpha(0.5 * this.sprite.alpha).setAngle(this.sprite.angle); }
   get body() { return this.sprite.body as Phaser.Physics.Arcade.Body; }
   get active() { return this.state !== 2 && this.phaseOn; }
 

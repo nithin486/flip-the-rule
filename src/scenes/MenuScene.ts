@@ -73,7 +73,7 @@ export class MenuScene extends Phaser.Scene {
     new Button(this, W / 2 + 150, 350, 'LEVEL SELECT', () => this.go('LevelSelect'), { w: 330, h: 56, size: 24, color: 0x7c3aed });
     const done = !!save.data.daily.completed[LevelSystem.dateKey()];
     new Button(this, W / 2 + 150, 418, done ? 'DAILY CHALLENGE ✓' : 'DAILY CHALLENGE', () => this.go('Gameplay', { daily: true }), { w: 330, h: 56, size: 24, color: 0x3b82f6 });
-    new Button(this, 190, 250, 'BALL SKINS', () => this.scene.launch('Skins', { from: 'Menu' }), { w: 190, h: 44, size: 18, color: 0xdb2777 });
+    new Button(this, 190, 278, 'BALL SKINS', () => this.scene.launch('Skins', { from: 'Menu' }), { w: 190, h: 44, size: 18, color: 0xdb2777 });
     new Button(this, W / 2 + 150, 486, 'SETTINGS', () => this.scene.launch('Settings', { from: 'Menu' }), { w: 330, h: 50, size: 22, color: 0x475569 });
 
     // --- progress ---
@@ -89,7 +89,7 @@ export class MenuScene extends Phaser.Scene {
     const vi = save.visitInfo, got = vi.newDay ? SKINS.findIndex((sk) => sk.streak === vi.streak) : -1, nxt = nextStreakSkin();
     if (got >= 0 || nxt) {
       const msg = got >= 0 ? `🎁 Day ${vi.streak} in a row! New skin unlocked: ${SKINS[got].name.toUpperCase()}` : `🎁 Play tomorrow too: ${nxt!.streak}-day streak unlocks the ${nxt!.name.toUpperCase()} skin`;
-      const t = this.add.text(190, 214, msg, { fontFamily: FONT_BODY, fontSize: '13px', color: '#fff7ed', fontStyle: '700', backgroundColor: 'rgba(194,65,12,0.88)', padding: { x: 10, y: 6 }, wordWrap: { width: 300 }, align: 'center' }).setOrigin(0.5).setDepth(5);
+      const t = this.add.text(190, 228, msg, { fontFamily: FONT_BODY, fontSize: '13px', color: '#fff7ed', fontStyle: '700', backgroundColor: 'rgba(194,65,12,0.88)', padding: { x: 10, y: 6 }, wordWrap: { width: 300 }, align: 'center' }).setOrigin(0.5).setDepth(5);
       if (got >= 0) { save.data.skin = got; save.save(); this.tweens.add({ targets: t, scale: 1.08, yoyo: true, repeat: 3, duration: 300 }); }
     }
     this.input.keyboard!.on('keydown-ENTER', () => this.go('Gameplay', { levelId: next }));
