@@ -3,6 +3,7 @@
 <script type="module">
 import '../src/main.ts';
 import { CoverScene } from './CoverScene.ts';
+import { hires } from '../src/ui/HiRes.ts';
 const q = new URLSearchParams(location.search), w = +q.get('w'), h = +q.get('h');
 const iv = setInterval(() => {
   const f = window.__ftr; if (!f) return;
@@ -10,7 +11,7 @@ const iv = setInterval(() => {
   if (!act.includes('Gameplay') && !act.includes('Menu')) return;
   clearInterval(iv);
   act.forEach((k) => g.scene.stop(k)); document.getElementById('touch-ui')?.remove();
-  g.scale.setGameSize(w, h); g.scale.refresh();
+  hires.res = 1; g.scale.setGameSize(w, h); g.scale.refresh();
   if (!g.scene.getScene('Cover')) g.scene.add('Cover', CoverScene, false);
   g.scene.start('Cover');
 }, 100);

@@ -21,7 +21,7 @@ export class CoverScene extends Phaser.Scene {
     const plx = portrait || square ? cx : VW * 0.62;
     const key = platformKey(this, Math.round(pw / k), 26, 1, 'solid');
     this.add.image(plx - pw * 0.18, floorY, key).setScale(k);
-    this.add.image(plx + pw * 0.22, ceilY, key).setScale(k);
+    this.add.image(plx + pw * 0.22 + (portrait || square ? 0 : 90 * k), ceilY, key).setScale(k);
     // spikes on the floor and a portal on the ceiling
     for (let i = 0; i < 4; i++) this.add.image(plx + pw * 0.12 + i * 22 * k, floorY - 20 * k, 'spike').setScale(k * 1.2);
     const ex = plx + pw * 0.56, ey = ceilY + 46 * k;

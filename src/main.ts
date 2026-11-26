@@ -18,11 +18,15 @@ import { SettingsScene } from './scenes/SettingsScene';
 import { SkinsScene } from './scenes/SkinsScene';
 import { LevelSystem } from './systems/LevelSystem';
 import { applyOrientation } from './ui/Layout';
+import { hires, installHiRes, pickRes } from './ui/HiRes';
+
+installHiRes();
+hires.res = pickRes(W, H);
 
 const game = new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'game',
-  width: W, height: H,
+  width: Math.round(W * hires.res), height: Math.round(H * hires.res),
   backgroundColor: '#0B0B1A',
   scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
   physics: { default: 'arcade', arcade: { gravity: { x: 0, y: 0 }, fixedStep: true, fps: 60, tileBias: 24 } },

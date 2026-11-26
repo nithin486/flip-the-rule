@@ -1,6 +1,7 @@
 import { save } from '../systems/SaveSystem';
 import Phaser from 'phaser';
 import { H, W, WORLDS, worldOfLevel } from '../config/gameConfig';
+import { hires } from './HiRes';
 
 type Draw = (c: CanvasRenderingContext2D, w: number, h: number) => void;
 const hex = (n: number, a?: number) => a === undefined ? '#' + n.toString(16).padStart(6, '0') : `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
@@ -9,10 +10,15 @@ const mix = (a: number, b: number, t: number) => {
   return ((ar + (br - ar) * t) << 16) | ((ag + (bg - ag) * t) << 8) | (ab + (bb - ab) * t);
 };
 
-export function canvasTex(scene: Phaser.Scene, key: string, w: number, h: number, draw: Draw) {
+export function canvasTex(scene: Phaser.Scene, key: string, w: number, h: number, draw: Draw, sharp = true) {
   if (scene.textures.exists(key)) return key;
-  const t = scene.textures.createCanvas(key, w, h)!;
-  const c = t.getContext(); draw(c, w, h); t.refresh();
+  // Drawn at the real pixel density (see HiRes.ts) but kept at its logical size, so every sprite, hit area and physics
+  // body that uses it stays exactly as before. Canvas-renderer fallback (no WebGL) keeps 1x.
+  const webgl = scene.sys.game.renderer.type === Phaser.WEBGL, k = sharp && webgl ? hires.res : 1;
+  const cw = Math.ceil(w * k), ch = Math.ceil(h * k);
+  const t = scene.textures.createCanvas(key, cw, ch)!;
+  const c = t.getContext(); c.save(); c.scale(cw / w, ch / h); draw(c, w, h); c.restore(); t.refresh();
+  if (k !== 1) { const src = t.source[0]; src.width = w; src.height = h; t.get().setSize(w, h); }
   return key;
 }
 const rr = (c: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) => {
@@ -161,7 +167,7 @@ export function mulberry(a: number) { return () => { a |= 0; a = (a + 0x6d2b79f5
 
 export function bgKey(scene: Phaser.Scene, world: number, flipped: boolean, variant = 0) {
   const th = WORLDS.find((w) => w.id === world) ?? WORLDS[0];
-  return canvasTex(scene, `bg_${world}_${variant}_${flipped ? 1 : 0}`, W, H, (c) => drawSky(c, th.skyTop, th.skyBottom, flipped, world, variant));
+  return canvasTex(scene, `bg_${world}_${variant}_${flipped ? 1 : 0}`, W, H, (c) => drawSky(c, th.skyTop, th.skyBottom, flipped, world, variant), false);
 }
 
 // ---------------- platforms ----------------
@@ -334,8 +340,8 @@ export function makeBaseTextures(scene: Phaser.Scene) {
   // player variants
   SKINS.forEach((sk, si) => (['idle', 'blink', 'happy', 'dead', 'flip'] as Expr[]).forEach((e) => [-1, 0, 1].forEach((look) => canvasTex(scene, playerKey(e, look, si), 44, 44, (c) => drawPlayer(c, e, look, sk)))));
   // ---- UI polish textures ----
-  canvasTex(scene, 'vignette', 480, 270, (c, w, h) => { const g = c.createRadialGradient(w / 2, h / 2, h * 0.38, w / 2, h / 2, w * 0.62); g.addColorStop(0, 'rgba(5,3,22,0)'); g.addColorStop(1, 'rgba(5,3,22,0.72)'); c.fillStyle = g; c.fillRect(0, 0, w, h); });
-  canvasTex(scene, 'ray', 160, 560, (c, w, h) => { const g = c.createLinearGradient(0, 0, 0, h); g.addColorStop(0, 'rgba(255,255,255,0.55)'); g.addColorStop(1, 'rgba(255,255,255,0)'); c.fillStyle = g; c.beginPath(); c.moveTo(w * 0.42, 0); c.lineTo(w * 0.58, 0); c.lineTo(w, h); c.lineTo(0, h); c.closePath(); c.fill(); });
+  canvasTex(scene, 'vignette', 480, 270, (c, w, h) => { const g = c.createRadialGradient(w / 2, h / 2, h * 0.38, w / 2, h / 2, w * 0.62); g.addColorStop(0, 'rgba(5,3,22,0)'); g.addColorStop(1, 'rgba(5,3,22,0.72)'); c.fillStyle = g; c.fillRect(0, 0, w, h); }, false);
+  canvasTex(scene, 'ray', 160, 560, (c, w, h) => { const g = c.createLinearGradient(0, 0, 0, h); g.addColorStop(0, 'rgba(255,255,255,0.55)'); g.addColorStop(1, 'rgba(255,255,255,0)'); c.fillStyle = g; c.beginPath(); c.moveTo(w * 0.42, 0); c.lineTo(w * 0.58, 0); c.lineTo(w, h); c.lineTo(0, h); c.closePath(); c.fill(); }, false);
   const island = (key: string, w: number, h: number, top: string, rock: string, seed: number) => canvasTex(scene, key, w, h, (c) => {
     const R = mulberry(seed); const th = h * 0.2;
     const body = c.createLinearGradient(0, th, 0, h); body.addColorStop(0, rock); body.addColorStop(1, 'rgba(10,8,40,0.95)'); c.fillStyle = body;
