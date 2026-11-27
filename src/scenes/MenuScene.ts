@@ -13,8 +13,9 @@ export class MenuScene extends Phaser.Scene {
     audio.play('menu', 57);
     this.cameras.main.fadeIn(300, 11, 11, 26);
     if (view.portrait) { this.createPortrait(); return; }
-    this.add.image(W / 2, H / 2, bgKey(this, 1, false));
-    const up = this.add.image(W / 2, H / 2, bgKey(this, 1, true)).setAlpha(0);
+    const wid = this.world().id;
+    this.add.image(W / 2, H / 2, bgKey(this, wid, false));
+    const up = this.add.image(W / 2, H / 2, bgKey(this, wid, true)).setAlpha(0);
 
     const shade = this.add.graphics(); shade.fillGradientStyle(0x0b0b2e, 0x0b0b2e, 0x2e1065, 0x2e1065, 0.28, 0.28, 0.5, 0.5).fillRect(0, 0, W, H);
     // --- atmosphere: soft light shafts, drifting clouds, twinkles ---
@@ -80,6 +81,7 @@ export class MenuScene extends Phaser.Scene {
     const started = save.totalStars() > 0 || save.data.unlockedLevel > 1;
     const play = new Button(this, W / 2 + 160, 248, started ? `PLAY · Level ${next}` : 'PLAY', () => this.go('Gameplay', { levelId: next }), { w: 340, h: 82, size: 38, color: 0x22c55e, radius: 24, solid: true });
     this.tweens.add({ targets: play, scale: 1.04, duration: 700, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+    this.shine(play);
     new Button(this, W / 2 + 160, 338, 'LEVEL SELECT', () => this.go('LevelSelect'), { w: 340, h: 58, size: 24, color: 0x7c3aed });
     const done = !!save.data.daily.completed[LevelSystem.dateKey()];
     new Button(this, W / 2 + 160, 406, done ? 'DAILY CHALLENGE ✓' : 'DAILY CHALLENGE', () => this.go('Gameplay', { daily: true }), { w: 340, h: 58, size: 24, color: 0x3b82f6 });
@@ -92,7 +94,8 @@ export class MenuScene extends Phaser.Scene {
       const g = this.add.graphics().setDepth(3); g.fillStyle(0x0b0b1a, 0.62).fillRoundedRect(x - w / 2, y - 16, w, 32, 16).lineStyle(2, col, 0.9).strokeRoundedRect(x - w / 2, y - 16, w, 32, 16);
       return this.add.text(x, y, label, { fontFamily: FONT_BODY, fontSize: '15px', color: tc, fontStyle: '700' }).setOrigin(0.5).setDepth(3);
     };
-    pill(sx, 512, 340, `★ ${s} / ${TOTAL_LEVELS * 3}    ·    Score ${save.data.totalScore.toLocaleString()}${save.data.visits.streak > 1 ? `    ·    🔥 ${save.data.visits.streak}` : ''}`, 0xfbbf24, '#fef3c7');
+    void pill; void s;
+    this.progressCard(sx, 498, 360, `★ ${s}/${TOTAL_LEVELS * 3}${save.data.visits.streak > 1 ? `  ·  🔥 ${save.data.visits.streak}` : ''}`);
     // Login streak reward / teaser (D1 hook): a streak-only skin unlocks on day 2, 3 and 5.
     const vi = save.visitInfo, got = vi.newDay ? SKINS.findIndex((sk) => sk.streak === vi.streak) : -1, nxt = nextStreakSkin();
     if (got >= 0 || nxt) {
@@ -107,8 +110,9 @@ export class MenuScene extends Phaser.Scene {
   /** Phones held upright: stacked logo, the flipping ball, then big thumb-sized buttons. */
   private createPortrait() {
     const VW = view.w, VH = view.h, cx = VW / 2;
-    coverImage(this, bgKey(this, 1, false));
-    const up = coverImage(this, bgKey(this, 1, true)).setAlpha(0);
+    const wid = this.world().id;
+    coverImage(this, bgKey(this, wid, false));
+    const up = coverImage(this, bgKey(this, wid, true)).setAlpha(0);
     const shade = this.add.graphics(); shade.fillGradientStyle(0x0b0b2e, 0x0b0b2e, 0x2e1065, 0x2e1065, 0.25, 0.25, 0.55, 0.55).fillRect(0, 0, VW, VH);
     for (let i = 0; i < 3; i++) { const cl = this.add.image(Phaser.Math.Between(0, VW), VH * (0.2 + i * 0.18), 'cloud').setScale(1.3 + i * 0.3).setAlpha(0.12).setTint(0xc4b5fd); this.tweens.add({ targets: cl, x: cl.x + (i % 2 ? -120 : 120), duration: 24000 + i * 5000, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' }); }
     for (let i = 0; i < 22; i++) { const st = this.add.image(Phaser.Math.Between(0, VW), Phaser.Math.Between(0, VH * 0.5), 'spark').setScale(Phaser.Math.FloatBetween(0.3, 0.8)).setAlpha(0.1); this.tweens.add({ targets: st, alpha: 0.9, duration: Phaser.Math.Between(900, 2200), delay: Phaser.Math.Between(0, 2000), yoyo: true, repeat: -1 }); }
@@ -132,9 +136,11 @@ export class MenuScene extends Phaser.Scene {
     // buttons
     const next = Math.min(TOTAL_LEVELS, save.data.unlockedLevel);
     const started = save.totalStars() > 0 || save.data.unlockedLevel > 1;
-    let y = Math.round(VH * 0.6);
+    this.progressCard(cx, bot + 84, 440, `★ ${save.totalStars()}/${TOTAL_LEVELS * 3}`, 1.3);
+    let y = Math.max(Math.round(VH * 0.6), bot + 84 + 116);
     const play = new Button(this, cx, y, started ? `PLAY · Level ${next}` : 'PLAY', () => this.go('Gameplay', { levelId: next }), { w: 440, h: 100, size: 44, color: 0x22c55e, radius: 26, solid: true });
     this.tweens.add({ targets: play, scale: 1.04, duration: 700, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+    this.shine(play);
     y += 104; new Button(this, cx, y, 'LEVEL SELECT', () => this.go('LevelSelect'), { w: 440, h: 72, size: 28, color: 0x7c3aed });
     const done = !!save.data.daily.completed[LevelSystem.dateKey()];
     y += 88; new Button(this, cx, y, done ? 'DAILY CHALLENGE ✓' : 'DAILY CHALLENGE', () => this.go('Gameplay', { daily: true }), { w: 440, h: 72, size: 28, color: 0x3b82f6 });
@@ -147,7 +153,7 @@ export class MenuScene extends Phaser.Scene {
       return this.add.text(x, py, label, { fontFamily: FONT_BODY, fontSize: '17px', color: tc, fontStyle: '700' }).setOrigin(0.5).setDepth(3);
     };
     const vs = save.data.visits.streak;
-    pill(cx, Math.min(VH - 36, y + 70), 420, `★ ${s} / ${TOTAL_LEVELS * 3}${vs > 1 ? `    ·    🔥 ${vs}-day streak` : ''}`, 0xfbbf24, '#fef3c7');
+    void s; if (vs > 1) pill(cx, Math.min(VH - 36, y + 70), 300, `🔥 ${vs}-day streak`, 0xfbbf24, '#fef3c7');
     const vi = save.visitInfo, got = vi.newDay ? SKINS.findIndex((sk) => sk.streak === vi.streak) : -1, nxt = nextStreakSkin();
     if (got >= 0 || nxt) {
       const msg = got >= 0 ? `🎁 Day ${vi.streak} in a row! New skin unlocked: ${SKINS[got].name.toUpperCase()}` : `🎁 Play tomorrow too: a ${nxt!.streak}-day streak unlocks the ${nxt!.name.toUpperCase()} skin`;
@@ -156,5 +162,37 @@ export class MenuScene extends Phaser.Scene {
       if (got >= 0) { save.data.skin = got; save.save(); this.tweens.add({ targets: t, scale: 1.06, yoyo: true, repeat: 3, duration: 300 }); }
     }
   }
+  /** World of the next level to play (the home page wears its sky and colours). */
+  private world() { const n = Math.min(TOTAL_LEVELS, save.data.unlockedLevel); return WORLDS.find((w) => n >= w.first && n <= w.last) ?? WORLDS[0]; }
+
+  /** "Where am I": world name, one pip per level (stars earned, the next one pulsing) and the next level's name. */
+  private progressCard(x: number, y: number, w: number, right: string, k = 1) {
+    const th = this.world(), next = Math.min(TOTAL_LEVELS, save.data.unlockedLevel), h = 66 * k;
+    const acc = Phaser.Display.Color.IntegerToColor(th.accent).lighten(18).color;
+    const g = this.add.graphics().setDepth(3);
+    g.fillStyle(0x000000, 0.28).fillRoundedRect(x - w / 2, y - h / 2 + 4, w, h, 18);
+    g.fillStyle(0x0b0b1a, 0.72).fillRoundedRect(x - w / 2, y - h / 2, w, h, 18).lineStyle(2, acc, 0.95).strokeRoundedRect(x - w / 2, y - h / 2, w, h, 18);
+    const hex = '#' + acc.toString(16).padStart(6, '0');
+    this.add.text(x - w / 2 + 16, y - 18 * k, `WORLD ${th.id} · ${th.name.toUpperCase()}`, { fontFamily: FONT_BODY, fontSize: `${Math.round(13 * k)}px`, color: hex, fontStyle: '800' }).setOrigin(0, 0.5).setDepth(4);
+    this.add.text(x + w / 2 - 16, y - 18 * k, right, { fontFamily: FONT_BODY, fontSize: `${Math.round(13 * k)}px`, color: '#fde68a', fontStyle: '800' }).setOrigin(1, 0.5).setDepth(4);
+    const lv = LevelSystem.get(next);
+    this.add.text(x + w / 2 - 16, y + 12 * k, `Next: ${lv.name}`, { fontFamily: FONT_BODY, fontSize: `${Math.round(14 * k)}px`, color: '#f5f3ff', fontStyle: '700' }).setOrigin(1, 0.5).setDepth(4);
+    for (let i = th.first; i <= th.last; i++) {
+      const px = x - w / 2 + 28 * k + (i - th.first) * 30 * k, py = y + 12 * k, st = save.stars(i), cur = i === next, pr = 10 * k;
+      const pip = this.add.graphics().setDepth(4);
+      if (st > 0) { pip.fillStyle(0xfbbf24, 1).fillCircle(px, py, pr).lineStyle(2, 0xfff7ad, 1).strokeCircle(px, py, pr); this.add.text(px, py + 1, String(st), { fontFamily: FONT_BODY, fontSize: `${Math.round(12 * k)}px`, color: '#3b2300', fontStyle: '800' }).setOrigin(0.5).setDepth(5); }
+      else if (cur) { pip.fillStyle(acc, 1).fillCircle(px, py, pr); const ring = this.add.image(px, py, 'glow').setScale(0.9 * k).setTint(acc).setBlendMode(Phaser.BlendModes.ADD).setDepth(3.5); this.tweens.add({ targets: ring, scale: 1.4 * k, alpha: 0.2, duration: 800, yoyo: true, repeat: -1 }); }
+      else pip.fillStyle(0xffffff, 0.12).fillCircle(px, py, pr - 1).lineStyle(1.5, 0xffffff, 0.35).strokeCircle(px, py, pr - 1);
+    }
+  }
+
+  /** A light glint sweeps across the button now and then: the eye goes to PLAY. */
+  private shine(btn: Button) {
+    const g = this.add.image(0, 0, 'glow').setTint(0xffffff).setBlendMode(Phaser.BlendModes.ADD).setAlpha(0).setScale(0.9, 2.2).setAngle(18);
+    btn.add(g);
+    const sweep = () => { g.setPosition(-btn.w / 2 + 20, 0).setAlpha(0); this.tweens.add({ targets: g, x: btn.w / 2 - 20, duration: 650, ease: 'Sine.easeInOut', onUpdate: (tw) => g.setAlpha(Math.sin(tw.progress * Math.PI) * 0.55) }); };
+    this.time.addEvent({ delay: 2600, startAt: 1900, loop: true, callback: sweep });
+  }
+
   private go(scene: string, data?: object) { audio.stopMusic(); this.cameras.main.fadeOut(180, 11, 11, 26); this.time.delayedCall(190, () => this.scene.start(scene, data)); }
 }
