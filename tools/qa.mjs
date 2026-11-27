@@ -4,7 +4,7 @@ import fs from 'fs';
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
 const url = process.env.URL || 'http://localhost:5173/';
-const all = [1, 2, 3, 4, 5, 6, 7, 8].flatMap((w) => JSON.parse(fs.readFileSync(new URL(`../levels/world${w}.json`, import.meta.url))));
+const all = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].flatMap((w) => JSON.parse(fs.readFileSync(new URL(`../levels/world${w}.json`, import.meta.url))));
 const b = await chromium.launch(); const p = await b.newPage({ viewport: { width: 907, height: 510 } });
 const errors = []; p.on('pageerror', (e) => errors.push(e.message)); p.on('console', (m) => { if (m.type() === 'error' && !/fonts|TUNNEL/.test(m.text())) errors.push(m.text()); });
 await p.goto(url); await p.waitForTimeout(3500);
@@ -42,7 +42,7 @@ const res = await p.evaluate(async (all) => {
   ok('checkpoint stores gravity direction', s.cpSnap && s.cpSnap.grav === 'up');
   // portal sanity + validation
   const lv = (await import(location.origin + '/src/systems/LevelSystem.ts')).LevelSystem;
-  const probs = lv.validateAll(); ok('all 40 levels validate', probs.length === 0 && lv.count() === 40, probs.join('; '));
+  const probs = lv.validateAll(); ok('all 60 levels validate', probs.length === 0 && lv.count() === 60, probs.join('; '));
   ok('every level has a flip limit >= par and a ghost solution', all.every((l) => l.flipLimit + (l.refills?.length ?? 0) >= l.flipTarget && lv.solution(l.id)?.length > 3));
   // flip limit: exceeding it ends the attempt
   s = await load(mk({ flipLimit: 2, platforms: [{ x: 40, y: 480, width: 600, height: 28 }, { x: 40, y: 250, width: 600, height: 28 }] })); s.manual = true;

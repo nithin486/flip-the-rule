@@ -16,6 +16,8 @@ window.__solve = async function (level, opts) {
   let P = 1; const periods = [];
   for (const p of level.platforms) if (p.path) periods.push(p.path.period);
   for (const h of level.hazards) if (h.type === 'saw' && h.path) periods.push(h.path.period);
+  for (const h of level.hazards) if (h.type === 'laser' || (h.type === 'spike' && h.period)) periods.push(h.period);
+  for (const p of level.platforms) if (p.kind === 'phase') periods.push(p.period ?? 3);
   for (const x of periods) P = lcm(P, Math.max(1, Math.round(x)));
   const hasT = periods.length > 0;
   const R = opts.macro;
@@ -24,7 +26,7 @@ window.__solve = async function (level, opts) {
   const key = (sn) => {
     const sw = sn.sw.join(',');
     const falls = sn.falls.map((a) => a[0]).join('');
-    return [Math.round(sn.px / (7 * opts.kq)), Math.round(sn.py / (7 * opts.kq)), Math.round(sn.vx / (45 * opts.kq)), Math.round(sn.vy / (90 * opts.kq)), sn.grav[0], sn.collected ? 1 : 0, sw, falls, sn.teleCd > 0 ? 1 : 0, sn.cd > 0 ? 1 : 0, sn.cp, sn.flips, String(sn.rf), sn.zin.join(''), hasT ? Math.floor((sn.t % P) * 5) : 0].join('|');
+    return [Math.round(sn.px / (7 * opts.kq)), Math.round(sn.py / (7 * opts.kq)), Math.round(sn.vx / (45 * opts.kq)), Math.round(sn.vy / (90 * opts.kq)), sn.grav[0], sn.collected ? 1 : 0, sw, falls, sn.teleCd > 0 ? 1 : 0, sn.cd > 0 ? 1 : 0, sn.cp, sn.flips, String(sn.rf), String(sn.ob || ''), Math.round((sn.dash || 0) * 10), sn.zin.join(''), hasT ? Math.floor((sn.t % P) * 5) : 0].join('|');
   };
   // binary heap
   const heap = [];

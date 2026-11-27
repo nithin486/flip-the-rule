@@ -4,13 +4,16 @@ export interface PathDef { dx: number; dy: number; period: number; phase?: numbe
 
 export interface PlatformDef {
   x: number; y: number; width: number; height: number; // top-left
-  kind?: 'solid' | 'falling' | 'moving' | 'ice' | 'conveyor' | 'bounce' | 'phase'; period?: number; phase?: number;
+  kind?: 'solid' | 'falling' | 'moving' | 'ice' | 'conveyor' | 'bounce' | 'phase' | 'polar' | 'boost'; period?: number; phase?: number;
+  pol?: GravityDir; // polar platforms: solid only while gravity points this way
   path?: PathDef;
   speed?: number; // conveyor belt speed, px/s (signed)
 }
 export interface SpikeDef { type: 'spike'; x: number; y: number; width: number; dir: 'up' | 'down' | 'left' | 'right'; period?: number; phase?: number; hidden?: boolean } // period => pulsing: dangerous for the first half of each cycle // x,y = top-left of the base strip
 export interface SawDef { type: 'saw'; x: number; y: number; r?: number; path?: PathDef; hidden?: boolean } // x,y centre
-export type HazardDef = SpikeDef | SawDef;
+/** Laser beam between two emitters: deadly while on (first `on` share of each period, default 0.5). x,y,width,height = beam rect. */
+export interface LaserDef { type: 'laser'; x: number; y: number; width: number; height: number; period: number; phase?: number; on?: number }
+export type HazardDef = SpikeDef | SawDef | LaserDef;
 export interface SwitchDef { id: string; x: number; y: number; dir?: 'up' | 'down' }
 export interface DoorDef { switch: string; x: number; y: number; width: number; height: number; bridge?: boolean }
 export interface PortalDef { id: string; x: number; y: number; pair: string }
@@ -27,6 +30,7 @@ export interface LevelData {
   parTime?: number; // seconds, light time bonus reference
   collectible?: Vec;
   refills?: Vec[];      // flip crystals: +1 flip each
+  orbs?: Vec[];         // gravity orbs: touching one flips gravity for free (not counted), once per attempt
   exit: Vec & { switch?: string };
   platforms: PlatformDef[];
   hazards: HazardDef[];

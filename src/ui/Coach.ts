@@ -48,7 +48,10 @@ export class Coach {
     if (this.step === 'done') return;
     if (flips > 0) { this.show('done'); return; }
     if (this.step === 'move' && x > edgeX - 40) this.show('flip');
-    this.box.setPosition(Phaser.Math.Clamp(x, 80, 880), up ? y + 64 : y - 66);
+    // keep the whole bubble on screen (the portrait camera only shows a narrow slice of the level)
+    const wv = this.scene.cameras.main.worldView, half = this.box.getBounds().width / 2 / Math.max(0.01, this.box.scale) + 10;
+    const lo = Math.max(80, wv.x + half), hi = Math.min(880, wv.right - half);
+    this.box.setPosition(lo <= hi ? Phaser.Math.Clamp(x, lo, hi) : x, up ? y + 64 : y - 66);
   }
   destroy() { this.pulse(null); this.box.destroy(); }
 }

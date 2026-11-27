@@ -8,9 +8,13 @@ import w5 from "../../levels/world5.json";
 import w6 from "../../levels/world6.json";
 import w7 from "../../levels/world7.json";
 import w8 from "../../levels/world8.json";
+import w9 from "../../levels/world9.json";
+import w10 from "../../levels/world10.json";
+import w11 from "../../levels/world11.json";
+import w12 from "../../levels/world12.json";
 import solutions from '../../levels/solutions.json';
 
-const ALL: LevelData[] = ([...w1, ...w2, ...w3, ...w4, ...w5, ...w6, ...w7, ...w8] as unknown as LevelData[]).sort((a, b) => a.id - b.id);
+const ALL: LevelData[] = ([...w1, ...w2, ...w3, ...w4, ...w5, ...w6, ...w7, ...w8, ...w9, ...w10, ...w11, ...w12] as unknown as LevelData[]).sort((a, b) => a.id - b.id);
 
 const isNum = (v: unknown): v is number => typeof v === 'number' && isFinite(v);
 const rectOverlap = (a: { x: number; y: number; w: number; h: number }, b: { x: number; y: number; w: number; h: number }) =>
@@ -87,7 +91,7 @@ export class LevelSystem {
     const path = (p?: { dx: number; dy: number }) => { if (p) { if (mx) p.dx = -p.dx; if (my) p.dy = -p.dy; } };
     for (const p of o.platforms as PlatformDef[]) { p.x = fx(p.x, p.width); p.y = fy(p.y, p.height); path(p.path); }
     for (const h of o.hazards) {
-      if (h.type === 'saw') { h.x = fx(h.x); h.y = fy(h.y); path(h.path); } else {
+      if (h.type === 'saw') { h.x = fx(h.x); h.y = fy(h.y); path(h.path); } else if (h.type === 'laser') { h.x = fx(h.x, h.width); h.y = fy(h.y, h.height); } else {
         const horiz = h.dir === 'up' || h.dir === 'down';
         if (horiz) { h.x = fx(h.x, h.width); h.y = fy(h.y, 14); if (my) h.dir = h.dir === 'up' ? 'down' : 'up'; }
         else { h.x = fx(h.x, 14); h.y = fy(h.y, h.width); if (mx) h.dir = h.dir === 'left' ? 'right' : 'left'; }
@@ -95,7 +99,9 @@ export class LevelSystem {
     }
     (o.checkpoints ?? []).forEach(pt);
     (o.refills ?? []).forEach(pt);
-    if (mx) for (const p of o.platforms as PlatformDef[]) if (p.kind === 'conveyor' && p.speed) p.speed = -p.speed;
+    (o.orbs ?? []).forEach(pt);
+    if (mx) for (const p of o.platforms as PlatformDef[]) if ((p.kind === 'conveyor' || p.kind === 'boost') && p.speed) p.speed = -p.speed;
+    if (my) for (const p of o.platforms as PlatformDef[]) if (p.kind === 'polar') p.pol = p.pol === 'up' ? 'down' : 'up';
     (o.switches ?? []).forEach((s) => { pt(s); if (my && s.dir) s.dir = s.dir === 'up' ? 'down' : 'up'; });
     (o.doors ?? []).forEach((d) => { d.x = fx(d.x, d.width); d.y = fy(d.y, d.height); });
     (o.portals ?? []).forEach(pt);

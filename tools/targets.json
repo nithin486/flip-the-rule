@@ -158,5 +158,85 @@
  "40": {
   "flipTarget": 3,
   "parTime": 16
+ },
+ "41": {
+  "flipTarget": 3,
+  "parTime": 16
+ },
+ "42": {
+  "flipTarget": 4,
+  "parTime": 16
+ },
+ "43": {
+  "flipTarget": 2,
+  "parTime": 16
+ },
+ "44": {
+  "flipTarget": 3,
+  "parTime": 16
+ },
+ "45": {
+  "flipTarget": 3,
+  "parTime": 16
+ },
+ "46": {
+  "flipTarget": 2,
+  "parTime": 16
+ },
+ "47": {
+  "flipTarget": 1,
+  "parTime": 16
+ },
+ "48": {
+  "flipTarget": 4,
+  "parTime": 16
+ },
+ "49": {
+  "flipTarget": 3,
+  "parTime": 16
+ },
+ "50": {
+  "flipTarget": 3,
+  "parTime": 16
+ },
+ "51": {
+  "flipTarget": 2,
+  "parTime": 14
+ },
+ "52": {
+  "flipTarget": 2,
+  "parTime": 14
+ },
+ "53": {
+  "flipTarget": 3,
+  "parTime": 16
+ },
+ "54": {
+  "flipTarget": 3,
+  "parTime": 16
+ },
+ "55": {
+  "flipTarget": 2,
+  "parTime": 14
+ },
+ "56": {
+  "flipTarget": 0,
+  "parTime": 18
+ },
+ "57": {
+  "flipTarget": 2,
+  "parTime": 16
+ },
+ "58": {
+  "flipTarget": 0,
+  "parTime": 16
+ },
+ "59": {
+  "flipTarget": 0,
+  "parTime": 17
+ },
+ "60": {
+  "flipTarget": 2,
+  "parTime": 14
  }
 }

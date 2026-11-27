@@ -8,21 +8,33 @@ export type FallState = 0 | 1 | 2; // intact, warning, gone
 export class Platform {
   sprite: Phaser.Physics.Arcade.Image;
   state: FallState = 0; timer = 0;
-  readonly kind: 'solid' | 'falling' | 'moving' | 'ice' | 'conveyor' | 'bounce' | 'phase'; phaseOn = true;
+  readonly kind: 'solid' | 'falling' | 'moving' | 'ice' | 'conveyor' | 'bounce' | 'phase' | 'polar' | 'boost'; phaseOn = true; polarOn = true;
   readonly bx: number; readonly by: number;
   vx = 0; vy = 0;
   constructor(public scene: Phaser.Scene, public def: PlatformDef, world: number, public fx: boolean) {
     this.kind = def.kind ?? 'solid';
     this.bx = def.x + def.width / 2; this.by = def.y + def.height / 2;
-    const key = platformKey(scene, def.width, def.height, world, this.kind, (def.speed ?? 1) < 0 ? -1 : 1);
+    const key = platformKey(scene, def.width, def.height, world, this.kind, this.kind === 'polar' ? (def.pol === 'up' ? -1 : 1) : (def.speed ?? 1) < 0 ? -1 : 1);
     this.sprite = scene.physics.add.image(this.bx, this.by, key);
     this.sprite.setDepth(5);
     const b = this.sprite.body as Phaser.Physics.Arcade.Body;
     b.setAllowGravity(false); b.setImmovable(true); b.pushable = false;
     b.setSize(def.width, def.height);
+    // soft contact shadow so slabs sit in the scene instead of floating as flat strips (visual only)
+    if (fx) this.shade = scene.add.image(this.bx, this.by, 'glow').setTint(0x02010a).setAlpha(0.5).setDisplaySize(def.width + 46, def.height + 40).setDepth(1);
   }
+  shade?: Phaser.GameObjects.Image;
+  /** Keep the shadow under the slab (moving, shaking, collapsing, phasing). Called once per render frame. */
+  syncShade() { const s = this.shade; if (!s) return; s.setPosition(this.sprite.x, this.sprite.y).setAlpha(0.5 * this.sprite.alpha).setAngle(this.sprite.angle); }
   get body() { return this.sprite.body as Phaser.Physics.Arcade.Body; }
-  get active() { return this.state !== 2 && this.phaseOn; }
+  get active() { return this.state !== 2 && this.phaseOn && this.polarOn; }
+  /** Polar platforms are solid only while the player's gravity matches their colour. */
+  setPolar(g: 'up' | 'down') {
+    if (this.kind !== 'polar') return;
+    const on = (this.def.pol ?? 'down') === g; if (on === this.polarOn) return;
+    this.polarOn = on; this.body.enable = on && this.state !== 2;
+    if (this.fx) { this.scene.tweens.killTweensOf(this.sprite); this.scene.tweens.add({ targets: this.sprite, alpha: on ? 1 : 0.22, duration: 140 }); }
+  }
 
   /** Place + set velocity for this step (kinematic path). */
   update(t: number, dt: number) {
@@ -53,7 +65,7 @@ export class Platform {
     if (this.fx) { this.scene.events.emit('fall-gone', this); this.scene.tweens.add({ targets: this.sprite, y: this.sprite.y + 260, alpha: 0, angle: 8, duration: 700, ease: 'Quad.easeIn' }); }
   }
   resetState() {
-    this.phaseOn = true; this.state = 0; this.timer = 0; this.body.enable = true;
+    this.phaseOn = true; this.polarOn = true; this.state = 0; this.timer = 0; this.body.enable = true;
     this.scene.tweens.killTweensOf(this.sprite);
     this.sprite.setAlpha(1).setAngle(0).clearTint();
     this.sprite.setPosition(this.bx, this.by); this.body.reset(this.bx, this.by); this.first = true;

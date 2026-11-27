@@ -1,0 +1,409 @@
+[
+ {
+  "id": 51,
+  "world": 11,
+  "name": "First Dash",
+  "playerStart": {
+   "x": 60,
+   "y": 463
+  },
+  "gravity": "down",
+  "flipTarget": 2,
+  "collectible": {
+   "x": 480,
+   "y": 400
+  },
+  "exit": {
+   "x": 905,
+   "y": 463
+  },
+  "platforms": [
+   {
+    "x": 0,
+    "y": 480,
+    "width": 220,
+    "height": 28
+   },
+   {
+    "x": 220,
+    "y": 480,
+    "width": 90,
+    "height": 28,
+    "kind": "boost",
+    "speed": 460
+   },
+   {
+    "x": 700,
+    "y": 480,
+    "width": 260,
+    "height": 28
+   },
+   {
+    "x": 0,
+    "y": 96,
+    "width": 960,
+    "height": 28
+   }
+  ],
+  "hazards": [
+   {
+    "type": "laser",
+    "x": 757,
+    "y": 124,
+    "width": 6,
+    "height": 356,
+    "period": 2.6,
+    "phase": 0.3,
+    "on": 0.5
+   },
+   {
+    "type": "spike",
+    "x": 260,
+    "y": 124,
+    "width": 480,
+    "dir": "down"
+   }
+  ],
+  "flipLimit": 3,
+  "parTime": 14,
+  "hint": "Dash pads fling you sideways - fast enough to clear a pit."
+ },
+ {
+  "id": 52,
+  "world": 11,
+  "name": "Ceiling Dash",
+  "playerStart": {
+   "x": 60,
+   "y": 463
+  },
+  "gravity": "down",
+  "flipTarget": 2,
+  "collectible": {
+   "x": 470,
+   "y": 180
+  },
+  "exit": {
+   "x": 905,
+   "y": 141
+  },
+  "platforms": [
+   {
+    "x": 0,
+    "y": 480,
+    "width": 200,
+    "height": 28
+   },
+   {
+    "x": 200,
+    "y": 480,
+    "width": 80,
+    "height": 28,
+    "kind": "boost",
+    "speed": 440
+   },
+   {
+    "x": 0,
+    "y": 96,
+    "width": 120,
+    "height": 28
+   },
+   {
+    "x": 400,
+    "y": 96,
+    "width": 90,
+    "height": 28,
+    "kind": "boost",
+    "speed": 460
+   },
+   {
+    "x": 490,
+    "y": 96,
+    "width": 60,
+    "height": 28
+   },
+   {
+    "x": 860,
+    "y": 96,
+    "width": 100,
+    "height": 28
+   },
+   {
+    "x": 520,
+    "y": 480,
+    "width": 100,
+    "height": 28
+   }
+  ],
+  "hazards": [
+   {
+    "type": "saw",
+    "x": 560,
+    "y": 300,
+    "r": 22,
+    "path": {
+     "dx": 0,
+     "dy": 120,
+     "period": 2.6,
+     "phase": 0
+    }
+   }
+  ],
+  "flipLimit": 3,
+  "parTime": 14
+ },
+ {
+  "id": 53,
+  "world": 11,
+  "name": "Backfire",
+  "playerStart": {
+   "x": 60,
+   "y": 463
+  },
+  "gravity": "down",
+  "flipTarget": 3,
+  "collectible": {
+   "x": 300,
+   "y": 300
+  },
+  "exit": {
+   "x": 905,
+   "y": 141
+  },
+  "platforms": [
+   {
+    "x": 0,
+    "y": 480,
+    "width": 380,
+    "height": 28
+   },
+   {
+    "x": 380,
+    "y": 480,
+    "width": 120,
+    "height": 28,
+    "kind": "boost",
+    "speed": -440
+   },
+   {
+    "x": 500,
+    "y": 480,
+    "width": 460,
+    "height": 28
+   },
+   {
+    "x": 0,
+    "y": 96,
+    "width": 960,
+    "height": 28
+   }
+  ],
+  "hazards": [
+   {
+    "type": "spike",
+    "x": 560,
+    "y": 466,
+    "width": 40,
+    "dir": "up",
+    "hidden": true
+   },
+   {
+    "type": "saw",
+    "x": 180,
+    "y": 400,
+    "r": 22
+   },
+   {
+    "type": "spike",
+    "x": 620,
+    "y": 466,
+    "width": 200,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 380,
+    "y": 124,
+    "width": 200,
+    "dir": "down"
+   }
+  ],
+  "flipLimit": 4,
+  "parTime": 16,
+  "hint": "Some pads throw you LEFT. Flip off them in time."
+ },
+ {
+  "id": 54,
+  "world": 11,
+  "name": "Slide and Dash",
+  "playerStart": {
+   "x": 60,
+   "y": 463
+  },
+  "gravity": "down",
+  "flipTarget": 3,
+  "collectible": {
+   "x": 560,
+   "y": 260
+  },
+  "exit": {
+   "x": 905,
+   "y": 463
+  },
+  "platforms": [
+   {
+    "x": 0,
+    "y": 480,
+    "width": 300,
+    "height": 28,
+    "kind": "ice"
+   },
+   {
+    "x": 300,
+    "y": 480,
+    "width": 90,
+    "height": 28,
+    "kind": "boost",
+    "speed": 420
+   },
+   {
+    "x": 720,
+    "y": 480,
+    "width": 240,
+    "height": 28
+   },
+   {
+    "x": 0,
+    "y": 96,
+    "width": 500,
+    "height": 28
+   },
+   {
+    "x": 700,
+    "y": 96,
+    "width": 260,
+    "height": 28
+   }
+  ],
+  "hazards": [
+   {
+    "type": "laser",
+    "x": 757,
+    "y": 124,
+    "width": 6,
+    "height": 356,
+    "period": 2.2,
+    "phase": 0.3,
+    "on": 0.5
+   },
+   {
+    "type": "spike",
+    "x": 820,
+    "y": 466,
+    "width": 40,
+    "dir": "up"
+   }
+  ],
+  "flipLimit": 4,
+  "parTime": 16
+ },
+ {
+  "id": 55,
+  "world": 11,
+  "name": "Dash Circuit",
+  "playerStart": {
+   "x": 60,
+   "y": 463
+  },
+  "gravity": "down",
+  "flipTarget": 2,
+  "collectible": {
+   "x": 480,
+   "y": 390
+  },
+  "exit": {
+   "x": 905,
+   "y": 141
+  },
+  "platforms": [
+   {
+    "x": 0,
+    "y": 480,
+    "width": 160,
+    "height": 28
+   },
+   {
+    "x": 160,
+    "y": 480,
+    "width": 80,
+    "height": 28,
+    "kind": "boost",
+    "speed": 440
+   },
+   {
+    "x": 400,
+    "y": 300,
+    "width": 160,
+    "height": 28,
+    "kind": "polar",
+    "pol": "up"
+   },
+   {
+    "x": 560,
+    "y": 480,
+    "width": 120,
+    "height": 28
+   },
+   {
+    "x": 560,
+    "y": 96,
+    "width": 100,
+    "height": 28,
+    "kind": "boost",
+    "speed": 440
+   },
+   {
+    "x": 660,
+    "y": 96,
+    "width": 300,
+    "height": 28
+   },
+   {
+    "x": 0,
+    "y": 96,
+    "width": 200,
+    "height": 28
+   }
+  ],
+  "hazards": [
+   {
+    "type": "saw",
+    "x": 300,
+    "y": 260,
+    "r": 22,
+    "path": {
+     "dx": 0,
+     "dy": 120,
+     "period": 2.8,
+     "phase": 0
+    }
+   },
+   {
+    "type": "spike",
+    "x": 760,
+    "y": 124,
+    "width": 40,
+    "dir": "down",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 560,
+    "y": 466,
+    "width": 30,
+    "dir": "up"
+   }
+  ],
+  "flipLimit": 2,
+  "parTime": 14
+ }
+]

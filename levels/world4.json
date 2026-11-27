@@ -546,7 +546,7 @@
     "gravity": "up"
    }
   ],
-  "flipLimit": 3,
+  "flipLimit": 2,
   "parTime": 16
  }
 ]

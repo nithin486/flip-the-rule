@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { H, W } from '../config/gameConfig';
 import { platform } from '../platform';
+import { hires, pickRes } from './HiRes';
 
 /**
  * Orientation support. Landscape: the classic 960x540 game. Portrait (phones held upright): the game canvas becomes
@@ -21,10 +22,10 @@ function portraitHeight(): number { return Phaser.Math.Clamp(Math.round(PW * win
 
 /** Applies the orientation to the game size. Returns true when the orientation (or portrait height) changed. */
 export function applyOrientation(game: Phaser.Game): boolean {
-  const p = wantPortrait(), w = p ? PW : W, h = p ? portraitHeight() : H;
-  if (p === view.portrait && w === view.w && Math.abs(h - view.h) < 24) return false;
-  view.portrait = p; view.w = w; view.h = h;
-  game.scale.setGameSize(w, h); game.scale.refresh();
+  const p = wantPortrait(), w = p ? PW : W, h = p ? portraitHeight() : H, res = pickRes(w, h);
+  if (p === view.portrait && w === view.w && Math.abs(h - view.h) < 24 && res === hires.res && game.scale.width === Math.round(w * res)) return false;
+  view.portrait = p; view.w = w; view.h = h; hires.res = res;
+  game.scale.setGameSize(Math.round(w * res), Math.round(h * res)); game.scale.refresh();
   return true;
 }
 

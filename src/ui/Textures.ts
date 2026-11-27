@@ -1,6 +1,7 @@
 import { save } from '../systems/SaveSystem';
 import Phaser from 'phaser';
 import { H, W, WORLDS, worldOfLevel } from '../config/gameConfig';
+import { hires } from './HiRes';
 
 type Draw = (c: CanvasRenderingContext2D, w: number, h: number) => void;
 const hex = (n: number, a?: number) => a === undefined ? '#' + n.toString(16).padStart(6, '0') : `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
@@ -9,10 +10,15 @@ const mix = (a: number, b: number, t: number) => {
   return ((ar + (br - ar) * t) << 16) | ((ag + (bg - ag) * t) << 8) | (ab + (bb - ab) * t);
 };
 
-export function canvasTex(scene: Phaser.Scene, key: string, w: number, h: number, draw: Draw) {
+export function canvasTex(scene: Phaser.Scene, key: string, w: number, h: number, draw: Draw, sharp = true) {
   if (scene.textures.exists(key)) return key;
-  const t = scene.textures.createCanvas(key, w, h)!;
-  const c = t.getContext(); draw(c, w, h); t.refresh();
+  // Drawn at the real pixel density (see HiRes.ts) but kept at its logical size, so every sprite, hit area and physics
+  // body that uses it stays exactly as before. Canvas-renderer fallback (no WebGL) keeps 1x.
+  const webgl = scene.sys.game.renderer.type === Phaser.WEBGL, k = sharp && webgl ? hires.res : 1;
+  const cw = Math.ceil(w * k), ch = Math.ceil(h * k);
+  const t = scene.textures.createCanvas(key, cw, ch)!;
+  const c = t.getContext(); c.save(); c.scale(cw / w, ch / h); draw(c, w, h); c.restore(); t.refresh();
+  if (k !== 1) { const src = t.source[0]; src.width = w; src.height = h; t.get().setSize(w, h); }
   return key;
 }
 const rr = (c: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) => {
@@ -41,13 +47,22 @@ export const playerKey = (e: Expr, look: number, skin = save.data.skin) => `p${s
 export function drawPlayer(c: CanvasRenderingContext2D, e: Expr, look: number, sk: Skin) {
   const S = 44, cx = S / 2, cy = S / 2, R = 19;
   c.clearRect(0, 0, S, S);
-  c.shadowColor = sk.glow; c.shadowBlur = 6;
-  const g = c.createRadialGradient(cx - 6, cy - 7, 2, cx, cy, R);
-  g.addColorStop(0, sk.c0); g.addColorStop(0.45, sk.c1); g.addColorStop(1, sk.c2);
+  // soft outer glow, glossy candy body, dark outline
+  c.shadowColor = sk.glow; c.shadowBlur = 7;
+  const g = c.createRadialGradient(cx - 6, cy - 8, 1, cx + 2, cy + 3, R + 2);
+  g.addColorStop(0, sk.c0); g.addColorStop(0.4, sk.c1); g.addColorStop(0.85, sk.c2); g.addColorStop(1, sk.line);
   c.fillStyle = g; c.beginPath(); c.arc(cx, cy, R, 0, Math.PI * 2); c.fill();
-  c.shadowBlur = 0; c.lineWidth = 2; c.strokeStyle = sk.line; c.stroke();
-  // shine
-  c.fillStyle = 'rgba(255,255,255,0.35)'; c.beginPath(); c.ellipse(cx - 7, cy - 9, 5, 3, -0.6, 0, Math.PI * 2); c.fill();
+  c.shadowBlur = 0;
+  // rim light along the lower right edge
+  c.save(); c.beginPath(); c.arc(cx, cy, R, 0, Math.PI * 2); c.clip();
+  c.strokeStyle = 'rgba(255,255,255,0.4)'; c.lineWidth = 3; c.beginPath(); c.arc(cx - 1.5, cy - 1.5, R, Math.PI * 0.05, Math.PI * 0.55); c.stroke();
+  // belly shade so the face reads as sitting on a sphere
+  const bs = c.createLinearGradient(0, cy + 4, 0, cy + R); bs.addColorStop(0, 'rgba(0,0,0,0)'); bs.addColorStop(1, 'rgba(0,0,0,0.18)'); c.fillStyle = bs; c.fillRect(0, cy + 4, S, R);
+  c.restore();
+  c.lineWidth = 2.2; c.strokeStyle = sk.line; c.beginPath(); c.arc(cx, cy, R, 0, Math.PI * 2); c.stroke();
+  // glossy highlight (big soft one + sharp small one)
+  c.fillStyle = 'rgba(255,255,255,0.32)'; c.beginPath(); c.ellipse(cx - 6, cy - 9, 8, 4.5, -0.55, 0, Math.PI * 2); c.fill();
+  c.fillStyle = 'rgba(255,255,255,0.9)'; c.beginPath(); c.ellipse(cx - 9, cy - 11, 2.6, 1.6, -0.6, 0, Math.PI * 2); c.fill();
   // face
   const ex = 6.5, ey = cy - 1, off = look * 2.2;
   const eye = (x: number) => {
@@ -56,7 +71,9 @@ export function drawPlayer(c: CanvasRenderingContext2D, e: Expr, look: number, s
     if (e === 'happy') { c.strokeStyle = '#1e1b4b'; c.lineWidth = 2.4; c.beginPath(); c.arc(x, ey + 2, 3.4, Math.PI * 1.1, Math.PI * 1.9); c.stroke(); return; }
     const big = e === 'flip' ? 5.6 : 4.8;
     c.fillStyle = '#fff'; c.beginPath(); c.ellipse(x, ey, big, big + 0.8, 0, 0, Math.PI * 2); c.fill();
-    c.fillStyle = '#1e1b4b'; c.beginPath(); c.arc(x + off, ey + 0.6, e === 'flip' ? 2.4 : 2.9, 0, Math.PI * 2); c.fill();
+    c.strokeStyle = 'rgba(30,27,75,0.35)'; c.lineWidth = 1; c.beginPath(); c.ellipse(x, ey, big, big + 0.8, 0, 0, Math.PI * 2); c.stroke();
+    c.fillStyle = sk.c2; c.beginPath(); c.arc(x + off, ey + 0.6, e === 'flip' ? 3.2 : 3.7, 0, Math.PI * 2); c.fill();
+    c.fillStyle = '#1e1b4b'; c.beginPath(); c.arc(x + off, ey + 0.6, e === 'flip' ? 2.0 : 2.4, 0, Math.PI * 2); c.fill();
     c.fillStyle = '#fff'; c.beginPath(); c.arc(x + off - 0.9, ey - 0.6, 0.9, 0, Math.PI * 2); c.fill();
   };
   eye(cx - ex + off * 0.4); eye(cx + ex + off * 0.4);
@@ -74,86 +91,134 @@ export function drawPlayer(c: CanvasRenderingContext2D, e: Expr, look: number, s
 }
 
 // ---------------- backgrounds ----------------
+/** Smooth hill silhouette through random control points (quadratic curves, not jagged lines). */
+function hills(c: CanvasRenderingContext2D, rnd: () => number, base: number, amp: number, step: number) {
+  const pts: Array<[number, number]> = [];
+  for (let x = -step; x <= W + step * 2; x += step * (0.7 + rnd() * 0.6)) pts.push([x, base - amp * (0.25 + rnd() * 0.75)]);
+  c.beginPath(); c.moveTo(-10, H + 10); c.lineTo(pts[0][0], pts[0][1]);
+  for (let i = 1; i < pts.length - 1; i++) { const [x, y] = pts[i], [nx, ny] = pts[i + 1]; c.quadraticCurveTo(x, y, (x + nx) / 2, (y + ny) / 2); }
+  c.lineTo(W + 10, H + 10); c.closePath();
+}
+/** Soft cartoon cloud bank: overlapping puffs lit from above. */
+function cloudBank(c: CanvasRenderingContext2D, rnd: () => number, cx: number, cy: number, w: number, lit: number, shade: number, a: number) {
+  const n = 5 + Math.floor(rnd() * 4), puffs: Array<[number, number, number]> = [];
+  for (let i = 0; i < n; i++) { const t = i / (n - 1); puffs.push([cx - w / 2 + t * w, cy - Math.sin(t * Math.PI) * w * 0.12 * (0.6 + rnd() * 0.6), w * (0.1 + Math.sin(t * Math.PI) * 0.12) * (0.7 + rnd() * 0.5)]); }
+  c.fillStyle = hex(shade, a); c.beginPath(); for (const [x, y, r] of puffs) { c.moveTo(x + r, y + r * 0.18); c.arc(x, y + r * 0.18, r, 0, 7); } c.rect(cx - w / 2, cy, w, w * 0.06); c.fill();
+  c.fillStyle = hex(lit, a * 0.8); c.beginPath(); for (const [x, y, r] of puffs) { c.moveTo(x - r * 0.08 + r * 0.8, y - r * 0.1); c.arc(x - r * 0.08, y - r * 0.1, r * 0.8, 0, 7); } c.fill();
+}
 function drawSky(c: CanvasRenderingContext2D, top: number, bottom: number, flipped: boolean, wid: number, variant = 0) {
   const th = WORLDS.find((w) => w.id === wid) ?? WORLDS[0];
-  const accent = flipped ? mix(th.accent, 0xff2bd6, 0.55) : th.accent, rimC = flipped ? mix(th.rim, 0xd9a8ff, 0.5) : th.rim;
-  const rnd = mulberry(wid * 77 + variant * 1291 + (flipped ? 3 : 1)), ringy = variant ? variant % 2 === 1 : wid % 2 === 1;
+  const accent = flipped ? mix(th.accent, 0xff2bd6, 0.5) : th.accent, rimC = flipped ? mix(th.rim, 0xd9a8ff, 0.5) : th.rim;
+  const sTop = flipped ? mix(top, 0x2a0748, 0.55) : top, sBot = flipped ? mix(bottom, 0x8a1ca8, 0.45) : bottom;
+  const rnd = mulberry(wid * 77 + variant * 1291 + 1);
+  if (flipped) { c.save(); c.translate(0, H); c.scale(1, -1); }
+  // sky: deep top, rich middle, warm glowing horizon band
+  const horizon = mix(mix(sBot, rimC, 0.45), 0xffffff, 0.18);
   const g = c.createLinearGradient(0, 0, 0, H);
-  if (!flipped) { g.addColorStop(0, hex(top)); g.addColorStop(1, hex(bottom)); }
-  else { g.addColorStop(0, hex(mix(bottom, 0x3b0a6b, 0.6))); g.addColorStop(1, hex(mix(top, 0x120225, 0.5))); }
+  g.addColorStop(0, hex(mix(sTop, 0x000000, 0.1))); g.addColorStop(0.45, hex(mix(sTop, sBot, 0.6))); g.addColorStop(0.78, hex(sBot)); g.addColorStop(1, hex(horizon));
   c.fillStyle = g; c.fillRect(0, 0, W, H);
-  // nebulae
+  // big soft nebula clouds
   c.globalCompositeOperation = 'lighter';
-  for (let i = 0; i < 6; i++) {
-    const x = rnd() * W, y = rnd() * H, r = 160 + rnd() * 240, col = i % 3 === 0 ? rimC : accent;
-    const ng = c.createRadialGradient(x, y, 0, x, y, r); ng.addColorStop(0, hex(col, 0.20)); ng.addColorStop(0.5, hex(col, 0.07)); ng.addColorStop(1, hex(col, 0));
+  for (let i = 0; i < 4; i++) {
+    const x = rnd() * W, y = rnd() * H * 0.6, r = 220 + rnd() * 260, col = i % 2 ? rimC : accent;
+    const ng = c.createRadialGradient(x, y, 0, x, y, r); ng.addColorStop(0, hex(col, 0.16)); ng.addColorStop(0.55, hex(col, 0.05)); ng.addColorStop(1, hex(col, 0));
     c.fillStyle = ng; c.fillRect(x - r, y - r, r * 2, r * 2);
   }
-  // stars (some with a glare cross)
-  for (let i = 0; i < 190; i++) {
-    const x = rnd() * W, y = rnd() * H, s = rnd() * 1.5 + 0.3, a = 0.25 + rnd() * 0.65;
-    c.fillStyle = `rgba(255,255,255,${a})`; c.beginPath(); c.arc(x, y, s, 0, 7); c.fill();
-    if (rnd() > 0.93) { c.strokeStyle = hex(rimC, 0.5); c.lineWidth = 1; c.beginPath(); c.moveTo(x - 7, y); c.lineTo(x + 7, y); c.moveTo(x, y - 7); c.lineTo(x, y + 7); c.stroke(); }
+  // stars: dense near the top, fading toward the horizon; a few sparkle crosses
+  for (let i = 0; i < 160; i++) {
+    const y = Math.pow(rnd(), 1.6) * H * 0.7, x = rnd() * W, s = rnd() * 1.4 + 0.3, a = (0.25 + rnd() * 0.7) * (1 - y / (H * 0.75));
+    c.fillStyle = `rgba(255,255,255,${a.toFixed(3)})`; c.beginPath(); c.arc(x, y, s, 0, 7); c.fill();
+    if (rnd() > 0.95) { const L = 5 + rnd() * 6; c.strokeStyle = hex(0xffffff, a * 0.7); c.lineWidth = 1; c.beginPath(); c.moveTo(x - L, y); c.lineTo(x + L, y); c.moveTo(x, y - L); c.lineTo(x, y + L); c.stroke(); }
   }
   c.globalCompositeOperation = 'source-over';
-  // planet with rim light (+ ring on odd worlds)
-  const px = 120 + rnd() * 720, py = flipped ? 400 + rnd() * 80 : 70 + rnd() * 90, pr = 52 + rnd() * 52;
-  if (ringy) { c.save(); c.translate(px, py); c.rotate(-0.35); c.strokeStyle = hex(rimC, 0.18); c.lineWidth = 9; c.beginPath(); c.ellipse(0, 0, pr * 1.9, pr * 0.42, 0, Math.PI, Math.PI * 2); c.stroke(); c.restore(); }
-  const pg = c.createRadialGradient(px - pr * 0.4, py - pr * 0.4, pr * 0.1, px, py, pr);
-  pg.addColorStop(0, hex(mix(accent, 0xffffff, 0.15))); pg.addColorStop(0.6, hex(mix(accent, 0x000000, 0.55))); pg.addColorStop(1, hex(mix(accent, 0x000000, 0.85)));
-  c.fillStyle = pg; c.beginPath(); c.arc(px, py, pr, 0, 7); c.fill();
-  c.save(); c.beginPath(); c.arc(px, py, pr, 0, 7); c.clip(); c.fillStyle = 'rgba(0,0,0,0.5)'; c.beginPath(); c.arc(px + pr * 0.38, py + pr * 0.3, pr * 1.02, 0, 7); c.fill(); c.restore();
-  c.strokeStyle = hex(rimC, 0.5); c.lineWidth = 2; c.beginPath(); c.arc(px, py, pr, Math.PI * 0.95, Math.PI * 1.55); c.stroke();
-  if (ringy) { c.save(); c.translate(px, py); c.rotate(-0.35); c.strokeStyle = hex(rimC, 0.4); c.lineWidth = 9; c.beginPath(); c.ellipse(0, 0, pr * 1.9, pr * 0.42, 0, 0, Math.PI); c.stroke(); c.restore(); }
-  // layered ridge silhouettes with a neon edge (bottom, or top when gravity is flipped)
-  c.save(); if (flipped) { c.translate(0, H); c.scale(1, -1); }
+  // planet: soft halo, banded surface, terminator shadow, rim light, optional ring
+  const px = 110 + rnd() * 740, py = 70 + rnd() * 80, pr = 46 + rnd() * 46, ringy = variant ? variant % 2 === 1 : wid % 2 === 1;
+  const halo = c.createRadialGradient(px, py, pr * 0.9, px, py, pr * 2.4); halo.addColorStop(0, hex(rimC, 0.22)); halo.addColorStop(1, hex(rimC, 0));
+  c.fillStyle = halo; c.fillRect(px - pr * 2.5, py - pr * 2.5, pr * 5, pr * 5);
+  const ringPath = (front: boolean) => { c.save(); c.translate(px, py); c.rotate(-0.32); const rg = c.createLinearGradient(-pr * 2, 0, pr * 2, 0); rg.addColorStop(0, hex(rimC, 0.05)); rg.addColorStop(0.5, hex(mix(rimC, 0xffffff, 0.4), front ? 0.6 : 0.3)); rg.addColorStop(1, hex(rimC, 0.05)); c.strokeStyle = rg; c.lineWidth = 7; c.beginPath(); c.ellipse(0, 0, pr * 1.85, pr * 0.4, 0, front ? 0 : Math.PI, front ? Math.PI : Math.PI * 2); c.stroke(); c.lineWidth = 2; c.strokeStyle = hex(0xffffff, front ? 0.35 : 0.15); c.beginPath(); c.ellipse(0, 0, pr * 2.05, pr * 0.46, 0, front ? 0 : Math.PI, front ? Math.PI : Math.PI * 2); c.stroke(); c.restore(); };
+  if (ringy) ringPath(false);
+  c.save(); c.beginPath(); c.arc(px, py, pr, 0, 7); c.clip();
+  const pg = c.createLinearGradient(px - pr, py - pr, px + pr, py + pr); pg.addColorStop(0, hex(mix(accent, 0xffffff, 0.45))); pg.addColorStop(0.5, hex(accent)); pg.addColorStop(1, hex(mix(accent, 0x000000, 0.6)));
+  c.fillStyle = pg; c.fillRect(px - pr, py - pr, pr * 2, pr * 2);
+  for (let b = 0; b < 5; b++) { c.fillStyle = hex(b % 2 ? 0xffffff : 0x000000, 0.07 + rnd() * 0.06); c.save(); c.translate(px, py); c.rotate(-0.32); c.fillRect(-pr, -pr + b * pr * 0.42 + rnd() * 6, pr * 2, pr * (0.1 + rnd() * 0.14)); c.restore(); }
+  const sh = c.createRadialGradient(px - pr * 0.45, py - pr * 0.5, pr * 0.2, px - pr * 0.2, py - pr * 0.2, pr * 1.5); sh.addColorStop(0, 'rgba(0,0,0,0)'); sh.addColorStop(0.6, 'rgba(0,0,0,0.15)'); sh.addColorStop(1, 'rgba(0,0,10,0.7)');
+  c.fillStyle = sh; c.fillRect(px - pr, py - pr, pr * 2, pr * 2); c.restore();
+  c.strokeStyle = hex(mix(rimC, 0xffffff, 0.4), 0.75); c.lineWidth = 2.5; c.beginPath(); c.arc(px, py, pr - 1, Math.PI * 0.95, Math.PI * 1.6); c.stroke();
+  if (ringy) ringPath(true);
+  // horizon sunrise glow behind the hills
+  { const hx = W * (0.3 + rnd() * 0.4), hg = c.createRadialGradient(hx, H * 0.86, 10, hx, H * 0.86, W * 0.6); hg.addColorStop(0, hex(mix(rimC, 0xffffff, 0.5), 0.45)); hg.addColorStop(0.4, hex(rimC, 0.14)); hg.addColorStop(1, hex(rimC, 0)); c.fillStyle = hg; c.fillRect(0, 0, W, H); }
+  // far cloud bank, lit by the horizon glow
+  for (let i = 0; i < 3; i++) cloudBank(c, rnd, rnd() * W, H * (0.5 + rnd() * 0.12), 220 + rnd() * 240, mix(horizon, 0xffffff, 0.25), mix(sBot, 0x000000, 0.1), 0.16);
+  // three smooth hill layers: hazy far, darker near, each with a rim-lit crest
   for (let L = 0; L < 3; L++) {
-    const base = H - 40 - L * 46, amp = 40 + L * 12, col = mix(bottom, 0x000000, 0.45 + L * 0.18);
-    c.beginPath(); c.moveTo(0, H); let x = 0; let y = base - rnd() * amp; c.lineTo(0, y);
-    while (x < W) { x += 34 + rnd() * 56; y = base - rnd() * amp; c.lineTo(Math.min(x, W), y); }
-    c.lineTo(W, H); c.closePath(); c.fillStyle = hex(col, 0.78); c.fill();
-    if (L === 0) { c.strokeStyle = hex(accent, 0.35); c.lineWidth = 1.5; c.stroke(); }
+    const base = H - 26 - (2 - L) * 44, amp = 70 - L * 14;
+    hills(c, rnd, base, amp, 90 + L * 30);
+    const col = mix(mix(sBot, horizon, 0.35 - L * 0.17), 0x000000, 0.25 + L * 0.22);
+    const hg = c.createLinearGradient(0, base - amp, 0, H); hg.addColorStop(0, hex(col)); hg.addColorStop(1, hex(mix(col, 0x000000, 0.45)));
+    c.fillStyle = hg; c.fill();
+    c.strokeStyle = hex(mix(rimC, 0xffffff, 0.2), 0.18 + L * 0.12); c.lineWidth = L === 2 ? 2.5 : 1.5; c.stroke();
   }
-  c.restore();
-  // vignette
-  const v = c.createRadialGradient(W / 2, H / 2, H * 0.35, W / 2, H / 2, H * 1.0); v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(2,2,12,0.6)');
+  // gentle top/bottom darkening so the play area reads first
+  const v = c.createLinearGradient(0, 0, 0, H); v.addColorStop(0, 'rgba(3,2,14,0.35)'); v.addColorStop(0.25, 'rgba(3,2,14,0)'); v.addColorStop(0.85, 'rgba(3,2,14,0)'); v.addColorStop(1, 'rgba(3,2,14,0.3)');
   c.fillStyle = v; c.fillRect(0, 0, W, H);
+  if (flipped) c.restore();
 }
 export function mulberry(a: number) { return () => { a |= 0; a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
 
 export function bgKey(scene: Phaser.Scene, world: number, flipped: boolean, variant = 0) {
   const th = WORLDS.find((w) => w.id === world) ?? WORLDS[0];
-  return canvasTex(scene, `bg_${world}_${variant}_${flipped ? 1 : 0}`, W, H, (c) => drawSky(c, th.skyTop, th.skyBottom, flipped, world, variant));
+  return canvasTex(scene, `bg_${world}_${variant}_${flipped ? 1 : 0}`, W, H, (c) => drawSky(c, th.skyTop, th.skyBottom, flipped, world, variant), false);
 }
 
 // ---------------- platforms ----------------
-export type PlatKind = 'solid' | 'falling' | 'moving' | 'ice' | 'conveyor' | 'bounce' | 'phase';
+export type PlatKind = 'solid' | 'falling' | 'moving' | 'ice' | 'conveyor' | 'bounce' | 'phase' | 'polar' | 'boost';
 export function platformKey(scene: Phaser.Scene, w: number, h: number, world: number, kind: PlatKind, dir = 1) {
   const th = WORLDS.find((x) => x.id === world) ?? WORLDS[0];
   const key = `plat_${world}_${kind}${dir < 0 ? 'L' : ''}_${w}x${h}`;
   return canvasTex(scene, key, w, h, (c) => {
-    const base = kind === 'falling' ? mix(th.rock, 0xb45309, 0.5) : kind === 'moving' ? mix(th.rock, 0x0e7490, 0.35) : kind === 'ice' ? 0x7dd3fc : kind === 'conveyor' ? mix(th.rock, 0x475569, 0.6) : kind === 'bounce' ? 0x15803d : th.rock;
-    const rim = kind === 'falling' ? 0xfcd34d : kind === 'moving' ? 0x67e8f9 : kind === 'ice' ? 0xffffff : kind === 'conveyor' ? 0xfde047 : kind === 'bounce' ? 0x86efac : kind === 'phase' ? 0xff9bf0 : th.rim;
-    const g = c.createLinearGradient(0, 0, 0, h); g.addColorStop(0, hex(mix(base, 0xffffff, 0.1))); g.addColorStop(0.5, hex(mix(base, 0x000000, 0.45))); g.addColorStop(1, hex(mix(base, 0xffffff, 0.1)));
-    rr(c, 0, 0, w, h, Math.min(10, h / 2)); c.fillStyle = g; c.fill();
-    c.save(); rr(c, 0, 0, w, h, Math.min(10, h / 2)); c.clip();
-    // rock speckles
-    const rnd = mulberry(w * 31 + h * 7);
-    c.strokeStyle = 'rgba(255,255,255,0.05)'; c.lineWidth = 1; for (let x = 36; x < w; x += 44) { c.beginPath(); c.moveTo(x, 3); c.lineTo(x, h - 3); c.stroke(); }
-    if (kind === 'falling') { c.strokeStyle = 'rgba(0,0,0,0.35)'; c.lineWidth = 1.5; for (let x = 18; x < w; x += 34) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x - 4, h * 0.4); c.lineTo(x + 3, h * 0.7); c.lineTo(x - 2, h); c.stroke(); } }
-    if (kind === 'moving') { c.fillStyle = 'rgba(103,232,249,0.55)'; for (let x = 14; x < w - 8; x += 28) { c.beginPath(); c.moveTo(x, h / 2 - 4); c.lineTo(x + 8, h / 2); c.lineTo(x, h / 2 + 4); c.closePath(); c.fill(); } }
-    if (kind === 'ice') { c.fillStyle = 'rgba(255,255,255,0.5)'; for (let x = -h; x < w + h; x += 22) { c.beginPath(); c.moveTo(x, h); c.lineTo(x + 8, h); c.lineTo(x + 8 + h, 0); c.lineTo(x + h, 0); c.closePath(); c.fill(); } }
-    if (kind === 'conveyor') { c.fillStyle = 'rgba(253,224,71,0.85)'; for (let x = 10; x < w - 10; x += 24) { c.beginPath(); if (dir > 0) { c.moveTo(x, h / 2 - 5); c.lineTo(x + 9, h / 2); c.lineTo(x, h / 2 + 5); } else { c.moveTo(x + 9, h / 2 - 5); c.lineTo(x, h / 2); c.lineTo(x + 9, h / 2 + 5); } c.closePath(); c.fill(); } }
-    if (kind === 'bounce') { c.strokeStyle = 'rgba(255,255,255,0.7)'; c.lineWidth = 2.5; for (let x = 10; x < w - 6; x += 14) { c.beginPath(); c.moveTo(x, 6); c.lineTo(x + 7, h / 2); c.lineTo(x, h - 6); c.stroke(); } }
+    const base = kind === 'falling' ? mix(th.rock, 0xb45309, 0.55) : kind === 'moving' ? mix(th.rock, 0x0e7490, 0.4) : kind === 'ice' ? 0x5fb8e8 : kind === 'conveyor' ? mix(th.rock, 0x475569, 0.65) : kind === 'bounce' ? 0x16a34a : kind === 'phase' ? mix(th.rock, 0xc026d3, 0.35) : kind === 'polar' ? (dir < 0 ? 0x9d2a9a : 0x0e7490) : kind === 'boost' ? 0xc2410c : mix(th.rock, th.accent, 0.12);
+    const rim = kind === 'falling' ? 0xfcd34d : kind === 'moving' ? 0x67e8f9 : kind === 'ice' ? 0xffffff : kind === 'conveyor' ? 0xfde047 : kind === 'bounce' ? 0x86efac : kind === 'phase' ? 0xff9bf0 : kind === 'polar' ? (dir < 0 ? 0xf0abfc : 0x67e8f9) : kind === 'boost' ? 0xfdba74 : th.rim;
+    const R = Math.min(10, h / 2), lip = Math.min(5, Math.max(3, h * 0.2));
+    // body: lit top band, darker core, softly lit underside (both faces are walkable)
+    const g = c.createLinearGradient(0, 0, 0, h);
+    g.addColorStop(0, hex(mix(base, 0xffffff, 0.28))); g.addColorStop(0.22, hex(mix(base, 0xffffff, 0.06))); g.addColorStop(0.55, hex(mix(base, 0x000000, 0.42))); g.addColorStop(0.85, hex(mix(base, 0x000000, 0.2))); g.addColorStop(1, hex(mix(base, 0xffffff, 0.12)));
+    rr(c, 0, 0, w, h, R); c.fillStyle = g; c.fill();
+    c.save(); rr(c, 0, 0, w, h, R); c.clip();
+    const rnd = mulberry(w * 31 + h * 7 + world);
+    // carved stone blocks (staggered rows when the slab is thick enough)
+    const rows = h >= 26 ? 2 : 1, rh = (h - lip * 2) / rows;
+    c.lineWidth = 1;
+    for (let r = 0; r < rows; r++) {
+      const y0 = lip + r * rh, bw = 38 + (r % 2) * 6;
+      c.strokeStyle = 'rgba(0,0,0,0.28)'; c.beginPath(); if (r) { c.moveTo(0, y0); c.lineTo(w, y0); } for (let x = (r % 2 ? bw / 2 : bw); x < w - 6; x += bw + Math.floor(rnd() * 10)) { c.moveTo(x, y0 + 1); c.lineTo(x, y0 + rh - 1); } c.stroke();
+      c.strokeStyle = 'rgba(255,255,255,0.08)'; c.beginPath(); for (let x = (r % 2 ? bw / 2 : bw) + 1; x < w - 6; x += bw + 4) { c.moveTo(x, y0 + 1); c.lineTo(x, y0 + rh - 1); } c.stroke();
+    }
+    // speckles + chips for a sculpted feel
+    for (let i = 0; i < w / 6; i++) { c.fillStyle = rnd() > 0.5 ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.16)'; c.fillRect(rnd() * w, lip + rnd() * (h - lip * 2), 1 + rnd() * 2.5, 1 + rnd() * 1.5); }
+    // kind-specific markings
+    if (kind === 'falling') { c.strokeStyle = 'rgba(30,10,0,0.55)'; c.lineWidth = 1.6; for (let x = 18; x < w; x += 30 + rnd() * 14) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x - 4, h * 0.35); c.lineTo(x + 4, h * 0.62); c.lineTo(x - 1, h); c.stroke(); } }
+    if (kind === 'moving') { c.fillStyle = 'rgba(165,243,252,0.75)'; for (let x = 14; x < w - 8; x += 26) { c.beginPath(); c.moveTo(x, h / 2 - 4); c.lineTo(x + 8, h / 2); c.lineTo(x, h / 2 + 4); c.closePath(); c.fill(); } }
+    if (kind === 'ice') { const ig = c.createLinearGradient(0, 0, w, h); ig.addColorStop(0, 'rgba(255,255,255,0.35)'); ig.addColorStop(1, 'rgba(255,255,255,0.05)'); c.fillStyle = ig; c.fillRect(0, 0, w, h); c.fillStyle = 'rgba(255,255,255,0.45)'; for (let x = -h; x < w + h; x += 26) { c.beginPath(); c.moveTo(x, h); c.lineTo(x + 6, h); c.lineTo(x + 6 + h, 0); c.lineTo(x + h, 0); c.closePath(); c.fill(); } }
+    if (kind === 'conveyor') { c.fillStyle = 'rgba(15,23,42,0.55)'; c.fillRect(0, lip, w, h - lip * 2); c.fillStyle = 'rgba(253,224,71,0.95)'; for (let x = 10; x < w - 10; x += 22) { c.beginPath(); if (dir > 0) { c.moveTo(x, h / 2 - 5); c.lineTo(x + 9, h / 2); c.lineTo(x, h / 2 + 5); } else { c.moveTo(x + 9, h / 2 - 5); c.lineTo(x, h / 2); c.lineTo(x + 9, h / 2 + 5); } c.closePath(); c.fill(); } }
+    if (kind === 'bounce') { c.strokeStyle = 'rgba(255,255,255,0.8)'; c.lineWidth = 2.5; for (let x = 10; x < w - 6; x += 14) { c.beginPath(); c.moveTo(x, 6); c.lineTo(x + 7, h / 2); c.lineTo(x, h - 6); c.stroke(); } }
+    if (kind === 'phase') { c.fillStyle = 'rgba(255,155,240,0.18)'; for (let x = 0; x < w; x += 12) c.fillRect(x, 0, 6, h); }
+    // polar: arrows show which gravity makes it solid (cyan = gravity down, pink = gravity up)
+    if (kind === 'polar') { c.fillStyle = dir < 0 ? 'rgba(250,232,255,0.85)' : 'rgba(207,250,254,0.85)'; for (let x = 16; x < w - 10; x += 30) { c.beginPath(); if (dir < 0) { c.moveTo(x, h / 2 + 4); c.lineTo(x + 6, h / 2 - 4); c.lineTo(x + 12, h / 2 + 4); } else { c.moveTo(x, h / 2 - 4); c.lineTo(x + 6, h / 2 + 4); c.lineTo(x + 12, h / 2 - 4); } c.lineWidth = 2.5; c.strokeStyle = c.fillStyle as string; c.stroke(); } }
+    // dash pad: double chevrons pointing the launch direction
+    if (kind === 'boost') { c.fillStyle = 'rgba(15,23,42,0.45)'; c.fillRect(0, lip, w, h - lip * 2); c.fillStyle = 'rgba(254,215,170,0.95)'; for (let x = 8; x < w - 14; x += 18) for (const o of [0, 7]) { c.beginPath(); if (dir > 0) { c.moveTo(x + o, h / 2 - 6); c.lineTo(x + o + 6, h / 2); c.lineTo(x + o, h / 2 + 6); } else { c.moveTo(x + o + 6, h / 2 - 6); c.lineTo(x + o, h / 2); c.lineTo(x + o + 6, h / 2 + 6); } c.lineTo(x + o + (dir > 0 ? 2 : 4), h / 2); c.closePath(); c.fill(); } }
+    // inner bevel: light from above, shade below the lip
+    c.fillStyle = 'rgba(255,255,255,0.22)'; c.fillRect(0, lip - 1, w, 1);
+    c.fillStyle = 'rgba(0,0,0,0.3)'; c.fillRect(0, lip, w, 2); c.fillRect(0, h - lip - 2, w, 2);
+    // metal end caps with rivets
+    if (w >= 40) for (const x of [0, w - 9]) { const mg = c.createLinearGradient(x, 0, x + 9, 0); mg.addColorStop(0, 'rgba(226,232,240,0.55)'); mg.addColorStop(1, 'rgba(71,85,105,0.55)'); c.fillStyle = mg; c.fillRect(x, lip, 9, h - lip * 2); if (h >= 18) { c.fillStyle = 'rgba(255,255,255,0.7)'; c.beginPath(); c.arc(x + 4.5, h / 2, 1.6, 0, 7); c.fill(); } }
     c.restore();
-    // glowing rims on BOTH faces: both are walkable
-    c.lineCap = 'round'; c.shadowBlur = 0; c.lineWidth = 9; c.strokeStyle = hex(rim, 0.18);
-    c.beginPath(); c.moveTo(Math.min(8, w / 2), 2); c.lineTo(w - Math.min(8, w / 2), 2); c.stroke(); c.beginPath(); c.moveTo(Math.min(8, w / 2), h - 2); c.lineTo(w - Math.min(8, w / 2), h - 2); c.stroke();
-    c.lineWidth = 3.5; c.strokeStyle = hex(rim);
-    c.shadowColor = hex(rim); c.shadowBlur = 14;
-    c.beginPath(); c.moveTo(Math.min(8, w / 2), 1.5); c.lineTo(w - Math.min(8, w / 2), 1.5); c.stroke();
-    c.beginPath(); c.moveTo(Math.min(8, w / 2), h - 1.5); c.lineTo(w - Math.min(8, w / 2), h - 1.5); c.stroke();
-    c.shadowBlur = 0; c.lineWidth = 2; c.strokeStyle = 'rgba(11,11,26,0.7)'; rr(c, 1, 1, w - 2, h - 2, Math.min(10, h / 2)); c.stroke();
+    // glowing crystal lips on BOTH faces (both are walkable)
+    const lipLine = (y: number) => { c.beginPath(); c.moveTo(Math.min(R, w / 2), y); c.lineTo(w - Math.min(R, w / 2), y); c.stroke(); };
+    c.lineCap = 'round';
+    c.lineWidth = 8; c.strokeStyle = hex(rim, 0.16); lipLine(2); lipLine(h - 2);
+    c.lineWidth = 3.5; c.strokeStyle = hex(rim); c.shadowColor = hex(rim); c.shadowBlur = 12; lipLine(1.6); lipLine(h - 1.6);
+    c.shadowBlur = 0; c.lineWidth = 1.2; c.strokeStyle = 'rgba(255,255,255,0.85)'; lipLine(1.2); lipLine(h - 1.4);
+    c.lineWidth = 1.5; c.strokeStyle = 'rgba(8,6,24,0.75)'; rr(c, 0.75, 0.75, w - 1.5, h - 1.5, R); c.stroke();
   });
 }
 export function doorKey(scene: Phaser.Scene, w: number, h: number, color: number, bridge: boolean) {
@@ -172,46 +237,76 @@ export function makeBaseTextures(scene: Phaser.Scene) {
   canvasTex(scene, 'glow', 64, 64, (c) => { const g = c.createRadialGradient(32, 32, 0, 32, 32, 32); g.addColorStop(0, 'rgba(255,255,255,0.9)'); g.addColorStop(1, 'rgba(255,255,255,0)'); c.fillStyle = g; c.fillRect(0, 0, 64, 64); });
   canvasTex(scene, 'ring', 64, 64, (c) => { c.strokeStyle = '#fff'; c.lineWidth = 4; c.beginPath(); c.arc(32, 32, 27, 0, 7); c.stroke(); });
   canvasTex(scene, 'spark', 16, 16, (c) => { c.fillStyle = '#fff'; c.beginPath(); c.moveTo(8, 0); c.lineTo(10, 6); c.lineTo(16, 8); c.lineTo(10, 10); c.lineTo(8, 16); c.lineTo(6, 10); c.lineTo(0, 8); c.lineTo(6, 6); c.closePath(); c.fill(); });
-  canvasTex(scene, 'cloud', 200, 70, (c) => {
-    c.fillStyle = 'rgba(255,255,255,0.55)';
-    [[50, 46, 30], [90, 34, 34], [132, 42, 30], [160, 48, 22], [24, 50, 20]].forEach(([x, y, r]) => { c.beginPath(); c.arc(x, y, r, 0, 7); c.fill(); });
-    c.fillRect(24, 46, 140, 24);
+  canvasTex(scene, 'cloud', 220, 90, (c) => {
+    // soft puffy cloud: blurred white puffs (tinted per world in code)
+    c.filter = 'blur(4px)';
+    c.fillStyle = 'rgba(255,255,255,0.9)';
+    [[60, 56, 30], [100, 42, 38], [146, 50, 32], [178, 60, 22], [34, 62, 20]].forEach(([x, y, r]) => { c.beginPath(); c.arc(x, y, r, 0, 7); c.fill(); });
+    c.fillRect(34, 56, 150, 22);
+    c.filter = 'none';
   });
-  // star collectible (gold, 5 point) 40px
+  // star collectible: chunky bevelled gold star
+  const starPath = (c: CanvasRenderingContext2D, R0: number, r0: number, ox = 22, oy = 23) => { c.beginPath(); for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + (i * Math.PI) / 5, r = i % 2 ? r0 : R0; const x = ox + Math.cos(a) * r, y = oy + Math.sin(a) * r; i ? c.lineTo(x, y) : c.moveTo(x, y); } c.closePath(); };
   canvasTex(scene, 'star', 44, 44, (c) => {
-    c.shadowColor = '#fbbf24'; c.shadowBlur = 8; c.fillStyle = '#fbbf24'; c.strokeStyle = '#b45309'; c.lineWidth = 2; c.lineJoin = 'round'; c.beginPath();
-    for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + (i * Math.PI) / 5, r = i % 2 ? 8.5 : 18; const x = 22 + Math.cos(a) * r, y = 23 + Math.sin(a) * r; i ? c.lineTo(x, y) : c.moveTo(x, y); }
-    c.closePath(); c.fill(); c.shadowBlur = 0; c.stroke();
-    c.fillStyle = 'rgba(255,255,255,0.6)'; c.beginPath(); c.ellipse(17, 16, 3, 5, -0.6, 0, 7); c.fill();
+    c.lineJoin = 'round'; c.shadowColor = 'rgba(251,191,36,0.9)'; c.shadowBlur = 9;
+    starPath(c, 19, 9); c.fillStyle = '#92400e'; c.fill(); c.shadowBlur = 0;
+    const g = c.createLinearGradient(8, 4, 36, 40); g.addColorStop(0, '#fff7c2'); g.addColorStop(0.35, '#fcd34d'); g.addColorStop(0.75, '#f59e0b'); g.addColorStop(1, '#b45309');
+    starPath(c, 17, 8.2); c.fillStyle = g; c.fill();
+    // facets: lighter top-left half of each arm
+    c.save(); starPath(c, 17, 8.2); c.clip(); c.fillStyle = 'rgba(255,255,255,0.22)'; c.beginPath(); c.moveTo(22, 23); for (let i = 0; i < 5; i++) { const a = -Math.PI / 2 + (i * 2 * Math.PI) / 5; c.lineTo(22 + Math.cos(a) * 20, 23 + Math.sin(a) * 20); c.lineTo(22 + Math.cos(a + 0.32) * 12, 23 + Math.sin(a + 0.32) * 12); c.lineTo(22, 23); } c.fill(); c.restore();
+    c.lineWidth = 1.6; c.strokeStyle = '#78350f'; starPath(c, 17, 8.2); c.stroke();
+    c.fillStyle = 'rgba(255,255,255,0.9)'; c.beginPath(); c.ellipse(16, 15, 2.6, 4.2, -0.6, 0, 7); c.fill();
   });
   canvasTex(scene, 'star_ui_off', 44, 44, (c) => {
     c.fillStyle = 'rgba(255,255,255,0.14)'; c.strokeStyle = 'rgba(255,255,255,0.3)'; c.lineWidth = 2; c.lineJoin = 'round'; c.beginPath();
     for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + (i * Math.PI) / 5, r = i % 2 ? 8.5 : 18; const x = 22 + Math.cos(a) * r, y = 23 + Math.sin(a) * r; i ? c.lineTo(x, y) : c.moveTo(x, y); }
     c.closePath(); c.fill(); c.stroke();
   });
-  // spike tile (one triangle, 20 wide x 14 tall) pointing UP
+  // spike tile (one triangle, 20 wide x 14 tall) pointing UP: steel blade with a glowing red edge
   canvasTex(scene, 'spike', 20, 14, (c) => {
-    const g = c.createLinearGradient(0, 0, 0, 14); g.addColorStop(0, '#fecaca'); g.addColorStop(0.35, '#ef4444'); g.addColorStop(1, '#991b1b');
-    c.fillStyle = g; c.strokeStyle = '#450a0a'; c.lineWidth = 1.5; c.lineJoin = 'round'; c.beginPath(); c.moveTo(1, 13.2); c.lineTo(10, 1.2); c.lineTo(19, 13.2); c.closePath(); c.fill(); c.stroke();
+    c.lineJoin = 'round';
+    c.beginPath(); c.moveTo(1, 13.5); c.lineTo(10, 0.8); c.lineTo(19, 13.5); c.closePath();
+    c.fillStyle = '#7f1d1d'; c.fill();
+    const l = c.createLinearGradient(1, 0, 10, 0); l.addColorStop(0, '#fca5a5'); l.addColorStop(1, '#f87171');
+    c.beginPath(); c.moveTo(2, 13); c.lineTo(10, 1.6); c.lineTo(10, 13); c.closePath(); c.fillStyle = l; c.fill();
+    const r = c.createLinearGradient(10, 0, 19, 0); r.addColorStop(0, '#dc2626'); r.addColorStop(1, '#7f1d1d');
+    c.beginPath(); c.moveTo(10, 1.6); c.lineTo(18, 13); c.lineTo(10, 13); c.closePath(); c.fillStyle = r; c.fill();
+    c.strokeStyle = '#450a0a'; c.lineWidth = 1.3; c.beginPath(); c.moveTo(1, 13.5); c.lineTo(10, 0.8); c.lineTo(19, 13.5); c.stroke();
+    c.fillStyle = '#fff1f2'; c.beginPath(); c.arc(10, 2.2, 1.1, 0, 7); c.fill();
+    c.fillStyle = 'rgba(0,0,0,0.35)'; c.fillRect(1, 12.5, 18, 1.5);
   });
-  // saw blade 64
+  // saw blade: brushed steel disc, shaded teeth, red hub
   canvasTex(scene, 'saw', 72, 72, (c) => {
-    c.translate(36, 36); const teeth = 12;
-    c.fillStyle = '#e2e8f0'; c.strokeStyle = '#450a0a'; c.lineWidth = 2; c.lineJoin = 'round'; c.beginPath();
-    for (let i = 0; i < teeth * 2; i++) { const a = (i * Math.PI) / teeth, r = i % 2 ? 24 : 34; c.lineTo(Math.cos(a) * r, Math.sin(a) * r); }
-    c.closePath(); c.shadowColor = '#ef4444'; c.shadowBlur = 8; c.fill(); c.shadowBlur = 0; c.stroke();
-    c.fillStyle = '#ef4444'; c.beginPath(); c.arc(0, 0, 14, 0, 7); c.fill(); c.stroke();
-    c.fillStyle = '#7f1d1d'; c.beginPath(); c.arc(0, 0, 5, 0, 7); c.fill();
-    c.strokeStyle = '#fecaca'; c.lineWidth = 2; c.beginPath(); c.moveTo(0, -12); c.lineTo(0, -5); c.moveTo(10, 6); c.lineTo(4, 3); c.moveTo(-10, 6); c.lineTo(-4, 3); c.stroke();
+    c.translate(36, 36); const teeth = 14;
+    c.lineJoin = 'round'; c.beginPath();
+    for (let i = 0; i < teeth * 2; i++) { const a = (i * Math.PI) / teeth, r = i % 2 ? 25 : 34; c.lineTo(Math.cos(a) * r, Math.sin(a) * r); }
+    c.closePath(); c.shadowColor = 'rgba(239,68,68,0.9)'; c.shadowBlur = 10;
+    const tg = c.createLinearGradient(-34, -34, 34, 34); tg.addColorStop(0, '#f8fafc'); tg.addColorStop(0.5, '#94a3b8'); tg.addColorStop(1, '#334155');
+    c.fillStyle = tg; c.fill(); c.shadowBlur = 0; c.strokeStyle = '#1e293b'; c.lineWidth = 2; c.stroke();
+    const dg = c.createRadialGradient(-6, -6, 2, 0, 0, 24); dg.addColorStop(0, '#e2e8f0'); dg.addColorStop(1, '#64748b');
+    c.fillStyle = dg; c.beginPath(); c.arc(0, 0, 22, 0, 7); c.fill(); c.strokeStyle = 'rgba(15,23,42,0.6)'; c.lineWidth = 1.5; c.stroke();
+    c.strokeStyle = 'rgba(255,255,255,0.5)'; c.lineWidth = 1; for (let i = 0; i < 4; i++) { c.beginPath(); c.arc(0, 0, 8 + i * 4, -2.4 + i * 0.3, -1.2 + i * 0.3); c.stroke(); }
+    const hg = c.createRadialGradient(-3, -3, 1, 0, 0, 11); hg.addColorStop(0, '#fca5a5'); hg.addColorStop(0.6, '#dc2626'); hg.addColorStop(1, '#7f1d1d');
+    c.fillStyle = hg; c.beginPath(); c.arc(0, 0, 10, 0, 7); c.fill(); c.strokeStyle = '#450a0a'; c.lineWidth = 1.5; c.stroke();
+    c.fillStyle = '#1e293b'; for (let i = 0; i < 3; i++) { const a = i * 2.094; c.beginPath(); c.arc(Math.cos(a) * 5, Math.sin(a) * 5, 1.6, 0, 7); c.fill(); }
   });
-  // exit portal layers
+  // exit portal: spiral vortex arms + glowing core
   canvasTex(scene, 'exit_a', 96, 96, (c) => {
-    c.translate(48, 48);
-    for (let i = 0; i < 3; i++) { c.strokeStyle = ['#06b6d4', '#7c3aed', '#fbbf24'][i]; c.lineWidth = 5 - i; c.shadowColor = c.strokeStyle; c.shadowBlur = 12; c.beginPath(); c.ellipse(0, 0, 40 - i * 9, 40 - i * 9, 0, i, i + 4.2); c.stroke(); }
+    c.translate(48, 48); c.lineCap = 'round';
+    const cols = ['#22d3ee', '#a78bfa', '#fbbf24'];
+    for (let k = 0; k < 3; k++) {
+      c.strokeStyle = cols[k]; c.shadowColor = cols[k]; c.shadowBlur = 10;
+      for (let arm = 0; arm < 2; arm++) {
+        c.lineWidth = 4.5 - k; c.beginPath();
+        for (let t = 0; t <= 1.001; t += 0.04) { const a = arm * Math.PI + k * 2.1 + t * 4.2, r = 40 - k * 8 - t * 18; const x = Math.cos(a) * r, y = Math.sin(a) * r; t ? c.lineTo(x, y) : c.moveTo(x, y); }
+        c.stroke();
+      }
+    }
+    c.shadowBlur = 0; c.strokeStyle = 'rgba(255,255,255,0.8)'; c.lineWidth = 2; c.beginPath(); c.arc(0, 0, 41, 0, 7); c.stroke();
   });
   canvasTex(scene, 'exit_b', 96, 96, (c) => {
-    const g = c.createRadialGradient(48, 48, 2, 48, 48, 34); g.addColorStop(0, 'rgba(255,255,255,0.95)'); g.addColorStop(0.5, 'rgba(6,182,212,0.7)'); g.addColorStop(1, 'rgba(124,58,237,0)');
-    c.fillStyle = g; c.beginPath(); c.arc(48, 48, 34, 0, 7); c.fill();
+    const g = c.createRadialGradient(48, 48, 2, 48, 48, 36); g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(0.25, 'rgba(186,230,253,0.95)'); g.addColorStop(0.6, 'rgba(6,182,212,0.6)'); g.addColorStop(1, 'rgba(124,58,237,0)');
+    c.fillStyle = g; c.beginPath(); c.arc(48, 48, 36, 0, 7); c.fill();
   });
   // teleport portal (white, tinted in code)
   canvasTex(scene, 'tele', 64, 64, (c) => {
@@ -226,6 +321,14 @@ export function makeBaseTextures(scene: Phaser.Scene) {
     c.fillStyle = g; c.strokeStyle = '#083344'; c.lineWidth = 2; c.lineJoin = 'round'; c.beginPath(); c.moveTo(20, 3); c.lineTo(34, 18); c.lineTo(28, 44); c.lineTo(12, 44); c.lineTo(6, 18); c.closePath(); c.fill(); c.shadowBlur = 0; c.stroke();
     c.strokeStyle = 'rgba(255,255,255,0.7)'; c.lineWidth = 1.5; c.beginPath(); c.moveTo(6, 18); c.lineTo(34, 18); c.moveTo(20, 3); c.lineTo(16, 18); c.lineTo(20, 44); c.stroke();
     c.fillStyle = '#fff'; c.font = '800 13px Poppins, sans-serif'; c.textAlign = 'center'; c.fillText('+1', 20, 34);
+  });
+  // gravity orb: swirling two-colour sphere with up/down arrows
+  canvasTex(scene, 'orb', 40, 40, (c) => {
+    const g = c.createRadialGradient(15, 14, 2, 20, 20, 17); g.addColorStop(0, '#fdf4ff'); g.addColorStop(0.45, '#e879f9'); g.addColorStop(1, '#6d28d9');
+    c.shadowColor = '#f0abfc'; c.shadowBlur = 8; c.fillStyle = g; c.beginPath(); c.arc(20, 20, 16, 0, 7); c.fill(); c.shadowBlur = 0;
+    c.strokeStyle = '#3b0764'; c.lineWidth = 1.8; c.stroke();
+    c.strokeStyle = '#67e8f9'; c.lineWidth = 2.5; c.lineCap = 'round'; c.beginPath(); c.moveTo(14, 12); c.lineTo(14, 26); c.moveTo(10, 22); c.lineTo(14, 27); c.lineTo(18, 22); c.stroke();
+    c.strokeStyle = '#fff'; c.beginPath(); c.moveTo(26, 28); c.lineTo(26, 14); c.moveTo(22, 18); c.lineTo(26, 13); c.lineTo(30, 18); c.stroke();
   });
   // checkpoint flag
   for (const on of [0, 1]) canvasTex(scene, `flag${on}`, 30, 46, (c) => {
@@ -249,8 +352,8 @@ export function makeBaseTextures(scene: Phaser.Scene) {
   // player variants
   SKINS.forEach((sk, si) => (['idle', 'blink', 'happy', 'dead', 'flip'] as Expr[]).forEach((e) => [-1, 0, 1].forEach((look) => canvasTex(scene, playerKey(e, look, si), 44, 44, (c) => drawPlayer(c, e, look, sk)))));
   // ---- UI polish textures ----
-  canvasTex(scene, 'vignette', 480, 270, (c, w, h) => { const g = c.createRadialGradient(w / 2, h / 2, h * 0.38, w / 2, h / 2, w * 0.62); g.addColorStop(0, 'rgba(5,3,22,0)'); g.addColorStop(1, 'rgba(5,3,22,0.72)'); c.fillStyle = g; c.fillRect(0, 0, w, h); });
-  canvasTex(scene, 'ray', 160, 560, (c, w, h) => { const g = c.createLinearGradient(0, 0, 0, h); g.addColorStop(0, 'rgba(255,255,255,0.55)'); g.addColorStop(1, 'rgba(255,255,255,0)'); c.fillStyle = g; c.beginPath(); c.moveTo(w * 0.42, 0); c.lineTo(w * 0.58, 0); c.lineTo(w, h); c.lineTo(0, h); c.closePath(); c.fill(); });
+  canvasTex(scene, 'vignette', 480, 270, (c, w, h) => { const g = c.createRadialGradient(w / 2, h / 2, h * 0.38, w / 2, h / 2, w * 0.62); g.addColorStop(0, 'rgba(5,3,22,0)'); g.addColorStop(1, 'rgba(5,3,22,0.72)'); c.fillStyle = g; c.fillRect(0, 0, w, h); }, false);
+  canvasTex(scene, 'ray', 160, 560, (c, w, h) => { const g = c.createLinearGradient(0, 0, 0, h); g.addColorStop(0, 'rgba(255,255,255,0.55)'); g.addColorStop(1, 'rgba(255,255,255,0)'); c.fillStyle = g; c.beginPath(); c.moveTo(w * 0.42, 0); c.lineTo(w * 0.58, 0); c.lineTo(w, h); c.lineTo(0, h); c.closePath(); c.fill(); }, false);
   const island = (key: string, w: number, h: number, top: string, rock: string, seed: number) => canvasTex(scene, key, w, h, (c) => {
     const R = mulberry(seed); const th = h * 0.2;
     const body = c.createLinearGradient(0, th, 0, h); body.addColorStop(0, rock); body.addColorStop(1, 'rgba(10,8,40,0.95)'); c.fillStyle = body;

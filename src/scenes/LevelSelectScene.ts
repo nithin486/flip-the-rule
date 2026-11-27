@@ -44,7 +44,7 @@ export class LevelSelectScene extends Phaser.Scene {
       new Button(this, W - 66, H / 2 + 10, '›', () => this.shift(1), { w: 52, h: 92, size: 40, color: th.accent }).setEnabled(this.world < WORLDS.length);
     }
     // tiles
-    const cols = P ? 3 : 5, tw = P ? 132 : 118, gap = P ? 24 : 20, x0 = VW / 2 - (Math.min(cols, n) * tw + (Math.min(cols, n) - 1) * gap) / 2 + tw / 2, y0 = P ? Math.round(VH * 0.38) : 262, rowH = tw + 74;
+    const cols = P ? 3 : 5, tw = P ? 132 : 134, gap = P ? 24 : 20, x0 = VW / 2 - (Math.min(cols, n) * tw + (Math.min(cols, n) - 1) * gap) / 2 + tw / 2, y0 = P ? Math.round(VH * 0.38) : 284, rowH = tw + 74;
     for (let i = 0; i < n; i++) {
       const id = th.first + i, row = Math.floor(i / cols), inRow = Math.min(cols, n - row * cols), c = i % cols;
       const x = VW / 2 - (inRow * tw + (inRow - 1) * gap) / 2 + tw / 2 + c * (tw + gap), y = y0 + row * rowH; void x0;
@@ -60,8 +60,8 @@ export class LevelSelectScene extends Phaser.Scene {
         g.fillStyle(0xffffff, 0.22).fillRoundedRect(-tw / 2 + 7, -tw / 2 + 5, tw - 14, tw * 0.34, { tl: 15, tr: 15, bl: 6, br: 6 });
         g.lineStyle(3, 0xffffff, 0.6).strokeRoundedRect(-tw / 2, -tw / 2, tw, tw - 4, 20);
         card.add(this.add.text(0, -20, String(id), { fontFamily: FONT_HEAD, fontSize: '46px', color: '#fff', fontStyle: '800' }).setOrigin(0.5).setStroke('#1e1b4b', 7));
-        const lv = LevelSystem.get(id); const lim = save.data.settings.hardMode ? lv.flipLimit : lv.flipTarget;
-        if (lim) { const cg = this.add.graphics(); cg.fillStyle(0x0b0b1a, 0.7).fillRoundedRect(-40, 3, 80, 20, 10).lineStyle(1.5, 0x67e8f9, 0.9).strokeRoundedRect(-40, 3, 80, 20, 10); card.add(cg); card.add(this.add.text(0, 13, save.data.settings.hardMode ? `⚡ ${lim} flips` : `★★★ ${lim} flip${lim === 1 ? '' : 's'}`, { fontFamily: FONT_BODY, fontSize: '12px', color: '#a5f3fc', fontStyle: '700' }).setOrigin(0.5)); }
+        const lv = LevelSystem.get(id); const lim = lv.flipLimit ?? lv.flipTarget;
+        if (lim) { const cg = this.add.graphics(); cg.fillStyle(0x0b0b1a, 0.7).fillRoundedRect(-40, 3, 80, 20, 10).lineStyle(1.5, 0x67e8f9, 0.9).strokeRoundedRect(-40, 3, 80, 20, 10); card.add(cg); card.add(this.add.text(0, 13, `⚡ ${lim} flip${lim === 1 ? '' : 's'}`, { fontFamily: FONT_BODY, fontSize: '12px', color: '#a5f3fc', fontStyle: '700' }).setOrigin(0.5)); }
         card.add(this.add.text(0, tw / 2 + 18, lv.name, { fontFamily: FONT_BODY, fontSize: '13px', color: '#e9d5ff', fontStyle: '700' }).setOrigin(0.5));
         for (let s = 0; s < 3; s++) card.add(this.add.image(-28 + s * 28, 40, s < stars ? 'star' : 'star_ui_off').setScale(0.5));
         const hit = this.add.zone(0, 0, tw, tw).setInteractive({ useHandCursor: true }); card.add(hit);

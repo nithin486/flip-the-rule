@@ -1,0 +1,431 @@
+[
+ {
+  "id": 46,
+  "world": 10,
+  "name": "First Beam",
+  "playerStart": {
+   "x": 60,
+   "y": 463
+  },
+  "gravity": "down",
+  "flipTarget": 2,
+  "collectible": {
+   "x": 700,
+   "y": 170
+  },
+  "exit": {
+   "x": 905,
+   "y": 463
+  },
+  "platforms": [
+   {
+    "x": 0,
+    "y": 480,
+    "width": 960,
+    "height": 28
+   },
+   {
+    "x": 0,
+    "y": 96,
+    "width": 960,
+    "height": 28
+   }
+  ],
+  "hazards": [
+   {
+    "type": "laser",
+    "x": 817,
+    "y": 124,
+    "width": 6,
+    "height": 356,
+    "period": 2.4,
+    "phase": 0.5,
+    "on": 0.5
+   },
+   {
+    "type": "spike",
+    "x": 260,
+    "y": 124,
+    "width": 180,
+    "dir": "down"
+   },
+   {
+    "type": "laser",
+    "x": 477,
+    "y": 124,
+    "width": 6,
+    "height": 356,
+    "period": 2.4,
+    "phase": 0,
+    "on": 0.5
+   },
+   {
+    "type": "spike",
+    "x": 560,
+    "y": 466,
+    "width": 120,
+    "dir": "up"
+   }
+  ],
+  "flipLimit": 3,
+  "parTime": 16,
+  "hint": "Lasers fire on a beat. Watch them blink, then cross while they are off."
+ },
+ {
+  "id": 47,
+  "world": 10,
+  "name": "Two Beats",
+  "playerStart": {
+   "x": 60,
+   "y": 463
+  },
+  "gravity": "down",
+  "flipTarget": 1,
+  "collectible": {
+   "x": 490,
+   "y": 300
+  },
+  "exit": {
+   "x": 905,
+   "y": 141
+  },
+  "platforms": [
+   {
+    "x": 0,
+    "y": 480,
+    "width": 960,
+    "height": 28
+   },
+   {
+    "x": 0,
+    "y": 96,
+    "width": 960,
+    "height": 28
+   }
+  ],
+  "hazards": [
+   {
+    "type": "saw",
+    "x": 490,
+    "y": 210,
+    "r": 22,
+    "path": {
+     "dx": 0,
+     "dy": 160,
+     "period": 3.2,
+     "phase": 0
+    }
+   },
+   {
+    "type": "laser",
+    "x": 327,
+    "y": 124,
+    "width": 6,
+    "height": 356,
+    "period": 2.4,
+    "phase": 0,
+    "on": 0.5
+   },
+   {
+    "type": "laser",
+    "x": 647,
+    "y": 124,
+    "width": 6,
+    "height": 356,
+    "period": 2.4,
+    "phase": 0.5,
+    "on": 0.5
+   },
+   {
+    "type": "spike",
+    "x": 400,
+    "y": 466,
+    "width": 520,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 120,
+    "y": 124,
+    "width": 160,
+    "dir": "down"
+   }
+  ],
+  "flipLimit": 2,
+  "parTime": 16
+ },
+ {
+  "id": 48,
+  "world": 10,
+  "name": "Ceiling Sweep",
+  "playerStart": {
+   "x": 60,
+   "y": 463
+  },
+  "gravity": "down",
+  "flipTarget": 4,
+  "collectible": {
+   "x": 480,
+   "y": 260
+  },
+  "exit": {
+   "x": 905,
+   "y": 463
+  },
+  "platforms": [
+   {
+    "x": 0,
+    "y": 480,
+    "width": 960,
+    "height": 28
+   },
+   {
+    "x": 0,
+    "y": 96,
+    "width": 960,
+    "height": 28
+   }
+  ],
+  "hazards": [
+   {
+    "type": "spike",
+    "x": 200,
+    "y": 466,
+    "width": 560,
+    "dir": "up"
+   },
+   {
+    "type": "laser",
+    "x": 250,
+    "y": 147,
+    "width": 460,
+    "height": 6,
+    "period": 3,
+    "phase": 0.25,
+    "on": 0.45
+   },
+   {
+    "type": "laser",
+    "x": 787,
+    "y": 124,
+    "width": 6,
+    "height": 276,
+    "period": 2,
+    "phase": 0.6,
+    "on": 0.4
+   }
+  ],
+  "flipLimit": 5,
+  "parTime": 16,
+  "hint": "Beams can sweep along the ceiling too."
+ },
+ {
+  "id": 49,
+  "world": 10,
+  "name": "Beam Lift",
+  "playerStart": {
+   "x": 60,
+   "y": 463
+  },
+  "gravity": "down",
+  "flipTarget": 3,
+  "collectible": {
+   "x": 480,
+   "y": 210
+  },
+  "exit": {
+   "x": 905,
+   "y": 141
+  },
+  "platforms": [
+   {
+    "x": 0,
+    "y": 480,
+    "width": 300,
+    "height": 28
+   },
+   {
+    "x": 380,
+    "y": 420,
+    "width": 160,
+    "height": 28,
+    "kind": "moving",
+    "path": {
+     "dx": 0,
+     "dy": -220,
+     "period": 4,
+     "phase": 0
+    }
+   },
+   {
+    "x": 640,
+    "y": 480,
+    "width": 320,
+    "height": 28
+   },
+   {
+    "x": 0,
+    "y": 96,
+    "width": 300,
+    "height": 28
+   },
+   {
+    "x": 640,
+    "y": 96,
+    "width": 320,
+    "height": 28
+   }
+  ],
+  "hazards": [
+   {
+    "type": "spike",
+    "x": 660,
+    "y": 466,
+    "width": 40,
+    "dir": "up",
+    "hidden": true
+   },
+   {
+    "type": "laser",
+    "x": 300,
+    "y": 297,
+    "width": 340,
+    "height": 6,
+    "period": 2.5,
+    "phase": 0,
+    "on": 0.5
+   },
+   {
+    "type": "spike",
+    "x": 300,
+    "y": 124,
+    "width": 340,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 700,
+    "y": 466,
+    "width": 200,
+    "dir": "up"
+   }
+  ],
+  "flipLimit": 4,
+  "parTime": 16
+ },
+ {
+  "id": 50,
+  "world": 10,
+  "name": "Laser Maze",
+  "playerStart": {
+   "x": 60,
+   "y": 463
+  },
+  "gravity": "down",
+  "flipTarget": 3,
+  "collectible": {
+   "x": 480,
+   "y": 400
+  },
+  "exit": {
+   "x": 905,
+   "y": 141
+  },
+  "platforms": [
+   {
+    "x": 0,
+    "y": 480,
+    "width": 960,
+    "height": 28
+   },
+   {
+    "x": 0,
+    "y": 96,
+    "width": 960,
+    "height": 28
+   },
+   {
+    "x": 380,
+    "y": 290,
+    "width": 200,
+    "height": 28
+   }
+  ],
+  "hazards": [
+   {
+    "type": "spike",
+    "x": 820,
+    "y": 124,
+    "width": 40,
+    "dir": "down",
+    "hidden": true
+   },
+   {
+    "type": "laser",
+    "x": 247,
+    "y": 124,
+    "width": 6,
+    "height": 356,
+    "period": 2.4,
+    "phase": 0,
+    "on": 0.5
+   },
+   {
+    "type": "laser",
+    "x": 380,
+    "y": 337,
+    "width": 200,
+    "height": 6,
+    "period": 2,
+    "phase": 0.5,
+    "on": 0.5
+   },
+   {
+    "type": "laser",
+    "x": 697,
+    "y": 124,
+    "width": 6,
+    "height": 356,
+    "period": 2.4,
+    "phase": 0.4,
+    "on": 0.5
+   },
+   {
+    "type": "saw",
+    "x": 480,
+    "y": 200,
+    "r": 22,
+    "path": {
+     "dx": 160,
+     "dy": 0,
+     "period": 3,
+     "phase": 0
+    }
+   },
+   {
+    "type": "spike",
+    "x": 560,
+    "y": 466,
+    "width": 50,
+    "dir": "up",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 760,
+    "y": 466,
+    "width": 120,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 260,
+    "y": 124,
+    "width": 100,
+    "dir": "down"
+   }
+  ],
+  "flipLimit": 3,
+  "parTime": 16
+ }
+]

@@ -27,16 +27,16 @@ export class LevelCompleteScene extends Phaser.Scene {
       }
     }
     const rows: Array<[string, string]> = [
-      ['Flips', save.data.settings.hardMode && level.flipLimit ? `${r.flips} of ${level.flipLimit} allowed  ·  par ${level.flipTarget}` : `${r.flips}  ·  ★★★ target ${level.flipTarget}`], ['Time', `${r.time.toFixed(1)}s`], ['Star collected', r.collected ? 'Yes  +500' : 'No'],
+      ['Flips', level.flipLimit ? `${r.flips} of ${level.flipLimit} allowed  ·  par ${level.flipTarget}` : `${r.flips}  ·  ★★★ target ${level.flipTarget}`], ['Time', `${r.time.toFixed(1)}s`], ['Star collected', r.collected ? 'Yes  +500' : 'No'],
       ['Efficiency', `+${r.breakdown.efficiency}`], ['Time bonus', `+${r.breakdown.time}`],
     ];
     rows.forEach(([a, b], i) => {
-      this.add.text(W / 2 - 200, H / 2 + 10 + i * 26, a, { fontFamily: FONT_BODY, fontSize: '17px', color: '#cbd5e1', fontStyle: '500' }).setOrigin(0, 0.5);
-      this.add.text(W / 2 + 200, H / 2 + 10 + i * 26, b, { fontFamily: FONT_BODY, fontSize: '17px', color: '#fff', fontStyle: '600' }).setOrigin(1, 0.5);
+      this.add.text(W / 2 - 200, H / 2 - 4 + i * 24, a, { fontFamily: FONT_BODY, fontSize: '17px', color: '#cbd5e1', fontStyle: '500' }).setOrigin(0, 0.5);
+      this.add.text(W / 2 + 200, H / 2 - 4 + i * 24, b, { fontFamily: FONT_BODY, fontSize: '17px', color: '#fff', fontStyle: '600' }).setOrigin(1, 0.5);
     });
     const sc = this.add.text(W / 2, H / 2 + 150, '0', { fontFamily: FONT_HEAD, fontSize: '46px', color: '#fbbf24', fontStyle: '800' }).setOrigin(0.5).setStroke('#451a03', 7);
     const o = { v: 0 }; this.tweens.add({ targets: o, v: r.score, duration: 900, delay: 300, onUpdate: () => sc.setText(`SCORE ${Math.round(o.v).toLocaleString()}`) });
-    if (r.newBest) this.add.text(W / 2 + 232, H / 2 + 148, 'NEW BEST!', { fontFamily: FONT_HEAD, fontSize: '20px', color: '#22c55e', fontStyle: '800' }).setOrigin(0.5).setAngle(-8);
+    if (r.newBest) { const nb = this.add.text(W / 2, H / 2 + 116, 'NEW BEST!', { fontFamily: FONT_HEAD, fontSize: '20px', color: '#4ade80', fontStyle: '800' }).setOrigin(0.5).setStroke('#052e16', 5).setScale(0); this.tweens.add({ targets: nb, scale: 1, duration: 300, delay: 1200, ease: 'Back.easeOut' }); }
     const tease = nextStreakSkin();
     const best = daily ? '' : `Best ${(save.data.bestScores[String(level.id)] ?? r.score).toLocaleString()}`;
     const teaseTxt = tease ? `🎁 Play again tomorrow to unlock the ${tease.name.toUpperCase()} skin` : '';

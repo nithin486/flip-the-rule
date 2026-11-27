@@ -55,3 +55,9 @@ Basic Launch result of v4: conversion 44% desktop / 15% mobile, playtime 2m22s /
 - **SDK**: respects `game.settings.muteAudio` (+ listener), `happytime()` on world clears, `reportGameCompletedPercentage()`; iOS audio resumes on touchend/click.
 - **Covers** (CrazyGames sizes, title-only text): `store/covers/` rendered from the game art by `tools/cover.html` + `tools/CoverScene.ts` (dev server: `/tools/cover.html?w=1920&h=1080`).
 Submit with both orientations enabled.
+
+## v6: 60 levels, flip limits always on
+- **4 new worlds (levels 41-60), one new concept each:** Polarity Park (cyan slabs are solid only while gravity points down, pink only while it points up), Laser Lab (beams that fire on a beat), Dash Drive (pads that fling you sideways), Orb Odyssey (orbs that flip gravity for free). All hand-designed in `tools/lv/L41-L60.mjs` and proven with `tools/proveOne.mjs`.
+- **Flip limit on every level, always enforced** (the Hard-mode toggle is gone): limit = proven minimum + spare flips: +3 on levels 1-5, +2 on 6-15, +1 after, and 0 spare on every world finale (20, 25, ... 60). Flip crystals still add +1. Running out = retry; the free ghost hint (after 3 fails) and free skip (after 6) still apply. Set in `tools/assembleProved.mjs` (`spare`).
+- **Hidden spikes and saws hide again on every attempt** (restart, death respawn, checkpoint).
+- `node tools/verifyFx.mjs` replays all 60 proven solutions in the real game with the limits on; `node tools/qa.mjs` covers the checklist.
