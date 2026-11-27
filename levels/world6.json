@@ -95,6 +95,13 @@
     "width": 50,
     "dir": "up",
     "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 591,
+    "y": 124,
+    "width": 60,
+    "dir": "down"
    }
   ],
   "refills": [
@@ -103,7 +110,7 @@
     "y": 250
    }
   ],
-  "flipLimit": 5,
+  "flipLimit": 4,
   "parTime": 16,
   "hint": "Phase platforms blink in and out. Wait for solid."
  },
@@ -206,6 +213,43 @@
     "y": 466,
     "width": 40,
     "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 305,
+    "y": 466,
+    "width": 40,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 465,
+    "y": 466,
+    "width": 40,
+    "dir": "up",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 625,
+    "y": 466,
+    "width": 60,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 254,
+    "y": 124,
+    "width": 40,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 621,
+    "y": 124,
+    "width": 80,
+    "dir": "down",
+    "hidden": true
    }
   ],
   "refills": [
@@ -214,7 +258,7 @@
     "y": 300
    }
   ],
-  "flipLimit": 4,
+  "flipLimit": 3,
   "parTime": 16,
   "hint": "Pulsing spikes are safe only half the time."
  },
@@ -317,6 +361,22 @@
     "y": 124,
     "width": 60,
     "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 710,
+    "y": 466,
+    "width": 60,
+    "dir": "up",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 836,
+    "y": 466,
+    "width": 120,
+    "dir": "up",
+    "hidden": true
    }
   ],
   "refills": [
@@ -329,7 +389,7 @@
     "y": 160
    }
   ],
-  "flipLimit": 3,
+  "flipLimit": 2,
   "parTime": 16,
   "hint": "Flip crystals refill one flip. Collect them on the way."
  },
@@ -465,6 +525,20 @@
     "dir": "down",
     "period": 3,
     "phase": 0.5
+   },
+   {
+    "type": "spike",
+    "x": 333,
+    "y": 124,
+    "width": 60,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 651,
+    "y": 124,
+    "width": 40,
+    "dir": "down"
    }
   ],
   "refills": [
@@ -473,7 +547,7 @@
     "y": 200
    }
   ],
-  "flipLimit": 3,
+  "flipLimit": 2,
   "parTime": 16
  },
  {

@@ -324,8 +324,9 @@ export class GameplayScene extends Phaser.Scene {
   private checkInteractions() {
     const P = this.player, c = P.b.center, cx = c.x, cy = c.y, r = PHYS.radius;
     // hidden hazards reveal themselves as the player closes in (and hide again on every retry/respawn)
-    if (this.fx) { for (const s of this.spikes) if (!s.revealed && (cx - (s.rect.x + s.rect.w / 2)) ** 2 + (cy - (s.rect.y + s.rect.h / 2)) ** 2 < 230 ** 2 + (s.rect.w / 2) ** 2) { s.reveal(this); audio.sfx('click'); }
-      for (const s of this.saws) if (!s.revealed && (cx - s.x) ** 2 + (cy - s.y) ** 2 < 250 ** 2) { s.reveal(this); audio.sfx('click'); } }
+    // only at the last moment: within ~1 body length of the strip's nearest point (saws: just outside their reach)
+    if (this.fx) { for (const s of this.spikes) if (!s.revealed) { const dx = Math.max(s.rect.x - cx, 0, cx - s.rect.x - s.rect.w), dy = Math.max(s.rect.y - cy, 0, cy - s.rect.y - s.rect.h); if (dx * dx + dy * dy < (r + 40) ** 2) { s.reveal(this); audio.sfx('click'); } }
+      for (const s of this.saws) if (!s.revealed && (cx - s.x) ** 2 + (cy - s.y) ** 2 < (s.r + r + 60) ** 2) { s.reveal(this); audio.sfx('click'); } }
     // hazards
     for (const s of this.spikes) if (s.active && circleRect(cx, cy, r - 2, s.hit)) return this.die();
     for (const s of this.saws) if ((cx - s.x) ** 2 + (cy - s.y) ** 2 <= (s.r * 0.82 + r - 3) ** 2) return this.die();

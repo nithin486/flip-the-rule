@@ -78,9 +78,25 @@
     "y": 124,
     "width": 60,
     "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 673,
+    "y": 124,
+    "width": 140,
+    "dir": "down",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 649,
+    "y": 436,
+    "width": 40,
+    "dir": "up",
+    "hidden": true
    }
   ],
-  "flipLimit": 5,
+  "flipLimit": 3,
   "parTime": 17,
   "hint": "Moving platforms carry you - time your flip to ride them."
  },
@@ -168,9 +184,17 @@
     "y": 416,
     "width": 50,
     "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 312,
+    "y": 136,
+    "width": 80,
+    "dir": "down",
+    "hidden": true
    }
   ],
-  "flipLimit": 4,
+  "flipLimit": 2,
   "parTime": 16,
   "hint": "Saws patrol the gaps. Watch their rhythm."
  },
@@ -269,9 +293,32 @@
     "y": 124,
     "width": 60,
     "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 203,
+    "y": 466,
+    "width": 620,
+    "dir": "up",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 9,
+    "y": 124,
+    "width": 220,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 830,
+    "y": 124,
+    "width": 120,
+    "dir": "down",
+    "hidden": true
    }
   ],
-  "flipLimit": 4,
+  "flipLimit": 2,
   "parTime": 16
  },
  {
@@ -371,9 +418,24 @@
     "y": 426,
     "width": 60,
     "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 709,
+    "y": 426,
+    "width": 40,
+    "dir": "up",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 831,
+    "y": 426,
+    "width": 120,
+    "dir": "up"
    }
   ],
-  "flipLimit": 5,
+  "flipLimit": 3,
   "parTime": 16
  },
  {
@@ -505,9 +567,23 @@
     "width": 40,
     "dir": "up",
     "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 710,
+    "y": 256,
+    "width": 60,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 710,
+    "y": 298,
+    "width": 60,
+    "dir": "down"
    }
   ],
-  "flipLimit": 4,
+  "flipLimit": 2,
   "parTime": 16
  }
 ]

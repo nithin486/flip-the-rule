@@ -73,9 +73,39 @@
     "y": 436,
     "width": 40,
     "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 309,
+    "y": 124,
+    "width": 60,
+    "dir": "down",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 450,
+    "y": 124,
+    "width": 60,
+    "dir": "down",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 674,
+    "y": 436,
+    "width": 40,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 790,
+    "y": 436,
+    "width": 100,
+    "dir": "up"
    }
   ],
-  "flipLimit": 5,
+  "flipLimit": 4,
   "parTime": 15,
   "hint": "Some spikes are hidden until you get close. Expect them on safe-looking landings."
  },
@@ -160,9 +190,31 @@
     "width": 60,
     "dir": "up",
     "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 495,
+    "y": 466,
+    "width": 140,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 334,
+    "y": 176,
+    "width": 40,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 695,
+    "y": 124,
+    "width": 260,
+    "dir": "down",
+    "hidden": true
    }
   ],
-  "flipLimit": 8,
+  "flipLimit": 7,
   "parTime": 16
  },
  {
@@ -252,9 +304,38 @@
     "width": 60,
     "dir": "down",
     "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 356,
+    "y": 386,
+    "width": 40,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 295,
+    "y": 428,
+    "width": 100,
+    "dir": "down",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 531,
+    "y": 338,
+    "width": 60,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 873,
+    "y": 466,
+    "width": 80,
+    "dir": "up"
    }
   ],
-  "flipLimit": 5,
+  "flipLimit": 4,
   "parTime": 16
  },
  {
@@ -352,10 +433,33 @@
     "width": 50,
     "dir": "down",
     "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 154,
+    "y": 466,
+    "width": 260,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 525,
+    "y": 466,
+    "width": 240,
+    "dir": "up",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 851,
+    "y": 466,
+    "width": 100,
+    "dir": "up"
    }
   ],
-  "flipLimit": 7,
-  "parTime": 16
+  "flipLimit": 5,
+  "parTime": 16,
+  "hint": "No spare flips from here on. Plan every one."
  },
  {
   "id": 10,
@@ -453,9 +557,59 @@
     "width": 50,
     "dir": "down",
     "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 271,
+    "y": 406,
+    "width": 60,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 405,
+    "y": 406,
+    "width": 180,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 670,
+    "y": 406,
+    "width": 80,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 10,
+    "y": 116,
+    "width": 940,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 9,
+    "y": 170,
+    "width": 240,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 443,
+    "y": 170,
+    "width": 100,
+    "dir": "down",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 811,
+    "y": 170,
+    "width": 140,
+    "dir": "down"
    }
   ],
-  "flipLimit": 6,
+  "flipLimit": 4,
   "parTime": 16
  }
 ]
