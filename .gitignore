@@ -3,3 +3,13 @@ dist
 dist-single
 tools/hard
 *.log
+
+# Claude Code Game Studios (per developer / per session)
+.claude/settings.local.json
+CLAUDE.local.md
+project.local.yaml
+production/session-logs/
+production/session-state/
+.claude/agent-memory/
+.claude/worktrees/
+.scratch/
