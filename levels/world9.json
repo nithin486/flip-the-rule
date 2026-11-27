@@ -81,9 +81,31 @@
     "y": 466,
     "width": 60,
     "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 669,
+    "y": 466,
+    "width": 40,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 791,
+    "y": 466,
+    "width": 160,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 10,
+    "y": 124,
+    "width": 360,
+    "dir": "down",
+    "hidden": true
    }
   ],
-  "flipLimit": 4,
+  "flipLimit": 3,
   "parTime": 16,
   "hint": "Cyan slabs hold you only while gravity points DOWN. Pink ones only while it points UP."
  },
@@ -168,9 +190,30 @@
     "y": 466,
     "width": 510,
     "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 776,
+    "y": 466,
+    "width": 40,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 10,
+    "y": 124,
+    "width": 220,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 770,
+    "y": 124,
+    "width": 180,
+    "dir": "down"
    }
   ],
-  "flipLimit": 5,
+  "flipLimit": 4,
   "parTime": 16
  },
  {
@@ -254,9 +297,31 @@
     "y": 124,
     "width": 520,
     "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 785,
+    "y": 466,
+    "width": 40,
+    "dir": "up",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 9,
+    "y": 124,
+    "width": 180,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 867,
+    "y": 124,
+    "width": 80,
+    "dir": "down"
    }
   ],
-  "flipLimit": 3,
+  "flipLimit": 2,
   "parTime": 16,
   "hint": "No floor in the middle: hop from colour to colour."
  },
@@ -378,9 +443,32 @@
     "y": 124,
     "width": 60,
     "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 571,
+    "y": 466,
+    "width": 40,
+    "dir": "up",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 770,
+    "y": 466,
+    "width": 180,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 10,
+    "y": 124,
+    "width": 180,
+    "dir": "down",
+    "hidden": true
    }
   ],
-  "flipLimit": 4,
+  "flipLimit": 3,
   "parTime": 16
  },
  {
@@ -510,6 +598,28 @@
     "y": 466,
     "width": 40,
     "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 867,
+    "y": 466,
+    "width": 80,
+    "dir": "up",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 10,
+    "y": 124,
+    "width": 140,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 785,
+    "y": 124,
+    "width": 40,
+    "dir": "down"
    }
   ],
   "flipLimit": 3,

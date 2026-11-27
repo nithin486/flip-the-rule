@@ -65,9 +65,37 @@
     "y": 466,
     "width": 120,
     "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 696,
+    "y": 466,
+    "width": 120,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 9,
+    "y": 124,
+    "width": 240,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 453,
+    "y": 124,
+    "width": 160,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 856,
+    "y": 124,
+    "width": 100,
+    "dir": "down"
    }
   ],
-  "flipLimit": 3,
+  "flipLimit": 2,
   "parTime": 16,
   "hint": "Lasers fire on a beat. Watch them blink, then cross while they are off."
  },
@@ -149,9 +177,23 @@
     "y": 124,
     "width": 160,
     "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 9,
+    "y": 124,
+    "width": 100,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 290,
+    "y": 124,
+    "width": 200,
+    "dir": "down"
    }
   ],
-  "flipLimit": 2,
+  "flipLimit": 1,
   "parTime": 16
  },
  {
@@ -213,9 +255,23 @@
     "period": 2,
     "phase": 0.6,
     "on": 0.4
+   },
+   {
+    "type": "spike",
+    "x": 4,
+    "y": 124,
+    "width": 320,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 487,
+    "y": 124,
+    "width": 460,
+    "dir": "down"
    }
   ],
-  "flipLimit": 5,
+  "flipLimit": 4,
   "parTime": 16,
   "hint": "Beams can sweep along the ceiling too."
  },
@@ -308,9 +364,39 @@
     "y": 466,
     "width": 200,
     "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 234,
+    "y": 466,
+    "width": 60,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 911,
+    "y": 466,
+    "width": 40,
+    "dir": "up",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 9,
+    "y": 124,
+    "width": 280,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 656,
+    "y": 124,
+    "width": 160,
+    "dir": "down",
+    "hidden": true
    }
   ],
-  "flipLimit": 4,
+  "flipLimit": 3,
   "parTime": 16
  },
  {
@@ -423,6 +509,43 @@
     "y": 124,
     "width": 100,
     "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 625,
+    "y": 466,
+    "width": 120,
+    "dir": "up",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 891,
+    "y": 466,
+    "width": 60,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 9,
+    "y": 124,
+    "width": 240,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 370,
+    "y": 124,
+    "width": 440,
+    "dir": "down",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 390,
+    "y": 276,
+    "width": 180,
+    "dir": "up"
    }
   ],
   "flipLimit": 3,

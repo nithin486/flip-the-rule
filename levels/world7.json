@@ -86,6 +86,41 @@
      "phase": 0
     },
     "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 268,
+    "y": 466,
+    "width": 60,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 9,
+    "y": 124,
+    "width": 80,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 171,
+    "y": 124,
+    "width": 80,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 649,
+    "y": 124,
+    "width": 40,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 771,
+    "y": 124,
+    "width": 180,
+    "dir": "down"
    }
   ],
   "zones": [
@@ -97,7 +132,7 @@
     "kind": "lock"
    }
   ],
-  "flipLimit": 3,
+  "flipLimit": 2,
   "parTime": 16,
   "hint": "In a no-flip zone your flip is ignored. Commit before you enter."
  },
@@ -223,7 +258,7 @@
     "kind": "reverse"
    }
   ],
-  "flipLimit": 5,
+  "flipLimit": 4,
   "parTime": 16,
   "hint": "Inside a reversed zone, left and right swap."
  },
@@ -345,7 +380,7 @@
     "kind": "lock"
    }
   ],
-  "flipLimit": 4,
+  "flipLimit": 3,
   "parTime": 16
  },
  {
@@ -452,6 +487,14 @@
     "width": 40,
     "dir": "up",
     "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 431,
+    "y": 466,
+    "width": 100,
+    "dir": "up",
+    "hidden": true
    }
   ],
   "zones": [
@@ -470,7 +513,7 @@
     "kind": "lock"
    }
   ],
-  "flipLimit": 5,
+  "flipLimit": 4,
   "parTime": 17
  },
  {

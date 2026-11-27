@@ -62,9 +62,32 @@
     "y": 124,
     "width": 480,
     "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 705,
+    "y": 466,
+    "width": 120,
+    "dir": "up",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 9,
+    "y": 124,
+    "width": 240,
+    "dir": "down",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 872,
+    "y": 124,
+    "width": 80,
+    "dir": "down"
    }
   ],
-  "flipLimit": 3,
+  "flipLimit": 2,
   "parTime": 14,
   "hint": "Dash pads fling you sideways - fast enough to clear a pit."
  },
@@ -146,9 +169,24 @@
      "period": 2.6,
      "phase": 0
     }
+   },
+   {
+    "type": "spike",
+    "x": 10,
+    "y": 124,
+    "width": 100,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 530,
+    "y": 466,
+    "width": 80,
+    "dir": "up",
+    "hidden": true
    }
   ],
-  "flipLimit": 3,
+  "flipLimit": 2,
   "parTime": 14
  },
  {
@@ -225,9 +263,44 @@
     "y": 124,
     "width": 200,
     "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 270,
+    "y": 466,
+    "width": 100,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 509,
+    "y": 466,
+    "width": 40,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 831,
+    "y": 466,
+    "width": 120,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 9,
+    "y": 124,
+    "width": 360,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 593,
+    "y": 124,
+    "width": 160,
+    "dir": "down"
    }
   ],
-  "flipLimit": 4,
+  "flipLimit": 3,
   "parTime": 16,
   "hint": "Some pads throw you LEFT. Flip off them in time."
  },
@@ -301,9 +374,31 @@
     "y": 466,
     "width": 40,
     "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 729,
+    "y": 466,
+    "width": 80,
+    "dir": "up",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 10,
+    "y": 124,
+    "width": 480,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 710,
+    "y": 124,
+    "width": 240,
+    "dir": "down"
    }
   ],
-  "flipLimit": 4,
+  "flipLimit": 3,
   "parTime": 16
  },
  {
@@ -401,6 +496,28 @@
     "y": 466,
     "width": 30,
     "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 596,
+    "y": 466,
+    "width": 80,
+    "dir": "up",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 672,
+    "y": 124,
+    "width": 60,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 10,
+    "y": 124,
+    "width": 180,
+    "dir": "down"
    }
   ],
   "flipLimit": 2,

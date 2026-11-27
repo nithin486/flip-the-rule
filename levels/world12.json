@@ -55,6 +55,21 @@
     "y": 124,
     "width": 380,
     "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 9,
+    "y": 124,
+    "width": 40,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 454,
+    "y": 124,
+    "width": 120,
+    "dir": "down",
+    "hidden": true
    }
   ],
   "orbs": [
@@ -63,7 +78,7 @@
     "y": 463
    }
   ],
-  "flipLimit": 2,
+  "flipLimit": 1,
   "parTime": 18,
   "hint": "Orbs flip your gravity for free. They do not count as flips."
  },
@@ -124,6 +139,21 @@
     "y": 124,
     "width": 360,
     "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 9,
+    "y": 124,
+    "width": 280,
+    "dir": "down",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 671,
+    "y": 124,
+    "width": 280,
+    "dir": "down"
    }
   ],
   "orbs": [
@@ -140,7 +170,7 @@
     "y": 380
    }
   ],
-  "flipLimit": 3,
+  "flipLimit": 2,
   "parTime": 16
  },
  {
@@ -233,6 +263,20 @@
     "y": 466,
     "width": 40,
     "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 9,
+    "y": 124,
+    "width": 40,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 768,
+    "y": 124,
+    "width": 180,
+    "dir": "down"
    }
   ],
   "orbs": [
@@ -245,7 +289,7 @@
     "y": 141
    }
   ],
-  "flipLimit": 2,
+  "flipLimit": 1,
   "parTime": 16,
   "hint": "An orb flip changes which coloured slabs are solid."
  },
@@ -324,6 +368,13 @@
     "y": 124,
     "width": 300,
     "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 9,
+    "y": 124,
+    "width": 180,
+    "dir": "down"
    }
   ],
   "orbs": [
@@ -332,7 +383,7 @@
     "y": 463
    }
   ],
-  "flipLimit": 2,
+  "flipLimit": 1,
   "parTime": 17
  },
  {
@@ -462,6 +513,28 @@
     "x": 820,
     "y": 466,
     "width": 120,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 9,
+    "y": 124,
+    "width": 180,
+    "dir": "down",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 691,
+    "y": 466,
+    "width": 60,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 769,
+    "y": 466,
+    "width": 40,
     "dir": "up"
    }
   ],

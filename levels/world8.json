@@ -116,6 +116,28 @@
     "y": 466,
     "width": 40,
     "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 209,
+    "y": 124,
+    "width": 40,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 317,
+    "y": 124,
+    "width": 60,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 873,
+    "y": 124,
+    "width": 80,
+    "dir": "down",
+    "hidden": true
    }
   ],
   "zones": [
@@ -128,9 +150,8 @@
     "wind": -220
    }
   ],
-  "flipLimit": 5,
-  "parTime": 17,
-  "hint": "No spare flips from here on. Plan every one."
+  "flipLimit": 4,
+  "parTime": 17
  },
  {
   "id": 37,
@@ -236,6 +257,71 @@
     "width": 50,
     "dir": "down",
     "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 276,
+    "y": 466,
+    "width": 60,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 775,
+    "y": 466,
+    "width": 40,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 147,
+    "y": 286,
+    "width": 40,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 265,
+    "y": 286,
+    "width": 140,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 511,
+    "y": 286,
+    "width": 120,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 149,
+    "y": 328,
+    "width": 40,
+    "dir": "down",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 373,
+    "y": 328,
+    "width": 160,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 9,
+    "y": 124,
+    "width": 680,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 770,
+    "y": 124,
+    "width": 40,
+    "dir": "down",
+    "hidden": true
    }
   ],
   "portals": [
@@ -261,7 +347,7 @@
     "kind": "lock"
    }
   ],
-  "flipLimit": 6,
+  "flipLimit": 5,
   "parTime": 16
  },
  {
@@ -412,7 +498,7 @@
     "wind": 240
    }
   ],
-  "flipLimit": 5,
+  "flipLimit": 4,
   "parTime": 16
  },
  {
@@ -549,6 +635,20 @@
     "y": 124,
     "width": 60,
     "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 148,
+    "y": 466,
+    "width": 120,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 373,
+    "y": 124,
+    "width": 40,
+    "dir": "down"
    }
   ],
   "zones": [
@@ -568,7 +668,7 @@
     "wind": -220
    }
   ],
-  "flipLimit": 6,
+  "flipLimit": 5,
   "parTime": 16
  },
  {
@@ -720,6 +820,13 @@
     "y": 124,
     "width": 60,
     "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 876,
+    "y": 466,
+    "width": 80,
+    "dir": "up"
    }
   ],
   "zones": [

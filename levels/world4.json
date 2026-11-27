@@ -66,6 +66,20 @@
     "y": 136,
     "width": 60,
     "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 750,
+    "y": 466,
+    "width": 40,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 874,
+    "y": 136,
+    "width": 80,
+    "dir": "down"
    }
   ],
   "portals": [
@@ -82,7 +96,7 @@
     "pair": "a"
    }
   ],
-  "flipLimit": 5,
+  "flipLimit": 4,
   "parTime": 15,
   "hint": "Portals link two places. Step in one, come out the other."
  },
@@ -153,6 +167,51 @@
     "y": 466,
     "width": 60,
     "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 212,
+    "y": 466,
+    "width": 40,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 433,
+    "y": 466,
+    "width": 180,
+    "dir": "up",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 688,
+    "y": 466,
+    "width": 60,
+    "dir": "up",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 319,
+    "y": 286,
+    "width": 80,
+    "dir": "up",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 564,
+    "y": 136,
+    "width": 40,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 834,
+    "y": 136,
+    "width": 120,
+    "dir": "down"
    }
   ],
   "switches": [
@@ -172,7 +231,7 @@
     "height": 344
    }
   ],
-  "flipLimit": 5,
+  "flipLimit": 4,
   "parTime": 16,
   "hint": "Step on the switch to open the gate."
  },
@@ -253,6 +312,14 @@
      "period": 3.2,
      "phase": 0
     }
+   },
+   {
+    "type": "spike",
+    "x": 765,
+    "y": 124,
+    "width": 60,
+    "dir": "down",
+    "hidden": true
    }
   ],
   "zones": [
@@ -264,7 +331,7 @@
     "gravity": "up"
    }
   ],
-  "flipLimit": 4,
+  "flipLimit": 3,
   "parTime": 16,
   "hint": "Gravity zones override gravity inside their glow."
  },
@@ -366,6 +433,43 @@
     "y": 124,
     "width": 60,
     "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 140,
+    "y": 466,
+    "width": 220,
+    "dir": "up",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 569,
+    "y": 466,
+    "width": 40,
+    "dir": "up",
+    "hidden": true
+   },
+   {
+    "type": "spike",
+    "x": 871,
+    "y": 466,
+    "width": 80,
+    "dir": "up"
+   },
+   {
+    "type": "spike",
+    "x": 9,
+    "y": 124,
+    "width": 100,
+    "dir": "down"
+   },
+   {
+    "type": "spike",
+    "x": 709,
+    "y": 124,
+    "width": 40,
+    "dir": "down"
    }
   ],
   "switches": [
@@ -398,7 +502,7 @@
     "height": 356
    }
   ],
-  "flipLimit": 4,
+  "flipLimit": 3,
   "parTime": 17
  },
  {
